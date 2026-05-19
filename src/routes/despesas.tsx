@@ -305,6 +305,11 @@ function ExpensesPage() {
                   <Label className="text-xs">Parcelas pagas</Label>
                   <Input type="number" min={0} value={form.installments_paid} onChange={(e) => setForm({ ...form, installments_paid: e.target.value })} />
                 </div>
+                <InstallmentPreview
+                  total={parseFloat(form.total_amount.replace(",", ".")) || 0}
+                  parts={Math.max(1, parseInt(form.installments_total || "1"))}
+                  paid={Math.max(0, parseInt(form.installments_paid || "0"))}
+                />
               </>
             )}
             {form.status !== "paid" && (
