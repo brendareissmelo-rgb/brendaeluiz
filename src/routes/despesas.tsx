@@ -305,6 +305,11 @@ function ExpensesPage() {
                   <Label className="text-xs">Parcelas pagas</Label>
                   <Input type="number" min={0} value={form.installments_paid} onChange={(e) => setForm({ ...form, installments_paid: e.target.value })} />
                 </div>
+                <InstallmentPreview
+                  total={parseFloat(form.total_amount.replace(",", ".")) || 0}
+                  parts={Math.max(1, parseInt(form.installments_total || "1"))}
+                  paid={Math.max(0, parseInt(form.installments_paid || "0"))}
+                />
               </>
             )}
             {form.status !== "paid" && (
@@ -353,4 +358,22 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   if (status === "paid") return <Badge className="bg-success/15 text-success border-success/30 hover:bg-success/15">Pago</Badge>;
   if (status === "installment") return <Badge className="bg-primary/15 text-primary border-primary/30 hover:bg-primary/15">Parcelado</Badge>;
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
+}
+
+function InstallmentPreview({ total, parts, paid }: { total: number; parts: number; paid: number }) {
+  const per = total / parts;
+  const cappedPaid = Math.min(paid, parts);
+  const paidAmount = per * cappedPaid;
+  const remainingAmount = Math.max(total - paidAmount, 0);
+  const remainingParts = Math.max(parts - cappedPaid, 0);
+  return (
+    <div className="sm:col-span-2 rounded-md border border-border/60 bg-muted/30 p-3 text-xs">
+      <div className="mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">Resumo do parcelamento</div>
+      <div className="grid grid-cols-3 gap-2 tabular-nums">
+        <div><div className="text-muted-foreground text-[11px]">Valor da parcela</div><div className="font-medium">{BRL(per || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x)</div><div className="font-medium text-success">{BRL(paidAmount || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Restante ({remainingParts}x)</div><div className="font-medium text-warning">{BRL(remainingAmount || 0)}</div></div>
+      </div>
+    </div>
+  );
 }

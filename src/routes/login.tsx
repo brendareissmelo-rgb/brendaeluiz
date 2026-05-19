@@ -15,7 +15,6 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -28,20 +27,9 @@ function LoginPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Bem-vinda!");
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
-        toast.success("Conta criada. Você já pode entrar.");
-        setMode("signin");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Bem-vinda!");
     } catch (err: any) {
       toast.error(err.message ?? "Erro ao autenticar");
     } finally {
@@ -55,7 +43,7 @@ function LoginPage() {
         <div className="mb-5">
           <h1 className="text-lg font-semibold tracking-tight">Finanças do Casamento</h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            {mode === "signin" ? "Entre para acessar o painel" : "Crie sua conta privada"}
+            Painel privado. Entre com seu e-mail e senha.
           </p>
         </div>
         <form onSubmit={submit} className="space-y-3">
@@ -79,20 +67,13 @@ function LoginPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete="current-password"
             />
           </div>
           <Button type="submit" disabled={busy} className="w-full">
-            {busy ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
+            {busy ? "Aguarde..." : "Entrar"}
           </Button>
         </form>
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground"
-        >
-          {mode === "signin" ? "Não tem conta? Criar agora" : "Já tem conta? Entrar"}
-        </button>
       </Card>
     </main>
   );
