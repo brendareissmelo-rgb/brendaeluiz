@@ -118,6 +118,7 @@ function ExpensesPage() {
       name: e.name,
       category: e.category,
       total_amount: String(e.total_amount),
+      down_payment: e.down_payment ? String(e.down_payment) : "",
       status: e.status,
       installments_total: String(e.installments_total),
       installments_paid: String(e.installments_paid),
@@ -135,6 +136,8 @@ function ExpensesPage() {
       toast.error("Preencha nome e valor corretamente.");
       return;
     }
+    const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
+    const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
     const paidInst = form.status === "installment" ? Math.min(total, Math.max(0, parseInt(form.installments_paid || "0"))) : form.status === "paid" ? 1 : 0;
 
@@ -145,6 +148,7 @@ function ExpensesPage() {
         name: form.name.trim(),
         category: form.category.trim() || "Outros",
         total_amount: amount,
+        down_payment: form.status === "paid" ? 0 : down,
         status: form.status,
         installments_total: total,
         installments_paid: paidInst,
