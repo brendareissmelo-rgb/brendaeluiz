@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          down_payment: number
           due_date: string | null
           id: string
           installments_paid: number
@@ -33,6 +34,7 @@ export type Database = {
         Insert: {
           category?: string
           created_at?: string
+          down_payment?: number
           due_date?: string | null
           id?: string
           installments_paid?: number
@@ -48,6 +50,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          down_payment?: number
           due_date?: string | null
           id?: string
           installments_paid?: number
