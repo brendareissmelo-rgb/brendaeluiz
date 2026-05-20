@@ -69,6 +69,7 @@ type FormState = {
   name: string;
   category: string;
   total_amount: string;
+  down_payment: string;
   status: Expense["status"];
   installments_total: string;
   installments_paid: string;
@@ -81,6 +82,7 @@ const empty: FormState = {
   name: "",
   category: "Outros",
   total_amount: "",
+  down_payment: "",
   status: "pending",
   installments_total: "1",
   installments_paid: "0",
@@ -116,6 +118,7 @@ function ExpensesPage() {
       name: e.name,
       category: e.category,
       total_amount: String(e.total_amount),
+      down_payment: e.down_payment ? String(e.down_payment) : "",
       status: e.status,
       installments_total: String(e.installments_total),
       installments_paid: String(e.installments_paid),
@@ -133,6 +136,8 @@ function ExpensesPage() {
       toast.error("Preencha nome e valor corretamente.");
       return;
     }
+    const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
+    const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
     const paidInst = form.status === "installment" ? Math.min(total, Math.max(0, parseInt(form.installments_paid || "0"))) : form.status === "paid" ? 1 : 0;
 
@@ -143,6 +148,7 @@ function ExpensesPage() {
         name: form.name.trim(),
         category: form.category.trim() || "Outros",
         total_amount: amount,
+        down_payment: form.status === "paid" ? 0 : down,
         status: form.status,
         installments_total: total,
         installments_paid: paidInst,
@@ -295,6 +301,22 @@ function ExpensesPage() {
                 </SelectContent>
               </Select>
             </div>
+            {form.status !== "paid" && (
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="text-xs">Valor de entrada (R$) <span className="text-muted-foreground font-normal">— opcional</span></Label>
+                <Input
+                  inputMode="decimal"
+                  value={form.down_payment}
+                  onChange={(e) => setForm({ ...form, down_payment: e.target.value })}
+                  placeholder="0,00"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  {form.status === "installment"
+                    ? "Será descontado do total e o restante dividido nas parcelas."
+                    : "Valor já adiantado dessa despesa."}
+                </p>
+              </div>
+            )}
             {form.status === "installment" && (
               <>
                 <div className="space-y-1.5">
@@ -307,6 +329,7 @@ function ExpensesPage() {
                 </div>
                 <InstallmentPreview
                   total={parseFloat(form.total_amount.replace(",", ".")) || 0}
+                  down={parseFloat((form.down_payment || "0").replace(",", ".")) || 0}
                   parts={Math.max(1, parseInt(form.installments_total || "1"))}
                   paid={Math.max(0, parseInt(form.installments_paid || "0"))}
                 />
@@ -360,18 +383,22 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
 }
 
-function InstallmentPreview({ total, parts, paid }: { total: number; parts: number; paid: number }) {
-  const per = total / parts;
+function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
+  const cappedDown = Math.min(Math.max(down, 0), total);
+  const base = Math.max(total - cappedDown, 0);
+  const per = base / parts;
   const cappedPaid = Math.min(paid, parts);
-  const paidAmount = per * cappedPaid;
-  const remainingAmount = Math.max(total - paidAmount, 0);
+  const paidInst = per * cappedPaid;
+  const paidTotal = cappedDown + paidInst;
+  const remainingAmount = Math.max(total - paidTotal, 0);
   const remainingParts = Math.max(parts - cappedPaid, 0);
   return (
     <div className="sm:col-span-2 rounded-md border border-border/60 bg-muted/30 p-3 text-xs">
       <div className="mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">Resumo do parcelamento</div>
-      <div className="grid grid-cols-3 gap-2 tabular-nums">
-        <div><div className="text-muted-foreground text-[11px]">Valor da parcela</div><div className="font-medium">{BRL(per || 0)}</div></div>
-        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x)</div><div className="font-medium text-success">{BRL(paidAmount || 0)}</div></div>
+      <div className="grid grid-cols-2 gap-2 tabular-nums sm:grid-cols-4">
+        <div><div className="text-muted-foreground text-[11px]">Entrada</div><div className="font-medium text-success">{BRL(cappedDown || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Parcela ({parts}x)</div><div className="font-medium">{BRL(per || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x + entrada)</div><div className="font-medium text-success">{BRL(paidTotal || 0)}</div></div>
         <div><div className="text-muted-foreground text-[11px]">Restante ({remainingParts}x)</div><div className="font-medium text-warning">{BRL(remainingAmount || 0)}</div></div>
       </div>
     </div>

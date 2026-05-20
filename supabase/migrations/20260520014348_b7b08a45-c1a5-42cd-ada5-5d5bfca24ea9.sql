@@ -1,0 +1,1 @@
+ALTER TABLE public.expenses ADD COLUMN down_payment numeric NOT NULL DEFAULT 0;

@@ -52,12 +52,15 @@ export function useDeleteExpense() {
 
 export function computeAmounts(e: Expense) {
   const total = Number(e.total_amount);
-  if (e.status === "paid") return { paid: total, remaining: 0, total };
-  if (e.status === "pending") return { paid: 0, remaining: total, total };
+  const down = Math.min(Number(e.down_payment ?? 0), total);
+  if (e.status === "paid") return { paid: total, remaining: 0, total, down };
+  if (e.status === "pending") return { paid: down, remaining: Math.max(total - down, 0), total, down };
   // installment
-  const per = e.installments_total > 0 ? total / e.installments_total : total;
-  const paid = per * Math.min(e.installments_paid, e.installments_total);
-  return { paid, remaining: Math.max(total - paid, 0), total };
+  const base = Math.max(total - down, 0);
+  const per = e.installments_total > 0 ? base / e.installments_total : base;
+  const paidInst = per * Math.min(e.installments_paid, e.installments_total);
+  const paid = down + paidInst;
+  return { paid, remaining: Math.max(total - paid, 0), total, down };
 }
 
 export function summarize(items: Expense[]) {
