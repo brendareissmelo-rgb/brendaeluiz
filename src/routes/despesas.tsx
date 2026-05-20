@@ -383,18 +383,22 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
 }
 
-function InstallmentPreview({ total, parts, paid }: { total: number; parts: number; paid: number }) {
-  const per = total / parts;
+function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
+  const cappedDown = Math.min(Math.max(down, 0), total);
+  const base = Math.max(total - cappedDown, 0);
+  const per = base / parts;
   const cappedPaid = Math.min(paid, parts);
-  const paidAmount = per * cappedPaid;
-  const remainingAmount = Math.max(total - paidAmount, 0);
+  const paidInst = per * cappedPaid;
+  const paidTotal = cappedDown + paidInst;
+  const remainingAmount = Math.max(total - paidTotal, 0);
   const remainingParts = Math.max(parts - cappedPaid, 0);
   return (
     <div className="sm:col-span-2 rounded-md border border-border/60 bg-muted/30 p-3 text-xs">
       <div className="mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">Resumo do parcelamento</div>
-      <div className="grid grid-cols-3 gap-2 tabular-nums">
-        <div><div className="text-muted-foreground text-[11px]">Valor da parcela</div><div className="font-medium">{BRL(per || 0)}</div></div>
-        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x)</div><div className="font-medium text-success">{BRL(paidAmount || 0)}</div></div>
+      <div className="grid grid-cols-2 gap-2 tabular-nums sm:grid-cols-4">
+        <div><div className="text-muted-foreground text-[11px]">Entrada</div><div className="font-medium text-success">{BRL(cappedDown || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Parcela ({parts}x)</div><div className="font-medium">{BRL(per || 0)}</div></div>
+        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x + entrada)</div><div className="font-medium text-success">{BRL(paidTotal || 0)}</div></div>
         <div><div className="text-muted-foreground text-[11px]">Restante ({remainingParts}x)</div><div className="font-medium text-warning">{BRL(remainingAmount || 0)}</div></div>
       </div>
     </div>
