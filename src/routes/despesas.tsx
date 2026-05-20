@@ -69,6 +69,7 @@ type FormState = {
   name: string;
   category: string;
   total_amount: string;
+  down_payment: string;
   status: Expense["status"];
   installments_total: string;
   installments_paid: string;
@@ -81,6 +82,7 @@ const empty: FormState = {
   name: "",
   category: "Outros",
   total_amount: "",
+  down_payment: "",
   status: "pending",
   installments_total: "1",
   installments_paid: "0",
