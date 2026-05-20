@@ -301,6 +301,22 @@ function ExpensesPage() {
                 </SelectContent>
               </Select>
             </div>
+            {form.status !== "paid" && (
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="text-xs">Valor de entrada (R$) <span className="text-muted-foreground font-normal">— opcional</span></Label>
+                <Input
+                  inputMode="decimal"
+                  value={form.down_payment}
+                  onChange={(e) => setForm({ ...form, down_payment: e.target.value })}
+                  placeholder="0,00"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  {form.status === "installment"
+                    ? "Será descontado do total e o restante dividido nas parcelas."
+                    : "Valor já adiantado dessa despesa."}
+                </p>
+              </div>
+            )}
             {form.status === "installment" && (
               <>
                 <div className="space-y-1.5">
@@ -313,6 +329,7 @@ function ExpensesPage() {
                 </div>
                 <InstallmentPreview
                   total={parseFloat(form.total_amount.replace(",", ".")) || 0}
+                  down={parseFloat((form.down_payment || "0").replace(",", ".")) || 0}
                   parts={Math.max(1, parseInt(form.installments_total || "1"))}
                   paid={Math.max(0, parseInt(form.installments_paid || "0"))}
                 />
