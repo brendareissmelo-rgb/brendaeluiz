@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { useExpenses, summarize, computeAmounts, BRL } from "@/lib/expenses";
+import { useExpenses, summarize, summarizeByOwner, computeAmounts, BRL } from "@/lib/expenses";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ function Stat({ label, value, hint, accent }: { label: string; value: string; hi
 function Dashboard() {
   const { data: items = [], isLoading } = useExpenses();
   const s = summarize(items);
+  const byOwner = summarizeByOwner(items);
   const pct = s.total > 0 ? Math.round((s.paid / s.total) * 100) : 0;
 
   const byCategory = new Map<string, { paid: number; remaining: number; total: number }>();
@@ -81,6 +82,46 @@ function Dashboard() {
           <span>Total {BRL(s.total)}</span>
         </div>
       </Card>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(["Luiz", "Brenda"] as const).map((person) => {
+          const v = byOwner[person];
+          const p = v.total > 0 ? Math.round((v.paid / v.total) * 100) : 0;
+          const accent = person === "Luiz" ? "text-blue-400" : "text-pink-400";
+          const dot = person === "Luiz" ? "bg-blue-500" : "bg-pink-500";
+          return (
+            <Card key={person} className="border-border/60 bg-card p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={`h-2 w-2 rounded-full ${dot}`} />
+                  <h3 className={`text-sm font-semibold ${accent}`}>{person}</h3>
+                </div>
+                <span className="text-[11px] text-muted-foreground tabular-nums">{p}% pago</span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 tabular-nums">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Total</div>
+                  <div className="text-sm font-semibold">{BRL(v.total)}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Pago</div>
+                  <div className="text-sm font-semibold text-success">{BRL(v.paid)}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">A pagar</div>
+                  <div className="text-sm font-semibold text-warning">{BRL(v.remaining)}</div>
+                </div>
+              </div>
+              <Progress value={p} className="mt-3 h-1.5" />
+              {v.inProgress > 0 && (
+                <div className="mt-2 text-[11px] text-muted-foreground">
+                  Em parcelamento: <span className="tabular-nums text-primary">{BRL(v.inProgress)}</span>
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-border/60 bg-card p-5">

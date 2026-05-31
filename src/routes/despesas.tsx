@@ -68,6 +68,7 @@ type FormState = {
   id?: string;
   name: string;
   category: string;
+  owner: "Luiz" | "Brenda" | "Ambos";
   total_amount: string;
   down_payment: string;
   status: Expense["status"];
@@ -81,6 +82,7 @@ type FormState = {
 const empty: FormState = {
   name: "",
   category: "Outros",
+  owner: "Ambos",
   total_amount: "",
   down_payment: "",
   status: "pending",
@@ -117,6 +119,7 @@ function ExpensesPage() {
       id: e.id,
       name: e.name,
       category: e.category,
+      owner: (((e as any).owner as FormState["owner"]) ?? "Ambos"),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
       status: e.status,
@@ -155,7 +158,8 @@ function ExpensesPage() {
         due_date: form.due_date || null,
         paid_date: form.status === "paid" ? (form.paid_date || new Date().toISOString().slice(0, 10)) : (form.paid_date || null),
         notes: form.notes.trim() || null,
-      });
+        owner: form.owner,
+      } as any);
       toast.success(form.id ? "Despesa atualizada" : "Despesa adicionada");
       setOpen(false);
     } catch (err: any) {
@@ -235,7 +239,10 @@ function ExpensesPage() {
               return (
                 <TableRow key={e.id} className="border-border/60">
                   <TableCell className="py-2.5">
-                    <div className="text-sm font-medium">{e.name}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{e.name}</span>
+                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos") ?? "Ambos"} />
+                    </div>
                     {e.status === "installment" && (
                       <div className="text-[11px] text-muted-foreground">
                         {e.installments_paid}/{e.installments_total} parcelas
@@ -298,6 +305,17 @@ function ExpensesPage() {
                   <SelectItem value="pending">A pagar</SelectItem>
                   <SelectItem value="installment">Parcelado</SelectItem>
                   <SelectItem value="paid">Pago</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs">Responsável</Label>
+              <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as FormState["owner"] })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
+                  <SelectItem value="Luiz">Luiz</SelectItem>
+                  <SelectItem value="Brenda">Brenda</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -381,6 +399,16 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   if (status === "paid") return <Badge className="bg-success/15 text-success border-success/30 hover:bg-success/15">Pago</Badge>;
   if (status === "installment") return <Badge className="bg-primary/15 text-primary border-primary/30 hover:bg-primary/15">Parcelado</Badge>;
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
+}
+
+function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" }) {
+  const cls =
+    owner === "Luiz"
+      ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      : owner === "Brenda"
+      ? "bg-pink-500/15 text-pink-400 border-pink-500/30"
+      : "bg-muted text-muted-foreground border-border";
+  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{owner}</span>;
 }
 
 function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
