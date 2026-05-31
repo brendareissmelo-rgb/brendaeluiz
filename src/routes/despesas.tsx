@@ -158,7 +158,8 @@ function ExpensesPage() {
         due_date: form.due_date || null,
         paid_date: form.status === "paid" ? (form.paid_date || new Date().toISOString().slice(0, 10)) : (form.paid_date || null),
         notes: form.notes.trim() || null,
-      });
+        owner: form.owner,
+      } as any);
       toast.success(form.id ? "Despesa atualizada" : "Despesa adicionada");
       setOpen(false);
     } catch (err: any) {
