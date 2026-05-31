@@ -239,7 +239,10 @@ function ExpensesPage() {
               return (
                 <TableRow key={e.id} className="border-border/60">
                   <TableCell className="py-2.5">
-                    <div className="text-sm font-medium">{e.name}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{e.name}</span>
+                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos") ?? "Ambos"} />
+                    </div>
                     {e.status === "installment" && (
                       <div className="text-[11px] text-muted-foreground">
                         {e.installments_paid}/{e.installments_total} parcelas
