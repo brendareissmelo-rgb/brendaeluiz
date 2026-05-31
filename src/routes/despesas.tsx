@@ -68,6 +68,7 @@ type FormState = {
   id?: string;
   name: string;
   category: string;
+  owner: "Luiz" | "Brenda" | "Ambos";
   total_amount: string;
   down_payment: string;
   status: Expense["status"];
@@ -81,6 +82,7 @@ type FormState = {
 const empty: FormState = {
   name: "",
   category: "Outros",
+  owner: "Ambos",
   total_amount: "",
   down_payment: "",
   status: "pending",
