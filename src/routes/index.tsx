@@ -31,6 +31,7 @@ function Stat({ label, value, hint, accent }: { label: string; value: string; hi
 function Dashboard() {
   const { data: items = [], isLoading } = useExpenses();
   const s = summarize(items);
+  const byOwner = summarizeByOwner(items);
   const pct = s.total > 0 ? Math.round((s.paid / s.total) * 100) : 0;
 
   const byCategory = new Map<string, { paid: number; remaining: number; total: number }>();
