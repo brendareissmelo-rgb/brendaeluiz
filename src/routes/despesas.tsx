@@ -305,6 +305,17 @@ function ExpensesPage() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs">Responsável</Label>
+              <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as FormState["owner"] })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
+                  <SelectItem value="Luiz">Luiz</SelectItem>
+                  <SelectItem value="Brenda">Brenda</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {form.status !== "paid" && (
               <div className="space-y-1.5 sm:col-span-2">
                 <Label className="text-xs">Valor de entrada (R$) <span className="text-muted-foreground font-normal">— opcional</span></Label>
