@@ -401,6 +401,16 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
 }
 
+function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" }) {
+  const cls =
+    owner === "Luiz"
+      ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      : owner === "Brenda"
+      ? "bg-pink-500/15 text-pink-400 border-pink-500/30"
+      : "bg-muted text-muted-foreground border-border";
+  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{owner}</span>;
+}
+
 function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
   const cappedDown = Math.min(Math.max(down, 0), total);
   const base = Math.max(total - cappedDown, 0);
