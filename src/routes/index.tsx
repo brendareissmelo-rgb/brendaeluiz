@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { useExpenses, summarize, computeAmounts, BRL } from "@/lib/expenses";
+import { useExpenses, summarize, summarizeByOwner, computeAmounts, BRL } from "@/lib/expenses";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
