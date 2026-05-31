@@ -119,6 +119,7 @@ function ExpensesPage() {
       id: e.id,
       name: e.name,
       category: e.category,
+      owner: (((e as any).owner as FormState["owner"]) ?? "Ambos"),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
       status: e.status,
