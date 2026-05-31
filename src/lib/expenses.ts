@@ -75,5 +75,33 @@ export function summarize(items: Expense[]) {
   return { paid, remaining, total, inProgress, count: items.length };
 }
 
+export type Owner = "Luiz" | "Brenda" | "Ambos";
+export const OWNERS: Owner[] = ["Luiz", "Brenda", "Ambos"];
+
+export function summarizeByOwner(items: Expense[]) {
+  const result: Record<"Luiz" | "Brenda", { paid: number; remaining: number; total: number; inProgress: number; count: number }> = {
+    Luiz: { paid: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
+    Brenda: { paid: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
+  };
+  for (const e of items) {
+    const a = computeAmounts(e);
+    const owner = (((e as any).owner as Owner) ?? "Ambos");
+    const targets: Array<{ key: "Luiz" | "Brenda"; share: number }> =
+      owner === "Ambos"
+        ? [{ key: "Luiz", share: 0.5 }, { key: "Brenda", share: 0.5 }]
+        : [{ key: owner, share: 1 }];
+    for (const t of targets) {
+      result[t.key].paid += a.paid * t.share;
+      result[t.key].remaining += a.remaining * t.share;
+      result[t.key].total += a.total * t.share;
+      if (e.status === "installment" && a.remaining > 0) {
+        result[t.key].inProgress += a.remaining * t.share;
+      }
+      result[t.key].count += 1;
+    }
+  }
+  return result;
+}
+
 export const BRL = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
