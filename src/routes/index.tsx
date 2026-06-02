@@ -84,6 +84,18 @@ function Dashboard() {
         </div>
       </Card>
 
+      {s.gifts > 0 && (
+        <Card className="border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[11px] uppercase tracking-wide text-amber-400/80">🎁 Presentes recebidos</div>
+              <div className="mt-1 text-xl font-semibold tabular-nums text-amber-300">{BRL(s.gifts)}</div>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">{s.giftsCount} item(ns) — não entram no orçamento</div>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2">
         {(["Luiz", "Brenda"] as const).map((person) => {
           const v = byOwner[person];
