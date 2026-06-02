@@ -68,7 +68,7 @@ type FormState = {
   id?: string;
   name: string;
   category: string;
-  owner: "Luiz" | "Brenda" | "Ambos";
+  owner: "Luiz" | "Brenda" | "Ambos" | "Presente";
   total_amount: string;
   down_payment: string;
   status: Expense["status"];
@@ -241,7 +241,7 @@ function ExpensesPage() {
                   <TableCell className="py-2.5">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{e.name}</span>
-                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos") ?? "Ambos"} />
+                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos" | "Presente") ?? "Ambos"} />
                     </div>
                     {e.status === "installment" && (
                       <div className="text-[11px] text-muted-foreground">
@@ -316,6 +316,7 @@ function ExpensesPage() {
                   <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
                   <SelectItem value="Luiz">Luiz</SelectItem>
                   <SelectItem value="Brenda">Brenda</SelectItem>
+                  <SelectItem value="Presente">🎁 Presente (não sai do bolso)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -401,14 +402,17 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
 }
 
-function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" }) {
+function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" | "Presente" }) {
   const cls =
     owner === "Luiz"
       ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
       : owner === "Brenda"
       ? "bg-pink-500/15 text-pink-400 border-pink-500/30"
+      : owner === "Presente"
+      ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
       : "bg-muted text-muted-foreground border-border";
-  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{owner}</span>;
+  const label = owner === "Presente" ? "🎁 Presente" : owner;
+  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{label}</span>;
 }
 
 function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
