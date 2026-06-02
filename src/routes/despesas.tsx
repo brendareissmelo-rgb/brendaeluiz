@@ -316,6 +316,7 @@ function ExpensesPage() {
                   <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
                   <SelectItem value="Luiz">Luiz</SelectItem>
                   <SelectItem value="Brenda">Brenda</SelectItem>
+                  <SelectItem value="Presente">🎁 Presente (não sai do bolso)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
