@@ -36,6 +36,7 @@ function Dashboard() {
 
   const byCategory = new Map<string, { paid: number; remaining: number; total: number }>();
   for (const e of items) {
+    if ((((e as any).owner as string) ?? "Ambos") === "Presente") continue;
     const a = computeAmounts(e);
     const cur = byCategory.get(e.category) ?? { paid: 0, remaining: 0, total: 0 };
     cur.paid += a.paid;
