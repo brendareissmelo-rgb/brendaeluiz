@@ -241,7 +241,7 @@ function ExpensesPage() {
                   <TableCell className="py-2.5">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{e.name}</span>
-                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos") ?? "Ambos"} />
+                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos" | "Presente") ?? "Ambos"} />
                     </div>
                     {e.status === "installment" && (
                       <div className="text-[11px] text-muted-foreground">
