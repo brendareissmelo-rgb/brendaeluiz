@@ -68,7 +68,7 @@ type FormState = {
   id?: string;
   name: string;
   category: string;
-  owner: "Luiz" | "Brenda" | "Ambos";
+  owner: "Luiz" | "Brenda" | "Ambos" | "Presente";
   total_amount: string;
   down_payment: string;
   status: Expense["status"];
