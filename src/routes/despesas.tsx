@@ -402,14 +402,17 @@ function StatusBadge({ status }: { status: Expense["status"] }) {
   return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
 }
 
-function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" }) {
+function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" | "Presente" }) {
   const cls =
     owner === "Luiz"
       ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
       : owner === "Brenda"
       ? "bg-pink-500/15 text-pink-400 border-pink-500/30"
+      : owner === "Presente"
+      ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
       : "bg-muted text-muted-foreground border-border";
-  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{owner}</span>;
+  const label = owner === "Presente" ? "🎁 Presente" : owner;
+  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{label}</span>;
 }
 
 function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
