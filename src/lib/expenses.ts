@@ -93,10 +93,11 @@ export function summarizeByOwner(items: Expense[]) {
   for (const e of items) {
     const a = computeAmounts(e);
     const owner = (((e as any).owner as Owner) ?? "Ambos");
+    if (owner === "Presente") continue;
     const targets: Array<{ key: "Luiz" | "Brenda"; share: number }> =
       owner === "Ambos"
         ? [{ key: "Luiz", share: 0.5 }, { key: "Brenda", share: 0.5 }]
-        : [{ key: owner, share: 1 }];
+        : [{ key: owner as "Luiz" | "Brenda", share: 1 }];
     for (const t of targets) {
       result[t.key].paid += a.paid * t.share;
       result[t.key].remaining += a.remaining * t.share;
