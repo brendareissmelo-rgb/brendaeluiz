@@ -2,13 +2,33 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import capa from "@/assets/capa-principal.jpg.asset.json";
+import capa from "@/assets/capa-principal-2.jpg.asset.json";
 import foto17 from "@/assets/luiz-brenda-17.jpg.asset.json";
 import foto18 from "@/assets/luiz-brenda-18.jpg.asset.json";
 import foto20 from "@/assets/luiz-brenda-20.jpg.asset.json";
 import foto11 from "@/assets/luiz-brenda-11.jpg.asset.json";
-import dressHomens from "@/assets/dresscode-homens.jpg.asset.json";
-import dressMulheres from "@/assets/dresscode-mulheres.jpg.asset.json";
+
+import h1 from "@/assets/dresscode-h-1.jpg.asset.json";
+import h2 from "@/assets/dresscode-h-2.jpg.asset.json";
+import h3 from "@/assets/dresscode-h-3.jpg.asset.json";
+import h4 from "@/assets/dresscode-h-4.jpg.asset.json";
+import h5 from "@/assets/dresscode-h-5.jpg.asset.json";
+import h6 from "@/assets/dresscode-h-6.jpg.asset.json";
+import h7 from "@/assets/dresscode-h-7.jpg.asset.json";
+import h8 from "@/assets/dresscode-h-8.jpg.asset.json";
+import h9 from "@/assets/dresscode-h-9.jpg.asset.json";
+import h10 from "@/assets/dresscode-h-10.jpg.asset.json";
+
+import m1 from "@/assets/dresscode-m-1.jpg.asset.json";
+import m2 from "@/assets/dresscode-m-2.jpg.asset.json";
+import m3 from "@/assets/dresscode-m-3.jpg.asset.json";
+import m4 from "@/assets/dresscode-m-4.jpg.asset.json";
+import m5 from "@/assets/dresscode-m-5.jpg.asset.json";
+import m6 from "@/assets/dresscode-m-6.jpg.asset.json";
+import m7 from "@/assets/dresscode-m-7.jpg.asset.json";
+import m8 from "@/assets/dresscode-m-8.jpg.asset.json";
+import m9 from "@/assets/dresscode-m-9.jpg.asset.json";
+import m10 from "@/assets/dresscode-m-10.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,6 +44,10 @@ export const Route = createFileRoute("/")({
 });
 
 const PIX_KEY = "brendareissmelo@gmail.com";
+const MAPS_URL = "https://maps.app.goo.gl/dnu4C5zDWqUHMkBi7";
+
+const homens = [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10];
+const mulheres = [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10];
 
 function Section({ id, eyebrow, title, children }: { id: string; eyebrow?: string; title: string; children: React.ReactNode }) {
   return (
@@ -40,17 +64,59 @@ function Section({ id, eyebrow, title, children }: { id: string; eyebrow?: strin
   );
 }
 
+function DresscodeCarousel({ title, images, alt }: { title: string; images: { url: string }[]; alt: string }) {
+  const [i, setI] = useState(0);
+  const total = images.length;
+  const prev = () => setI((c) => (c - 1 + total) % total);
+  const next = () => setI((c) => (c + 1) % total);
+
+  return (
+    <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
+      <div className="relative bg-[#f5efe4]">
+        <img
+          src={images[i].url}
+          alt={`${alt} ${i + 1}`}
+          loading="lazy"
+          className="h-80 w-full object-contain"
+        />
+        <button
+          type="button"
+          onClick={prev}
+          aria-label="Anterior"
+          className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={next}
+          aria-label="Próxima"
+          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
+        >
+          ›
+        </button>
+        <div className="absolute bottom-2 right-3 rounded-full bg-background/70 px-2 py-0.5 text-[11px] tabular-nums text-muted-foreground backdrop-blur">
+          {i + 1} / {total}
+        </div>
+      </div>
+      <div className="p-5">
+        <h3 className="font-serif text-xl">{title}</h3>
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const [copied, setCopied] = useState(false);
 
   const timeline = [
     { time: "13:00", label: "Making Of" },
-    { time: "17:00", label: "Chegada do Noivo" },
-    { time: "17:10", label: "Chegada dos Convidados" },
+    { time: "15:00", label: "Chegada do Noivo" },
+    { time: "16:40", label: "Chegada dos Convidados" },
     { time: "17:30", label: "Início da Cerimônia" },
-    { time: "18:30", label: "Término da Cerimônia" },
-    { time: "18:45", label: "Fotos com os Convidados" },
-    { time: "20:00", label: "Encerramento" },
+    { time: "18:45", label: "Término da Cerimônia" },
+    { time: "19:00", label: "Fotos com os Convidados" },
+    { time: "19:45", label: "Encerramento" },
   ];
 
   const manual = [
@@ -58,8 +124,7 @@ function Home() {
     "Evite conversas paralelas durante a cerimônia. Cada palavra faz parte do nosso momento.",
     "Chegue com pelo menos 20 minutos de antecedência para acomodar todos com tranquilidade.",
     "Respeite o dresscode: sem tons de rosa e sem branco.",
-    "Deixe as crianças acompanhadas por um responsável durante toda a cerimônia.",
-    "Ao final, ajude-nos a registrar tudo compartilhando suas fotos com a hashtag #BrendaELuiz2026.",
+    "Ao final da cerimônia, os convidados poderão enviar as fotos do casamento no nosso grupo do WhatsApp, que será criado para avisos prévios até o dia do casamento. Assim que a cerimônia terminar, o grupo será liberado para todos compartilharem os registros.",
   ];
 
   const copyPix = async () => {
@@ -105,7 +170,7 @@ function Home() {
               Travessa Alferes Costa, 395 — Bairro Sacramenta
             </div>
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Igreja+Quadrangular+Nova+Vida+Trav+Alferes+Costa+395+Sacramenta"
+              href={MAPS_URL}
               target="_blank"
               rel="noreferrer"
               className="mt-5 inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/20"
@@ -142,26 +207,11 @@ function Home() {
       <Section id="dresscode" eyebrow="Traje" title="Dresscode">
         <p className="mx-auto mb-10 max-w-2xl text-center text-sm text-muted-foreground">
           Queremos você confortável e elegante. Traje social, tons neutros e terrosos são bem-vindos.
+          Navegue pelas sugestões com as setas.
         </p>
         <div className="grid gap-8 sm:grid-cols-2">
-          <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
-            <img src={dressHomens.url} alt="Sugestão de traje masculino" loading="lazy" className="h-80 w-full object-contain bg-[#f5efe4]" />
-            <div className="p-5">
-              <h3 className="font-serif text-xl">Homens</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Terno em tons neutros (bege, caqui, azul-marinho, cinza) com camisa social. Sapato social ou mocassim. Gravata é opcional.
-              </p>
-            </div>
-          </div>
-          <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
-            <img src={dressMulheres.url} alt="Sugestão de traje feminino" loading="lazy" className="h-80 w-full object-contain bg-[#f5efe4]" />
-            <div className="p-5">
-              <h3 className="font-serif text-xl">Mulheres</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Vestidos midi ou longos em tons terrosos, verdes, azuis, dourados ou pastéis suaves. Salto confortável ou sapato baixo.
-              </p>
-            </div>
-          </div>
+          <DresscodeCarousel title="Homens" images={homens} alt="Sugestão de traje masculino" />
+          <DresscodeCarousel title="Mulheres" images={mulheres} alt="Sugestão de traje feminino" />
         </div>
 
         <div className="mt-8 rounded-lg border border-destructive/40 bg-destructive/5 p-5">
@@ -194,8 +244,10 @@ function Home() {
       <Section id="presente" eyebrow="Com carinho" title="Nosso Presente">
         <div className="mx-auto max-w-2xl rounded-lg border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent p-8 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Sua presença já é o maior presente. Mas, se quiser contribuir com o início da nossa história,
-            deixamos abaixo nossa chave Pix. Qualquer valor será recebido com muito amor.
+            Sua presença já é o maior presente — contribuir com o Pix{" "}
+            <span className="font-medium text-foreground">não é obrigatório</span>. Se quiser fazer
+            parte do início da nossa história, deixamos abaixo nossa chave. Qualquer valor será
+            recebido com muito amor.
           </p>
           <div className="mt-6 rounded-md border border-border/60 bg-card p-4">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">Chave Pix (e-mail)</div>
