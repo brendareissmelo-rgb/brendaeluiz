@@ -21,7 +21,7 @@ function LoginPage() {
   const [forgot, setForgot] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/" });
+    if (!loading && user) navigate({ to: "/painel" });
   }, [user, loading, navigate]);
 
   const submit = async (e: React.FormEvent) => {
