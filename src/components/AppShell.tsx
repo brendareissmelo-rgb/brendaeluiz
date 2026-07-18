@@ -22,12 +22,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const navItems = [
-    { to: "/", label: "Dashboard" },
+    { to: "/painel", label: "Dashboard" },
     { to: "/despesas", label: "Despesas" },
   ];
 
   return (
     <div className="min-h-screen bg-background">
+
       <header className="border-b border-border/60 bg-card/40 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <div className="flex items-center gap-6">
@@ -36,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <nav className="flex items-center gap-1">
               {navItems.map((n) => {
-                const active = n.to === "/" ? path === "/" : path.startsWith(n.to);
+                const active = n.to === "/painel" ? path === "/painel" : path.startsWith(n.to);
                 return (
                   <Link
                     key={n.to}
