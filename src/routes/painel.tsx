@@ -12,7 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { useExpenses, summarize, summarizeByOwner, computeAmounts, BRL, type Expense } from "@/lib/expenses";
+import { useExpenses, summarize, computeAmounts, BRL, type Expense } from "@/lib/expenses";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DonutRing, Meter, OwnerTag, StatusBadge, ownerOf, OWNER_STYLES } from "@/components/finance-ui";
@@ -174,7 +174,6 @@ function PersonCard({
 function Dashboard() {
   const { data: items = [], isLoading } = useExpenses();
   const s = summarize(items);
-  const byOwner = summarizeByOwner(items);
   const pct = s.total > 0 ? Math.round((s.paid / s.total) * 100) : 0;
 
   const byCategory = new Map<string, { paid: number; remaining: number; total: number }>();
