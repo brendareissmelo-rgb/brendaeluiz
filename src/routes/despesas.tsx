@@ -1,5 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import {
+  CheckCircle2,
+  CreditCard,
+  Gift,
+  Pencil,
+  Plus,
+  Receipt,
+  Search,
+  Timer,
+  Trash2,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import {
   useExpenses,
@@ -8,6 +21,7 @@ import {
   computeAmounts,
   BRL,
   type Expense,
+  type Owner,
 } from "@/lib/expenses";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -29,15 +43,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +54,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { DonutRing, Meter, OwnerTag, StatusBadge, ownerOf, OWNER_STYLES } from "@/components/finance-ui";
 
 export const Route = createFileRoute("/despesas")({
   component: () => (
@@ -58,17 +64,25 @@ export const Route = createFileRoute("/despesas")({
   ),
 });
 
+const C = { paid: "#3fcfa0", remaining: "#e0a33c" };
+
 const STATUS_LABEL: Record<Expense["status"], string> = {
   paid: "Pago",
   pending: "A pagar",
   installment: "Parcelado",
 };
 
+const STATUS_ICON: Record<Expense["status"], React.ElementType> = {
+  paid: CheckCircle2,
+  pending: Timer,
+  installment: CreditCard,
+};
+
 type FormState = {
   id?: string;
   name: string;
   category: string;
-  owner: "Luiz" | "Brenda" | "Ambos" | "Presente";
+  owner: Owner;
   total_amount: string;
   down_payment: string;
   status: Expense["status"];
@@ -100,14 +114,33 @@ function ExpensesPage() {
   const remove = useDeleteExpense();
 
   const [filter, setFilter] = useState<"all" | Expense["status"]>("all");
+  const [ownerFilter, setOwnerFilter] = useState<"all" | Owner>("all");
+  const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(empty);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const filtered = useMemo(
-    () => (filter === "all" ? items : items.filter((e) => e.status === filter)),
-    [items, filter]
+    () =>
+      items
+        .filter((e) => (filter === "all" ? true : e.status === filter))
+        .filter((e) => (ownerFilter === "all" ? true : ownerOf(e) === ownerFilter))
+        .filter((e) =>
+          q.trim() ? (e.name + " " + e.category).toLowerCase().includes(q.trim().toLowerCase()) : true
+        ),
+    [items, filter, ownerFilter, q]
   );
+
+  const totals = useMemo(() => {
+    let paid = 0, remaining = 0, total = 0;
+    for (const e of filtered) {
+      const a = computeAmounts(e);
+      paid += a.paid;
+      remaining += a.remaining;
+      total += a.total;
+    }
+    return { paid, remaining, total, pct: total > 0 ? Math.round((paid / total) * 100) : 0 };
+  }, [filtered]);
 
   const openNew = () => {
     setForm(empty);
@@ -119,7 +152,7 @@ function ExpensesPage() {
       id: e.id,
       name: e.name,
       category: e.category,
-      owner: (((e as any).owner as FormState["owner"]) ?? "Ambos"),
+      owner: ownerOf(e),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
       status: e.status,
@@ -142,7 +175,12 @@ function ExpensesPage() {
     const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
     const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
-    const paidInst = form.status === "installment" ? Math.min(total, Math.max(0, parseInt(form.installments_paid || "0"))) : form.status === "paid" ? 1 : 0;
+    const paidInst =
+      form.status === "installment"
+        ? Math.min(total, Math.max(0, parseInt(form.installments_paid || "0")))
+        : form.status === "paid"
+        ? 1
+        : 0;
 
     try {
       await upsert.mutateAsync({
@@ -156,7 +194,10 @@ function ExpensesPage() {
         installments_total: total,
         installments_paid: paidInst,
         due_date: form.due_date || null,
-        paid_date: form.status === "paid" ? (form.paid_date || new Date().toISOString().slice(0, 10)) : (form.paid_date || null),
+        paid_date:
+          form.status === "paid"
+            ? form.paid_date || new Date().toISOString().slice(0, 10)
+            : form.paid_date || null,
         notes: form.notes.trim() || null,
         owner: form.owner,
       } as any);
@@ -185,104 +226,261 @@ function ExpensesPage() {
     pending: items.filter((e) => e.status === "pending").length,
     installment: items.filter((e) => e.status === "installment").length,
   };
+  const ownerCounts = {
+    all: items.length,
+    Luiz: items.filter((e) => ownerOf(e) === "Luiz").length,
+    Brenda: items.filter((e) => ownerOf(e) === "Brenda").length,
+    Ambos: items.filter((e) => ownerOf(e) === "Ambos").length,
+    Presente: items.filter((e) => ownerOf(e) === "Presente").length,
+  };
 
   return (
     <div className="space-y-5">
-      <div className="flex items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Despesas</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Receipt className="h-4 w-4" />
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight">Despesas</h1>
+          </div>
+          <p className="mt-1 text-xs font-normal text-muted-foreground">
             Adicione, edite ou remova. Tudo sincroniza com o dashboard.
           </p>
         </div>
-        <Button size="sm" onClick={openNew}>+ Nova despesa</Button>
+        <Button size="sm" onClick={openNew}>
+          <Plus className="mr-1 h-3.5 w-3.5" /> Nova despesa
+        </Button>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
-        {(["all", "paid", "installment", "pending"] as const).map((k) => (
-          <button
-            key={k}
-            onClick={() => setFilter(k)}
-            className={
-              "rounded-md border px-2.5 py-1 text-xs transition-colors " +
-              (filter === k
-                ? "border-primary/50 bg-primary/10 text-primary"
-                : "border-border bg-card text-muted-foreground hover:text-foreground")
-            }
+      {/* RESUMO DO FILTRO */}
+      <Card className="border-border/50 bg-card p-5">
+        <div className="flex flex-wrap items-center gap-6">
+          <DonutRing
+            size={92}
+            thickness={9}
+            segments={[
+              { value: totals.paid, color: C.paid },
+              { value: totals.remaining, color: C.remaining },
+            ]}
           >
-            {k === "all" ? "Todas" : STATUS_LABEL[k]}{" "}
-            <span className="ml-1 tabular-nums opacity-70">{counts[k]}</span>
-          </button>
-        ))}
+            <span className="text-base font-bold tabular-nums">{totals.pct}%</span>
+            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">pago</span>
+          </DonutRing>
+          <div className="min-w-[180px] flex-1">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Seleção atual · {filtered.length} item(ns)
+            </div>
+            <div className="mt-1 text-3xl font-bold leading-none tabular-nums">{BRL(totals.total)}</div>
+            <div className="mt-4">
+              <Meter
+                height={8}
+                segments={[
+                  { value: totals.paid, color: C.paid },
+                  { value: totals.remaining, color: C.remaining },
+                ]}
+              />
+            </div>
+          </div>
+          <div className="flex gap-6">
+            <div>
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <CheckCircle2 className="h-3 w-3 text-success" /> Pago
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-success">{BRL(totals.paid)}</div>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <Timer className="h-3 w-3 text-warning" /> A pagar
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-warning">{BRL(totals.remaining)}</div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* FILTROS */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {(["all", "paid", "installment", "pending"] as const).map((k) => {
+            const Icon = k === "all" ? Wallet : STATUS_ICON[k];
+            return (
+              <button
+                key={k}
+                onClick={() => setFilter(k)}
+                className={
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors " +
+                  (filter === k
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border/60 bg-card text-muted-foreground hover:text-foreground")
+                }
+              >
+                <Icon className="h-3 w-3" />
+                {k === "all" ? "Todas" : STATUS_LABEL[k]}
+                <span className="tabular-nums opacity-60">{counts[k]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {(["all", "Luiz", "Brenda", "Ambos", "Presente"] as const).map((k) => {
+            const style = k === "all" ? null : OWNER_STYLES[k];
+            const Icon = k === "all" ? Users : k === "Presente" ? Gift : Users;
+            const active = ownerFilter === k;
+            return (
+              <button
+                key={k}
+                onClick={() => setOwnerFilter(k)}
+                className={
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors " +
+                  (active
+                    ? style
+                      ? `${style.bg} ${style.text} ${style.border}`
+                      : "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border/60 bg-card text-muted-foreground hover:text-foreground")
+                }
+              >
+                {k === "all" ? <Icon className="h-3 w-3" /> : <span className={`h-2 w-2 rounded-full ${style!.dot}`} />}
+                {k === "all" ? "Todos" : k}
+                <span className="tabular-nums opacity-60">{ownerCounts[k]}</span>
+              </button>
+            );
+          })}
+
+          <div className="relative ml-auto">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar..."
+              className="h-8 w-44 pl-8 text-xs"
+            />
+          </div>
+        </div>
       </div>
 
-      <Card className="overflow-hidden border-border/60 bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border/60 hover:bg-transparent">
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide">Nome</TableHead>
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide">Categoria</TableHead>
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide">Status</TableHead>
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide text-right">Pago</TableHead>
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide text-right">Restante</TableHead>
-              <TableHead className="h-9 text-[11px] uppercase tracking-wide text-right">Total</TableHead>
-              <TableHead className="h-9 w-px"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow><TableCell colSpan={7} className="py-8 text-center text-xs text-muted-foreground">Carregando...</TableCell></TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={7} className="py-8 text-center text-xs text-muted-foreground">Nenhuma despesa.</TableCell></TableRow>
-            ) : filtered.map((e) => {
-              const a = computeAmounts(e);
-              return (
-                <TableRow key={e.id} className="border-border/60">
-                  <TableCell className="py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{e.name}</span>
-                      <OwnerTag owner={((e as any).owner as "Luiz" | "Brenda" | "Ambos" | "Presente") ?? "Ambos"} />
+      {/* LISTA */}
+      {isLoading ? (
+        <Card className="border-border/50 bg-card p-8 text-center text-xs text-muted-foreground">Carregando...</Card>
+      ) : filtered.length === 0 ? (
+        <Card className="border-border/50 bg-card p-10 text-center">
+          <Receipt className="mx-auto h-6 w-6 text-muted-foreground/60" />
+          <p className="mt-2 text-xs text-muted-foreground">Nenhuma despesa nesta seleção.</p>
+        </Card>
+      ) : (
+        <div className="grid gap-2.5">
+          {filtered.map((e) => {
+            const a = computeAmounts(e);
+            const p = a.total > 0 ? Math.round((a.paid / a.total) * 100) : 0;
+            const owner = ownerOf(e);
+            const Icon = STATUS_ICON[e.status];
+            const isGift = owner === "Presente";
+            return (
+              <Card
+                key={e.id}
+                className={`group border-border/50 bg-card p-4 transition-colors hover:border-border ${
+                  isGift ? "border-amber-500/25" : ""
+                }`}
+              >
+                <div className="flex flex-wrap items-start gap-4">
+                  <span
+                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                      isGift
+                        ? "bg-amber-500/10 text-amber-400"
+                        : e.status === "paid"
+                        ? "bg-success/10 text-success"
+                        : e.status === "installment"
+                        ? "bg-primary/10 text-primary"
+                        : "bg-warning/10 text-warning"
+                    }`}
+                  >
+                    {isGift ? <Gift className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  </span>
+
+                  <div className="min-w-[180px] flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm font-bold tracking-tight">{e.name}</h3>
+                      <OwnerTag owner={owner} />
+                      <StatusBadge status={e.status} />
                     </div>
-                    {e.status === "installment" && (
-                      <div className="text-[11px] text-muted-foreground">
-                        {e.installments_paid}/{e.installments_total} parcelas
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-normal text-muted-foreground">
+                      <span>{e.category}</span>
+                      {e.status === "installment" && (
+                        <span className="tabular-nums">
+                          {e.installments_paid}/{e.installments_total} parcelas
+                        </span>
+                      )}
+                      {e.due_date && e.status !== "paid" && (
+                        <span className="tabular-nums">vence {new Date(e.due_date).toLocaleDateString("pt-BR")}</span>
+                      )}
+                    </div>
+                    {!isGift && (
+                      <div className="mt-2.5 max-w-sm">
+                        <Meter
+                          height={5}
+                          segments={[
+                            { value: a.paid, color: C.paid },
+                            { value: a.remaining, color: C.remaining },
+                          ]}
+                        />
                       </div>
                     )}
-                    {e.due_date && e.status !== "paid" && (
-                      <div className="text-[11px] text-muted-foreground">
-                        vence {new Date(e.due_date).toLocaleDateString("pt-BR")}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="py-2.5 text-xs text-muted-foreground">{e.category}</TableCell>
-                  <TableCell className="py-2.5">
-                    <StatusBadge status={e.status} />
-                  </TableCell>
-                  <TableCell className="py-2.5 text-right text-sm tabular-nums text-success">{BRL(a.paid)}</TableCell>
-                  <TableCell className="py-2.5 text-right text-sm tabular-nums text-warning">{BRL(a.remaining)}</TableCell>
-                  <TableCell className="py-2.5 text-right text-sm tabular-nums">{BRL(a.total)}</TableCell>
-                  <TableCell className="py-2.5">
-                    <div className="flex justify-end gap-1">
-                      <Button size="sm" variant="ghost" onClick={() => openEdit(e)}>Editar</Button>
-                      <Button size="sm" variant="ghost" onClick={() => setDeleteId(e.id)}>Excluir</Button>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-5 text-right tabular-nums">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Pago</div>
+                      <div className="text-sm font-semibold text-success">{BRL(a.paid)}</div>
                     </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Card>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Restante</div>
+                      <div className="text-sm font-semibold text-warning">{BRL(a.remaining)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
+                      <div className="text-base font-bold">{BRL(a.total)}</div>
+                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% pago</div>}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1 self-center">
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(e)} aria-label="Editar">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => setDeleteId(e.id)}
+                      aria-label="Excluir"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg border-border/60 bg-card">
           <DialogHeader>
-            <DialogTitle className="text-base">{form.id ? "Editar despesa" : "Nova despesa"}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              {form.id ? <Pencil className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
+              {form.id ? "Editar despesa" : "Nova despesa"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5 sm:col-span-2">
               <Label className="text-xs">Nome</Label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ex.: Buffet, Vestido, Decoração..." />
+              <Input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Ex.: Buffet, Vestido, Decoração..."
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Categoria</Label>
@@ -295,7 +493,12 @@ function ExpensesPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Valor total (R$)</Label>
-              <Input inputMode="decimal" value={form.total_amount} onChange={(e) => setForm({ ...form, total_amount: e.target.value })} placeholder="0,00" />
+              <Input
+                inputMode="decimal"
+                value={form.total_amount}
+                onChange={(e) => setForm({ ...form, total_amount: e.target.value })}
+                placeholder="0,00"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Status</Label>
@@ -310,19 +513,21 @@ function ExpensesPage() {
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <Label className="text-xs">Responsável</Label>
-              <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as FormState["owner"] })}>
+              <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as Owner })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
                   <SelectItem value="Luiz">Luiz</SelectItem>
                   <SelectItem value="Brenda">Brenda</SelectItem>
-                  <SelectItem value="Presente">🎁 Presente (não sai do bolso)</SelectItem>
+                  <SelectItem value="Presente">Presente (não sai do bolso)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {form.status !== "paid" && (
               <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-xs">Valor de entrada (R$) <span className="text-muted-foreground font-normal">— opcional</span></Label>
+                <Label className="text-xs">
+                  Valor de entrada (R$) <span className="font-normal text-muted-foreground">— opcional</span>
+                </Label>
                 <Input
                   inputMode="decimal"
                   value={form.down_payment}
@@ -340,11 +545,21 @@ function ExpensesPage() {
               <>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Parcelas totais</Label>
-                  <Input type="number" min={1} value={form.installments_total} onChange={(e) => setForm({ ...form, installments_total: e.target.value })} />
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.installments_total}
+                    onChange={(e) => setForm({ ...form, installments_total: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Parcelas pagas</Label>
-                  <Input type="number" min={0} value={form.installments_paid} onChange={(e) => setForm({ ...form, installments_paid: e.target.value })} />
+                  <Input
+                    type="number"
+                    min={0}
+                    value={form.installments_paid}
+                    onChange={(e) => setForm({ ...form, installments_paid: e.target.value })}
+                  />
                 </div>
                 <InstallmentPreview
                   total={parseFloat(form.total_amount.replace(",", ".")) || 0}
@@ -383,36 +598,19 @@ function ExpensesPage() {
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent className="border-border/60 bg-card">
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir despesa?</AlertDialogTitle>
-            <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+            <AlertDialogTitle className="text-base">Excluir despesa?</AlertDialogTitle>
+            <AlertDialogDescription className="text-xs">
+              Essa ação não pode ser desfeita.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
+            <AlertDialogCancel className="h-8 text-xs">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="h-8 text-xs" onClick={confirmDelete}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
   );
-}
-
-function StatusBadge({ status }: { status: Expense["status"] }) {
-  if (status === "paid") return <Badge className="bg-success/15 text-success border-success/30 hover:bg-success/15">Pago</Badge>;
-  if (status === "installment") return <Badge className="bg-primary/15 text-primary border-primary/30 hover:bg-primary/15">Parcelado</Badge>;
-  return <Badge className="bg-warning/15 text-warning border-warning/30 hover:bg-warning/15">A pagar</Badge>;
-}
-
-function OwnerTag({ owner }: { owner: "Luiz" | "Brenda" | "Ambos" | "Presente" }) {
-  const cls =
-    owner === "Luiz"
-      ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
-      : owner === "Brenda"
-      ? "bg-pink-500/15 text-pink-400 border-pink-500/30"
-      : owner === "Presente"
-      ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
-      : "bg-muted text-muted-foreground border-border";
-  const label = owner === "Presente" ? "🎁 Presente" : owner;
-  return <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>{label}</span>;
 }
 
 function InstallmentPreview({ total, down, parts, paid }: { total: number; down: number; parts: number; paid: number }) {
@@ -425,13 +623,34 @@ function InstallmentPreview({ total, down, parts, paid }: { total: number; down:
   const remainingAmount = Math.max(total - paidTotal, 0);
   const remainingParts = Math.max(parts - cappedPaid, 0);
   return (
-    <div className="sm:col-span-2 rounded-md border border-border/60 bg-muted/30 p-3 text-xs">
-      <div className="mb-1 text-[11px] uppercase tracking-wide text-muted-foreground">Resumo do parcelamento</div>
-      <div className="grid grid-cols-2 gap-2 tabular-nums sm:grid-cols-4">
-        <div><div className="text-muted-foreground text-[11px]">Entrada</div><div className="font-medium text-success">{BRL(cappedDown || 0)}</div></div>
-        <div><div className="text-muted-foreground text-[11px]">Parcela ({parts}x)</div><div className="font-medium">{BRL(per || 0)}</div></div>
-        <div><div className="text-muted-foreground text-[11px]">Já pago ({cappedPaid}x + entrada)</div><div className="font-medium text-success">{BRL(paidTotal || 0)}</div></div>
-        <div><div className="text-muted-foreground text-[11px]">Restante ({remainingParts}x)</div><div className="font-medium text-warning">{BRL(remainingAmount || 0)}</div></div>
+    <div className="rounded-md border border-border/60 bg-muted/20 p-3 text-xs sm:col-span-2">
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <CreditCard className="h-3 w-3" /> Resumo do parcelamento
+      </div>
+      <Meter
+        height={6}
+        segments={[
+          { value: paidTotal, color: C.paid },
+          { value: remainingAmount, color: C.remaining },
+        ]}
+      />
+      <div className="mt-3 grid grid-cols-2 gap-2 tabular-nums sm:grid-cols-4">
+        <div>
+          <div className="text-[10px] text-muted-foreground">Entrada</div>
+          <div className="font-semibold text-success">{BRL(cappedDown || 0)}</div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">Parcela ({parts}x)</div>
+          <div className="font-semibold">{BRL(per || 0)}</div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">Já pago ({cappedPaid}x + entrada)</div>
+          <div className="font-semibold text-success">{BRL(paidTotal || 0)}</div>
+        </div>
+        <div>
+          <div className="text-[10px] text-muted-foreground">Restante ({remainingParts}x)</div>
+          <div className="font-semibold text-warning">{BRL(remainingAmount || 0)}</div>
+        </div>
       </div>
     </div>
   );

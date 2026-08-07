@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const PIX_KEY = "brendareissmelo@gmail.com";
+const PIX_KEY = "brendaeluiz2026@gmail.com";
 const MAPS_URL = "https://maps.app.goo.gl/dnu4C5zDWqUHMkBi7";
 
 const homens = [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10];

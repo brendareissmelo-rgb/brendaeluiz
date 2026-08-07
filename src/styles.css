@@ -50,10 +50,10 @@
   --background: oklch(0.16 0.012 280);
   --foreground: oklch(0.96 0.005 280);
 
-  --card: oklch(0.20 0.014 280);
+  --card: #0C0D12;
   --card-foreground: oklch(0.96 0.005 280);
 
-  --popover: oklch(0.20 0.014 280);
+  --popover: #0C0D12;
   --popover-foreground: oklch(0.96 0.005 280);
 
   --primary: oklch(0.82 0.10 75); /* soft champagne gold */
@@ -94,9 +94,9 @@
 .dark {
   --background: oklch(0.16 0.012 280);
   --foreground: oklch(0.96 0.005 280);
-  --card: oklch(0.20 0.014 280);
+  --card: #0C0D12;
   --card-foreground: oklch(0.96 0.005 280);
-  --popover: oklch(0.20 0.014 280);
+  --popover: #0C0D12;
   --popover-foreground: oklch(0.96 0.005 280);
   --primary: oklch(0.82 0.10 75);
   --primary-foreground: oklch(0.18 0.012 280);
