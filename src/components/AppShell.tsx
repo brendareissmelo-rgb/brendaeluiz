@@ -24,6 +24,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navItems = [
     { to: "/painel", label: "Dashboard" },
     { to: "/despesas", label: "Despesas" },
+    { to: "/site", label: "Site" },
   ];
 
   return (
