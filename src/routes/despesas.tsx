@@ -438,6 +438,7 @@ function ExpensesPage() {
                           height={5}
                           segments={[
                             { value: a.paid, color: C.paid },
+                            { value: a.reserved, color: C.reserved },
                             { value: a.remaining, color: C.remaining },
                           ]}
                         />
@@ -445,10 +446,14 @@ function ExpensesPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-5 text-right tabular-nums">
+                  <div className="grid grid-cols-2 gap-5 text-right tabular-nums sm:grid-cols-4">
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Pago</div>
                       <div className="text-sm font-semibold text-success">{BRL(a.paid)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Na caixinha</div>
+                      <div className="text-sm font-semibold text-sky-400">{BRL(a.reserved)}</div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Restante</div>
@@ -457,9 +462,10 @@ function ExpensesPage() {
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
                       <div className="text-base font-bold">{BRL(a.total)}</div>
-                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% pago</div>}
+                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% coberto</div>}
                     </div>
                   </div>
+
 
                   <div className="flex gap-1 self-center">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(e)} aria-label="Editar">
