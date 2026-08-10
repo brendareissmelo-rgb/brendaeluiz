@@ -64,7 +64,7 @@ export const Route = createFileRoute("/despesas")({
   ),
 });
 
-const C = { paid: "#3fcfa0", remaining: "#e0a33c" };
+const C = { paid: "#3fcfa0", reserved: "#3b82f6", remaining: "#e0a33c" };
 
 const STATUS_LABEL: Record<Expense["status"], string> = {
   paid: "Pago",
@@ -85,6 +85,7 @@ type FormState = {
   owner: Owner;
   total_amount: string;
   down_payment: string;
+  reserved: string;
   status: Expense["status"];
   installments_total: string;
   installments_paid: string;
@@ -99,6 +100,7 @@ const empty: FormState = {
   owner: "Ambos",
   total_amount: "",
   down_payment: "",
+  reserved: "",
   status: "pending",
   installments_total: "1",
   installments_paid: "0",
@@ -132,14 +134,15 @@ function ExpensesPage() {
   );
 
   const totals = useMemo(() => {
-    let paid = 0, remaining = 0, total = 0;
+    let paid = 0, reserved = 0, remaining = 0, total = 0;
     for (const e of filtered) {
       const a = computeAmounts(e);
       paid += a.paid;
+      reserved += a.reserved;
       remaining += a.remaining;
       total += a.total;
     }
-    return { paid, remaining, total, pct: total > 0 ? Math.round((paid / total) * 100) : 0 };
+    return { paid, reserved, remaining, total, pct: total > 0 ? Math.round(((paid + reserved) / total) * 100) : 0 };
   }, [filtered]);
 
   const openNew = () => {
@@ -155,6 +158,7 @@ function ExpensesPage() {
       owner: ownerOf(e),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
+      reserved: (e as any).reserved ? String((e as any).reserved) : "",
       status: e.status,
       installments_total: String(e.installments_total),
       installments_paid: String(e.installments_paid),
@@ -174,6 +178,8 @@ function ExpensesPage() {
     }
     const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
     const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
+    const rawReserved = parseFloat((form.reserved || "0").replace(",", "."));
+    const reserved = isNaN(rawReserved) ? 0 : Math.min(Math.max(rawReserved, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
     const paidInst =
       form.status === "installment"
@@ -190,6 +196,7 @@ function ExpensesPage() {
         category: form.category.trim() || "Outros",
         total_amount: amount,
         down_payment: form.status === "paid" ? 0 : down,
+        reserved: form.status === "paid" ? 0 : reserved,
         status: form.status,
         installments_total: total,
         installments_paid: paidInst,
