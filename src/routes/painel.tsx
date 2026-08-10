@@ -91,16 +91,24 @@ function PersonCard({
         .map((e) => {
           const a = computeAmounts(e);
           const share = ownerOf(e) === "Ambos" ? 0.5 : 1;
-          return { e, share, paid: a.paid * share, remaining: a.remaining * share, total: a.total * share };
+          return {
+            e,
+            share,
+            paid: a.paid * share,
+            reserved: a.reserved * share,
+            remaining: a.remaining * share,
+            total: a.total * share,
+          };
         })
         .sort((a, b) => b.remaining - a.remaining || b.total - a.total),
     [items, person]
   );
 
   const paid = rows.reduce((n, r) => n + r.paid, 0);
+  const reserved = rows.reduce((n, r) => n + r.reserved, 0);
   const remaining = rows.reduce((n, r) => n + r.remaining, 0);
-  const total = paid + remaining;
-  const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+  const total = paid + reserved + remaining;
+  const pct = total > 0 ? Math.round(((paid + reserved) / total) * 100) : 0;
 
   return (
     <Card className="border-border/50 bg-card p-5">
@@ -110,11 +118,12 @@ function PersonCard({
           thickness={9}
           segments={[
             { value: paid, color: s.stroke },
+            { value: reserved, color: C.reserved },
             { value: remaining, color: "rgba(255,255,255,0.07)" },
           ]}
         >
           <span className={`text-base font-bold tabular-nums ${s.text}`}>{pct}%</span>
-          <span className="text-[9px] uppercase tracking-widest text-muted-foreground">pago</span>
+          <span className="text-[9px] uppercase tracking-widest text-muted-foreground">coberto</span>
         </DonutRing>
 
         <div className="min-w-0 flex-1">
@@ -124,10 +133,14 @@ function PersonCard({
             <span className="text-[11px] font-normal text-muted-foreground">· {rows.length} item(ns)</span>
           </div>
           <div className="mt-2 text-2xl font-bold leading-none tabular-nums">{BRL(total)}</div>
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="mt-3 grid grid-cols-3 gap-3">
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Pago</div>
               <div className="text-sm font-semibold tabular-nums text-success">{BRL(paid)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Caixinha</div>
+              <div className="text-sm font-semibold tabular-nums text-sky-400">{BRL(reserved)}</div>
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">A pagar</div>
@@ -135,6 +148,7 @@ function PersonCard({
             </div>
           </div>
         </div>
+
       </div>
 
       <button
