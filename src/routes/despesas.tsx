@@ -389,7 +389,7 @@ function ExpensesPage() {
         <div className="grid gap-2.5">
           {filtered.map((e) => {
             const a = computeAmounts(e);
-            const p = a.total > 0 ? Math.round((a.paid / a.total) * 100) : 0;
+            const p = a.total > 0 ? Math.round(((a.paid + a.reserved) / a.total) * 100) : 0;
             const owner = ownerOf(e);
             const Icon = STATUS_ICON[e.status];
             const isGift = owner === "Presente";
