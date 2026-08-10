@@ -564,6 +564,24 @@ function ExpensesPage() {
                 </p>
               </div>
             )}
+            {form.status !== "paid" && (
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="flex items-center gap-1.5 text-xs">
+                  <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                  Na Caixinha (R$) <span className="font-normal text-muted-foreground">— opcional</span>
+                </Label>
+                <Input
+                  inputMode="decimal"
+                  value={form.reserved}
+                  onChange={(e) => setForm({ ...form, reserved: e.target.value })}
+                  placeholder="0,00"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Valor guardado por fora (reserva no banco) para essa despesa. Não é um pagamento oficial, mas abate o
+                  valor a pagar.
+                </p>
+              </div>
+            )}
             {form.status === "installment" && (
               <>
                 <div className="space-y-1.5">
