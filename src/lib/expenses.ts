@@ -95,9 +95,9 @@ export type Owner = "Luiz" | "Brenda" | "Ambos" | "Presente";
 export const OWNERS: Owner[] = ["Luiz", "Brenda", "Ambos", "Presente"];
 
 export function summarizeByOwner(items: Expense[]) {
-  const result: Record<"Luiz" | "Brenda", { paid: number; remaining: number; total: number; inProgress: number; count: number }> = {
-    Luiz: { paid: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
-    Brenda: { paid: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
+  const result: Record<"Luiz" | "Brenda", { paid: number; reserved: number; remaining: number; total: number; inProgress: number; count: number }> = {
+    Luiz: { paid: 0, reserved: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
+    Brenda: { paid: 0, reserved: 0, remaining: 0, total: 0, inProgress: 0, count: 0 },
   };
   for (const e of items) {
     const a = computeAmounts(e);
@@ -109,8 +109,10 @@ export function summarizeByOwner(items: Expense[]) {
         : [{ key: owner as "Luiz" | "Brenda", share: 1 }];
     for (const t of targets) {
       result[t.key].paid += a.paid * t.share;
+      result[t.key].reserved += a.reserved * t.share;
       result[t.key].remaining += a.remaining * t.share;
       result[t.key].total += a.total * t.share;
+
       if (e.status === "installment" && a.remaining > 0) {
         result[t.key].inProgress += a.remaining * t.share;
       }
