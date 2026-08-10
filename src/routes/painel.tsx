@@ -8,6 +8,7 @@ import {
   CreditCard,
   Gift,
   Layers,
+  PiggyBank,
   Timer,
   Wallet,
 } from "lucide-react";
