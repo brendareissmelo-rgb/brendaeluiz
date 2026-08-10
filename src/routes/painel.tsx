@@ -27,6 +27,7 @@ export const Route = createFileRoute("/painel")({
 
 const C = {
   paid: "#3fcfa0",
+  reserved: "#3b82f6",
   remaining: "#e0a33c",
   primary: "#e8bd85",
   gift: "#fbbf24",
@@ -43,14 +44,16 @@ function Stat({
   value: string;
   hint?: string;
   icon: React.ElementType;
-  tone?: "default" | "success" | "warning" | "primary";
+  tone?: "default" | "success" | "warning" | "primary" | "info";
 }) {
   const tones = {
     default: { v: "text-foreground", i: "text-muted-foreground bg-muted/60" },
     success: { v: "text-success", i: "text-success bg-success/10" },
     warning: { v: "text-warning", i: "text-warning bg-warning/10" },
     primary: { v: "text-primary", i: "text-primary bg-primary/10" },
+    info: { v: "text-sky-400", i: "text-sky-400 bg-sky-500/10" },
   }[tone];
+
 
   return (
     <Card className="group relative overflow-hidden border-border/50 bg-card p-4 transition-colors hover:border-border">
