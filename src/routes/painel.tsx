@@ -191,20 +191,23 @@ function PersonCard({
 function Dashboard() {
   const { data: items = [], isLoading } = useExpenses();
   const s = summarize(items);
-  const pct = s.total > 0 ? Math.round((s.paid / s.total) * 100) : 0;
+  const paidPct = s.total > 0 ? Math.round((s.paid / s.total) * 100) : 0;
+  const pct = s.total > 0 ? Math.round(((s.paid + s.reserved) / s.total) * 100) : 0;
 
-  const byCategory = new Map<string, { paid: number; remaining: number; total: number }>();
+  const byCategory = new Map<string, { paid: number; reserved: number; remaining: number; total: number }>();
   for (const e of items) {
     if (ownerOf(e) === "Presente") continue;
     const a = computeAmounts(e);
-    const cur = byCategory.get(e.category) ?? { paid: 0, remaining: 0, total: 0 };
+    const cur = byCategory.get(e.category) ?? { paid: 0, reserved: 0, remaining: 0, total: 0 };
     cur.paid += a.paid;
+    cur.reserved += a.reserved;
     cur.remaining += a.remaining;
     cur.total += a.total;
     byCategory.set(e.category, cur);
   }
   const cats = [...byCategory.entries()].sort((a, b) => b[1].total - a[1].total);
   const maxCat = cats.length ? cats[0][1].total : 1;
+
 
   const upcoming = items
     .filter((e) => e.status !== "paid" && e.due_date && ownerOf(e) !== "Presente")
