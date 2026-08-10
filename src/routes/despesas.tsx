@@ -7,6 +7,7 @@ import {
   Pencil,
   Plus,
   Receipt,
+  PiggyBank,
   Search,
   Timer,
   Trash2,
@@ -268,11 +269,12 @@ function ExpensesPage() {
             thickness={9}
             segments={[
               { value: totals.paid, color: C.paid },
+              { value: totals.reserved, color: C.reserved },
               { value: totals.remaining, color: C.remaining },
             ]}
           >
             <span className="text-base font-bold tabular-nums">{totals.pct}%</span>
-            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">pago</span>
+            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">coberto</span>
           </DonutRing>
           <div className="min-w-[180px] flex-1">
             <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -284,6 +286,7 @@ function ExpensesPage() {
                 height={8}
                 segments={[
                   { value: totals.paid, color: C.paid },
+                  { value: totals.reserved, color: C.reserved },
                   { value: totals.remaining, color: C.remaining },
                 ]}
               />
@@ -298,11 +301,18 @@ function ExpensesPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <PiggyBank className="h-3 w-3 text-sky-400" /> Na caixinha
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-sky-400">{BRL(totals.reserved)}</div>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
                 <Timer className="h-3 w-3 text-warning" /> A pagar
               </div>
               <div className="mt-1 text-lg font-bold tabular-nums text-warning">{BRL(totals.remaining)}</div>
             </div>
           </div>
+
         </div>
       </Card>
 
