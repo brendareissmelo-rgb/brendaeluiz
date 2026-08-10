@@ -355,6 +355,7 @@ function Dashboard() {
                       height={7}
                       segments={[
                         { value: v.paid, color: C.paid },
+                        { value: v.reserved, color: C.reserved },
                         { value: v.remaining, color: C.remaining },
                       ]}
                     />
