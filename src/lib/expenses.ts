@@ -53,18 +53,25 @@ export function useDeleteExpense() {
 export function computeAmounts(e: Expense) {
   const total = Number(e.total_amount);
   const down = Math.min(Number(e.down_payment ?? 0), total);
-  if (e.status === "paid") return { paid: total, remaining: 0, total, down };
-  if (e.status === "pending") return { paid: down, remaining: Math.max(total - down, 0), total, down };
-  // installment
-  const base = Math.max(total - down, 0);
-  const per = e.installments_total > 0 ? base / e.installments_total : base;
-  const paidInst = per * Math.min(e.installments_paid, e.installments_total);
-  const paid = down + paidInst;
-  return { paid, remaining: Math.max(total - paid, 0), total, down };
+  let paid: number;
+  if (e.status === "paid") {
+    paid = total;
+  } else if (e.status === "pending") {
+    paid = down;
+  } else {
+    const base = Math.max(total - down, 0);
+    const per = e.installments_total > 0 ? base / e.installments_total : base;
+    paid = down + per * Math.min(e.installments_paid, e.installments_total);
+  }
+  const reserved = Math.min(
+    Math.max(Number((e as any).reserved ?? 0), 0),
+    Math.max(total - paid, 0)
+  );
+  return { paid, reserved, remaining: Math.max(total - paid - reserved, 0), total, down };
 }
 
 export function summarize(items: Expense[]) {
-  let paid = 0, remaining = 0, total = 0, inProgress = 0, gifts = 0, giftsCount = 0, count = 0;
+  let paid = 0, reserved = 0, remaining = 0, total = 0, inProgress = 0, gifts = 0, giftsCount = 0, count = 0;
   for (const e of items) {
     const a = computeAmounts(e);
     const owner = (((e as any).owner as Owner) ?? "Ambos");
@@ -74,13 +81,15 @@ export function summarize(items: Expense[]) {
       continue;
     }
     paid += a.paid;
+    reserved += a.reserved;
     remaining += a.remaining;
     total += a.total;
     if (e.status === "installment" && a.remaining > 0) inProgress += a.remaining;
     count += 1;
   }
-  return { paid, remaining, total, inProgress, count, gifts, giftsCount };
+  return { paid, reserved, remaining, total, inProgress, count, gifts, giftsCount };
 }
+
 
 export type Owner = "Luiz" | "Brenda" | "Ambos" | "Presente";
 export const OWNERS: Owner[] = ["Luiz", "Brenda", "Ambos", "Presente"];
