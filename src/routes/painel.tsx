@@ -243,10 +243,11 @@ function Dashboard() {
             thickness={14}
             segments={[
               { value: s.paid, color: C.paid },
+              { value: s.reserved, color: C.reserved },
               { value: s.remaining, color: C.remaining },
             ]}
           >
-            <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Pago</span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Coberto</span>
             <span className="text-3xl font-bold leading-none tabular-nums">{pct}%</span>
           </DonutRing>
 
@@ -266,6 +267,7 @@ function Dashboard() {
                 height={10}
                 segments={[
                   { value: s.paid, color: C.paid },
+                  { value: s.reserved, color: C.reserved },
                   { value: s.remaining, color: C.remaining },
                 ]}
               />
@@ -274,6 +276,11 @@ function Dashboard() {
                   <span className="h-2 w-2 rounded-full" style={{ background: C.paid }} />
                   <span className="text-muted-foreground">Pago</span>
                   <span className="font-semibold tabular-nums text-foreground">{BRL(s.paid)}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full" style={{ background: C.reserved }} />
+                  <span className="text-muted-foreground">Na caixinha</span>
+                  <span className="font-semibold tabular-nums text-foreground">{BRL(s.reserved)}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full" style={{ background: C.remaining }} />
@@ -286,12 +293,14 @@ function Dashboard() {
         </div>
       </Card>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Total previsto" value={BRL(s.total)} hint={`${s.count} despesa(s)`} icon={Layers} />
-        <Stat label="Já pago" value={BRL(s.paid)} hint={`${pct}% do total`} icon={CheckCircle2} tone="success" />
+        <Stat label="Já pago" value={BRL(s.paid)} hint={`${paidPct}% do total`} icon={CheckCircle2} tone="success" />
+        <Stat label="Na caixinha" value={BRL(s.reserved)} hint="Reservado por fora" icon={PiggyBank} tone="info" />
         <Stat label="A pagar" value={BRL(s.remaining)} hint={`${100 - pct}% restante`} icon={Timer} tone="warning" />
         <Stat label="Em parcelamento" value={BRL(s.inProgress)} hint="Saldo das parcelas" icon={CreditCard} tone="primary" />
       </div>
+
 
       {s.gifts > 0 && (
         <Card className="border-amber-500/25 bg-card p-4">
