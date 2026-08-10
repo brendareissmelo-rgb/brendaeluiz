@@ -7,6 +7,7 @@ import {
   Pencil,
   Plus,
   Receipt,
+  PiggyBank,
   Search,
   Timer,
   Trash2,
@@ -64,7 +65,7 @@ export const Route = createFileRoute("/despesas")({
   ),
 });
 
-const C = { paid: "#3fcfa0", remaining: "#e0a33c" };
+const C = { paid: "#3fcfa0", reserved: "#3b82f6", remaining: "#e0a33c" };
 
 const STATUS_LABEL: Record<Expense["status"], string> = {
   paid: "Pago",
@@ -85,6 +86,7 @@ type FormState = {
   owner: Owner;
   total_amount: string;
   down_payment: string;
+  reserved: string;
   status: Expense["status"];
   installments_total: string;
   installments_paid: string;
@@ -99,6 +101,7 @@ const empty: FormState = {
   owner: "Ambos",
   total_amount: "",
   down_payment: "",
+  reserved: "",
   status: "pending",
   installments_total: "1",
   installments_paid: "0",
@@ -132,14 +135,15 @@ function ExpensesPage() {
   );
 
   const totals = useMemo(() => {
-    let paid = 0, remaining = 0, total = 0;
+    let paid = 0, reserved = 0, remaining = 0, total = 0;
     for (const e of filtered) {
       const a = computeAmounts(e);
       paid += a.paid;
+      reserved += a.reserved;
       remaining += a.remaining;
       total += a.total;
     }
-    return { paid, remaining, total, pct: total > 0 ? Math.round((paid / total) * 100) : 0 };
+    return { paid, reserved, remaining, total, pct: total > 0 ? Math.round(((paid + reserved) / total) * 100) : 0 };
   }, [filtered]);
 
   const openNew = () => {
@@ -155,6 +159,7 @@ function ExpensesPage() {
       owner: ownerOf(e),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
+      reserved: (e as any).reserved ? String((e as any).reserved) : "",
       status: e.status,
       installments_total: String(e.installments_total),
       installments_paid: String(e.installments_paid),
@@ -174,6 +179,8 @@ function ExpensesPage() {
     }
     const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
     const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
+    const rawReserved = parseFloat((form.reserved || "0").replace(",", "."));
+    const reserved = isNaN(rawReserved) ? 0 : Math.min(Math.max(rawReserved, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
     const paidInst =
       form.status === "installment"
@@ -190,6 +197,7 @@ function ExpensesPage() {
         category: form.category.trim() || "Outros",
         total_amount: amount,
         down_payment: form.status === "paid" ? 0 : down,
+        reserved: form.status === "paid" ? 0 : reserved,
         status: form.status,
         installments_total: total,
         installments_paid: paidInst,
@@ -261,11 +269,12 @@ function ExpensesPage() {
             thickness={9}
             segments={[
               { value: totals.paid, color: C.paid },
+              { value: totals.reserved, color: C.reserved },
               { value: totals.remaining, color: C.remaining },
             ]}
           >
             <span className="text-base font-bold tabular-nums">{totals.pct}%</span>
-            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">pago</span>
+            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">coberto</span>
           </DonutRing>
           <div className="min-w-[180px] flex-1">
             <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -277,6 +286,7 @@ function ExpensesPage() {
                 height={8}
                 segments={[
                   { value: totals.paid, color: C.paid },
+                  { value: totals.reserved, color: C.reserved },
                   { value: totals.remaining, color: C.remaining },
                 ]}
               />
@@ -291,11 +301,18 @@ function ExpensesPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <PiggyBank className="h-3 w-3 text-sky-400" /> Na caixinha
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-sky-400">{BRL(totals.reserved)}</div>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
                 <Timer className="h-3 w-3 text-warning" /> A pagar
               </div>
               <div className="mt-1 text-lg font-bold tabular-nums text-warning">{BRL(totals.remaining)}</div>
             </div>
           </div>
+
         </div>
       </Card>
 
@@ -372,7 +389,7 @@ function ExpensesPage() {
         <div className="grid gap-2.5">
           {filtered.map((e) => {
             const a = computeAmounts(e);
-            const p = a.total > 0 ? Math.round((a.paid / a.total) * 100) : 0;
+            const p = a.total > 0 ? Math.round(((a.paid + a.reserved) / a.total) * 100) : 0;
             const owner = ownerOf(e);
             const Icon = STATUS_ICON[e.status];
             const isGift = owner === "Presente";
@@ -421,6 +438,7 @@ function ExpensesPage() {
                           height={5}
                           segments={[
                             { value: a.paid, color: C.paid },
+                            { value: a.reserved, color: C.reserved },
                             { value: a.remaining, color: C.remaining },
                           ]}
                         />
@@ -428,10 +446,14 @@ function ExpensesPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-5 text-right tabular-nums">
+                  <div className="grid grid-cols-2 gap-5 text-right tabular-nums sm:grid-cols-4">
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Pago</div>
                       <div className="text-sm font-semibold text-success">{BRL(a.paid)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Na caixinha</div>
+                      <div className="text-sm font-semibold text-sky-400">{BRL(a.reserved)}</div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Restante</div>
@@ -440,9 +462,10 @@ function ExpensesPage() {
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
                       <div className="text-base font-bold">{BRL(a.total)}</div>
-                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% pago</div>}
+                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% coberto</div>}
                     </div>
                   </div>
+
 
                   <div className="flex gap-1 self-center">
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(e)} aria-label="Editar">
@@ -538,6 +561,24 @@ function ExpensesPage() {
                   {form.status === "installment"
                     ? "Será descontado do total e o restante dividido nas parcelas."
                     : "Valor já adiantado dessa despesa."}
+                </p>
+              </div>
+            )}
+            {form.status !== "paid" && (
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="flex items-center gap-1.5 text-xs">
+                  <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                  Na Caixinha (R$) <span className="font-normal text-muted-foreground">— opcional</span>
+                </Label>
+                <Input
+                  inputMode="decimal"
+                  value={form.reserved}
+                  onChange={(e) => setForm({ ...form, reserved: e.target.value })}
+                  placeholder="0,00"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Valor guardado por fora (reserva no banco) para essa despesa. Não é um pagamento oficial, mas abate o
+                  valor a pagar.
                 </p>
               </div>
             )}
