@@ -194,29 +194,7 @@ function Home() {
         </div>
       </Section>
 
-      {/* DRESSCODE */}
-      <Section id="dresscode" eyebrow={c.dresscode.eyebrow} title={c.dresscode.title}>
-        <p className="mx-auto mb-10 max-w-2xl text-center text-sm text-muted-foreground">
-          {c.dresscode.intro}
-        </p>
-        <div className="grid gap-8 sm:grid-cols-2">
-          <DresscodeCarousel title={c.dresscode.menTitle} images={c.dresscode.men} alt="Sugestão de traje masculino" />
-          <DresscodeCarousel title={c.dresscode.womenTitle} images={c.dresscode.women} alt="Sugestão de traje feminino" />
-        </div>
 
-        <div className="mt-8 rounded-lg border border-destructive/40 bg-destructive/5 p-5">
-          <div className="text-[11px] uppercase tracking-widest text-destructive">{c.dresscode.avoidTitle}</div>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-pink-400" /> Rosa
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-white" /> Branco
-            </span>
-            <span className="text-xs text-muted-foreground">— {c.dresscode.avoidNote}</span>
-          </div>
-        </div>
-      </Section>
 
       {/* MANUAIS */}
       <Section id="manual" eyebrow={c.manuals.eyebrow} title={c.manuals.title}>
