@@ -23,9 +23,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const navItems = [
-    { to: "/painel", label: "Dashboard" },
-    { to: "/despesas", label: "Despesas" },
-    { to: "/site", label: "Site" },
+    { to: "/painel", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/despesas", label: "Despesas", icon: Receipt },
+    { to: "/site", label: "Configurações", icon: Settings },
   ];
 
   return (
@@ -34,23 +34,30 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="border-b border-border/60 bg-card/40 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <div className="flex items-center gap-6">
-            <div className="text-sm font-semibold tracking-tight">
-              <span className="text-primary">◆</span> Finanças do Casamento
-            </div>
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold tracking-tight transition-opacity hover:opacity-80"
+            >
+              <span className="text-primary">◆</span> Casamento Brenda & Luiz
+            </a>
             <nav className="flex items-center gap-1">
               {navItems.map((n) => {
                 const active = n.to === "/painel" ? path === "/painel" : path.startsWith(n.to);
+                const Icon = n.icon;
                 return (
                   <Link
                     key={n.to}
                     to={n.to}
                     className={
-                      "rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors " +
+                      "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors " +
                       (active
                         ? "bg-accent text-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/50")
                     }
                   >
+                    <Icon className="h-3.5 w-3.5" />
                     {n.label}
                   </Link>
                 );
