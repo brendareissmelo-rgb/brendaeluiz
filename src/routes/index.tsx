@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
+import { Countdown } from "@/components/countdown";
+import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { useSiteContent, DEFAULT_CONTENT, type Manual } from "@/lib/site-content";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
