@@ -225,9 +225,9 @@ function Home() {
 
       {/* PRESENTE / PIX */}
       <Section id="presente" eyebrow={c.gift.eyebrow} title={c.gift.title}>
-        <div className="mx-auto max-w-2xl rounded-lg border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent p-8 text-center">
+        <div className="mx-auto max-w-2xl p-2 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
-          <div className="mt-6 rounded-md border border-border/60 bg-card p-4">
+          <div className="mt-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
             <div className="mt-2 font-mono text-sm break-all">{c.gift.pixKey}</div>
           </div>
@@ -238,6 +238,7 @@ function Home() {
             {copied ? "Copiado ✓" : "Copiar chave Pix"}
           </button>
         </div>
+
       </Section>
 
       {/* PRÉ-WEDDING */}
