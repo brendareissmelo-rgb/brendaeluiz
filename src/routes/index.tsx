@@ -39,49 +39,7 @@ function Section({ id, eyebrow, title, children }: { id: string; eyebrow?: strin
   );
 }
 
-function DresscodeCarousel({ title, images, alt }: { title: string; images: string[]; alt: string }) {
-  const [i, setI] = useState(0);
-  const total = images.length;
-  if (total === 0) return null;
-  const idx = i % total;
-  const prev = () => setI((c) => (c - 1 + total) % total);
-  const next = () => setI((c) => (c + 1) % total);
 
-  return (
-    <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
-      <div className="relative bg-[#f5efe4]">
-        <img
-          src={images[idx]}
-          alt={`${alt} ${idx + 1}`}
-          loading="lazy"
-          className="h-80 w-full object-contain"
-        />
-        <button
-          type="button"
-          onClick={prev}
-          aria-label="Anterior"
-          className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          onClick={next}
-          aria-label="Próxima"
-          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
-        >
-          ›
-        </button>
-        <div className="absolute bottom-2 right-3 rounded-full bg-background/70 px-2 py-0.5 text-[11px] tabular-nums text-muted-foreground backdrop-blur">
-          {idx + 1} / {total}
-        </div>
-      </div>
-      <div className="p-5">
-        <h3 className="font-serif text-xl">{title}</h3>
-      </div>
-    </div>
-  );
-}
 
 function ManualAccordion({ manuals }: { manuals: Manual[] }) {
   const [open, setOpen] = useState<string | null>(null);
