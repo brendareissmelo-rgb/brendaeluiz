@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteImport } from './routes/site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PainelRouteImport } from './routes/painel'
+import { Route as MesaDosConvidadosRouteImport } from './routes/mesa-dos-convidados'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -29,6 +30,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const PainelRoute = PainelRouteImport.update({
   id: '/painel',
   path: '/painel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MesaDosConvidadosRoute = MesaDosConvidadosRouteImport.update({
+  id: '/mesa-dos-convidados',
+  path: '/mesa-dos-convidados',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -78,16 +87,25 @@ export interface FileRouteTypes {
     | '/'
     | '/despesas'
     | '/login'
+    | '/mesa-dos-convidados'
     | '/painel'
     | '/reset-password'
     | '/site'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/despesas' | '/login' | '/painel' | '/reset-password' | '/site'
+  to:
+    | '/'
+    | '/despesas'
+    | '/login'
+    | '/mesa-dos-convidados'
+    | '/painel'
+    | '/reset-password'
+    | '/site'
   id:
     | '__root__'
     | '/'
     | '/despesas'
     | '/login'
+    | '/mesa-dos-convidados'
     | '/painel'
     | '/reset-password'
     | '/site'
@@ -97,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DespesasRoute: typeof DespesasRoute
   LoginRoute: typeof LoginRoute
+  MesaDosConvidadosRoute: typeof MesaDosConvidadosRoute
   PainelRoute: typeof PainelRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SiteRoute: typeof SiteRoute
@@ -123,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/painel'
       fullPath: '/painel'
       preLoaderRoute: typeof PainelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mesa-dos-convidados': {
+      id: '/mesa-dos-convidados'
+      path: '/mesa-dos-convidados'
+      fullPath: '/mesa-dos-convidados'
+      preLoaderRoute: typeof MesaDosConvidadosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -153,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DespesasRoute: DespesasRoute,
   LoginRoute: LoginRoute,
+  MesaDosConvidadosRoute: MesaDosConvidadosRoute,
   PainelRoute: PainelRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SiteRoute: SiteRoute,
