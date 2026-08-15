@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteImport } from './routes/site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PainelRouteImport } from './routes/painel'
+import { Route as MesaDosConvidadosRouteImport } from './routes/mesa-dos-convidados'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DresscodeRouteImport } from './routes/dresscode'
 import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -31,9 +33,19 @@ const PainelRoute = PainelRouteImport.update({
   path: '/painel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MesaDosConvidadosRoute = MesaDosConvidadosRouteImport.update({
+  id: '/mesa-dos-convidados',
+  path: '/mesa-dos-convidados',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DresscodeRoute = DresscodeRouteImport.update({
+  id: '/dresscode',
+  path: '/dresscode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DespesasRoute = DespesasRouteImport.update({
@@ -50,7 +62,9 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
+  '/dresscode': typeof DresscodeRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -58,7 +72,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
+  '/dresscode': typeof DresscodeRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -67,7 +83,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/despesas': typeof DespesasRoute
+  '/dresscode': typeof DresscodeRoute
   '/login': typeof LoginRoute
+  '/mesa-dos-convidados': typeof MesaDosConvidadosRoute
   '/painel': typeof PainelRoute
   '/reset-password': typeof ResetPasswordRoute
   '/site': typeof SiteRoute
@@ -77,17 +95,29 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/despesas'
+    | '/dresscode'
     | '/login'
+    | '/mesa-dos-convidados'
     | '/painel'
     | '/reset-password'
     | '/site'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/despesas' | '/login' | '/painel' | '/reset-password' | '/site'
+  to:
+    | '/'
+    | '/despesas'
+    | '/dresscode'
+    | '/login'
+    | '/mesa-dos-convidados'
+    | '/painel'
+    | '/reset-password'
+    | '/site'
   id:
     | '__root__'
     | '/'
     | '/despesas'
+    | '/dresscode'
     | '/login'
+    | '/mesa-dos-convidados'
     | '/painel'
     | '/reset-password'
     | '/site'
@@ -96,7 +126,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DespesasRoute: typeof DespesasRoute
+  DresscodeRoute: typeof DresscodeRoute
   LoginRoute: typeof LoginRoute
+  MesaDosConvidadosRoute: typeof MesaDosConvidadosRoute
   PainelRoute: typeof PainelRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SiteRoute: typeof SiteRoute
@@ -125,11 +157,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PainelRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mesa-dos-convidados': {
+      id: '/mesa-dos-convidados'
+      path: '/mesa-dos-convidados'
+      fullPath: '/mesa-dos-convidados'
+      preLoaderRoute: typeof MesaDosConvidadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dresscode': {
+      id: '/dresscode'
+      path: '/dresscode'
+      fullPath: '/dresscode'
+      preLoaderRoute: typeof DresscodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/despesas': {
@@ -152,7 +198,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DespesasRoute: DespesasRoute,
+  DresscodeRoute: DresscodeRoute,
   LoginRoute: LoginRoute,
+  MesaDosConvidadosRoute: MesaDosConvidadosRoute,
   PainelRoute: PainelRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SiteRoute: SiteRoute,
@@ -160,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

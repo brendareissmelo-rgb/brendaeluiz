@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
+import { Countdown } from "@/components/countdown";
+import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { useSiteContent, DEFAULT_CONTENT, type Manual } from "@/lib/site-content";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,49 +39,7 @@ function Section({ id, eyebrow, title, children }: { id: string; eyebrow?: strin
   );
 }
 
-function DresscodeCarousel({ title, images, alt }: { title: string; images: string[]; alt: string }) {
-  const [i, setI] = useState(0);
-  const total = images.length;
-  if (total === 0) return null;
-  const idx = i % total;
-  const prev = () => setI((c) => (c - 1 + total) % total);
-  const next = () => setI((c) => (c + 1) % total);
 
-  return (
-    <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
-      <div className="relative bg-[#f5efe4]">
-        <img
-          src={images[idx]}
-          alt={`${alt} ${idx + 1}`}
-          loading="lazy"
-          className="h-80 w-full object-contain"
-        />
-        <button
-          type="button"
-          onClick={prev}
-          aria-label="Anterior"
-          className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          onClick={next}
-          aria-label="Próxima"
-          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow backdrop-blur transition hover:bg-background"
-        >
-          ›
-        </button>
-        <div className="absolute bottom-2 right-3 rounded-full bg-background/70 px-2 py-0.5 text-[11px] tabular-nums text-muted-foreground backdrop-blur">
-          {idx + 1} / {total}
-        </div>
-      </div>
-      <div className="p-5">
-        <h3 className="font-serif text-xl">{title}</h3>
-      </div>
-    </div>
-  );
-}
 
 function ManualAccordion({ manuals }: { manuals: Manual[] }) {
   const [open, setOpen] = useState<string | null>(null);
@@ -136,7 +97,8 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
+      <SiteNav />
       {/* HERO */}
       <header className="relative h-[100svh] w-full overflow-hidden">
         <img
@@ -146,7 +108,8 @@ function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
         <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 text-center text-white">
-          <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
+          <Countdown />
+          <div className="mt-8 text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
           <h1 className="mt-3 font-serif text-5xl font-light tracking-tight sm:text-7xl">
             Brenda <span className="text-primary">&</span> Luiz
           </h1>
@@ -157,6 +120,7 @@ function Home() {
           </div>
         </div>
       </header>
+
 
       {/* CERIMÔNIA */}
       <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
@@ -191,29 +155,7 @@ function Home() {
         </div>
       </Section>
 
-      {/* DRESSCODE */}
-      <Section id="dresscode" eyebrow={c.dresscode.eyebrow} title={c.dresscode.title}>
-        <p className="mx-auto mb-10 max-w-2xl text-center text-sm text-muted-foreground">
-          {c.dresscode.intro}
-        </p>
-        <div className="grid gap-8 sm:grid-cols-2">
-          <DresscodeCarousel title={c.dresscode.menTitle} images={c.dresscode.men} alt="Sugestão de traje masculino" />
-          <DresscodeCarousel title={c.dresscode.womenTitle} images={c.dresscode.women} alt="Sugestão de traje feminino" />
-        </div>
 
-        <div className="mt-8 rounded-lg border border-destructive/40 bg-destructive/5 p-5">
-          <div className="text-[11px] uppercase tracking-widest text-destructive">{c.dresscode.avoidTitle}</div>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-pink-400" /> Rosa
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-white" /> Branco
-            </span>
-            <span className="text-xs text-muted-foreground">— {c.dresscode.avoidNote}</span>
-          </div>
-        </div>
-      </Section>
 
       {/* MANUAIS */}
       <Section id="manual" eyebrow={c.manuals.eyebrow} title={c.manuals.title}>
@@ -222,9 +164,9 @@ function Home() {
 
       {/* PRESENTE / PIX */}
       <Section id="presente" eyebrow={c.gift.eyebrow} title={c.gift.title}>
-        <div className="mx-auto max-w-2xl rounded-lg border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent p-8 text-center">
+        <div className="mx-auto max-w-2xl p-2 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
-          <div className="mt-6 rounded-md border border-border/60 bg-card p-4">
+          <div className="mt-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
             <div className="mt-2 font-mono text-sm break-all">{c.gift.pixKey}</div>
           </div>
@@ -235,6 +177,7 @@ function Home() {
             {copied ? "Copiado ✓" : "Copiar chave Pix"}
           </button>
         </div>
+
       </Section>
 
       {/* PRÉ-WEDDING */}
@@ -249,18 +192,9 @@ function Home() {
         </div>
       </Section>
 
-      {/* Footer nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-around px-2 py-2 text-[11px] uppercase tracking-widest">
-          <a href="#top" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Início</a>
-          <a href="#cerimonia" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Cerimônia</a>
-          <a href="#dresscode" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Dresscode</a>
-          <a href="#manual" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Manuais</a>
-          <a href="#presente" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Presente</a>
-          <Link to="/login" className="rounded px-2 py-1.5 text-primary hover:text-primary/80">Login</Link>
-        </div>
-      </nav>
+      <SiteFooter />
       <div id="top" className="absolute top-0" />
+
     </div>
   );
 }
