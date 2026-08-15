@@ -252,18 +252,9 @@ function Home() {
         </div>
       </Section>
 
-      {/* Footer nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-around px-2 py-2 text-[11px] uppercase tracking-widest">
-          <a href="#top" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Início</a>
-          <a href="#cerimonia" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Cerimônia</a>
-          <a href="#dresscode" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Dresscode</a>
-          <a href="#manual" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Manuais</a>
-          <a href="#presente" className="rounded px-2 py-1.5 text-muted-foreground hover:text-primary">Presente</a>
-          <Link to="/login" className="rounded px-2 py-1.5 text-primary hover:text-primary/80">Login</Link>
-        </div>
-      </nav>
+      <SiteFooter />
       <div id="top" className="absolute top-0" />
+
     </div>
   );
 }
