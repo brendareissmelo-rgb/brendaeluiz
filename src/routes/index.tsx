@@ -139,7 +139,8 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
+      <SiteNav />
       {/* HERO */}
       <header className="relative h-[100svh] w-full overflow-hidden">
         <img
@@ -149,7 +150,8 @@ function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
         <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 text-center text-white">
-          <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
+          <Countdown />
+          <div className="mt-8 text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
           <h1 className="mt-3 font-serif text-5xl font-light tracking-tight sm:text-7xl">
             Brenda <span className="text-primary">&</span> Luiz
           </h1>
@@ -160,6 +162,7 @@ function Home() {
           </div>
         </div>
       </header>
+
 
       {/* CERIMÔNIA */}
       <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
