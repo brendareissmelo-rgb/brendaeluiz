@@ -88,70 +88,51 @@ function LookCard({
   );
 }
 
-function Gallery({ title, images, alt }: { title: string; images: string[]; alt: string }) {
-  const [i, setI] = useState(0);
-  const total = images.length;
-  if (total === 0) return null;
-  const idx = ((i % total) + total) % total;
-
+function SecretCard({ label, caption }: { label: string; caption?: string }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card">
-      <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
-        <h3 className="font-serif text-lg">{title}</h3>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] tabular-nums text-muted-foreground">
-            {idx + 1}/{total}
-          </span>
-          <button
-            type="button"
-            onClick={() => setI(idx - 1)}
-            aria-label="Anterior"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 transition hover:border-primary/50 hover:text-primary"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setI(idx + 1)}
-            aria-label="Próxima"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 transition hover:border-primary/50 hover:text-primary"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
+    <figure className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition hover:border-primary/40">
+      <div className="relative flex aspect-[3/4] items-center justify-center bg-gradient-to-b from-[#f7f2e9] to-[#ece3d5]">
+        <span className="font-serif text-2xl font-light tracking-[0.2em] text-[#8a7a63]">
+          Segredo
+        </span>
       </div>
-
-      <div className="relative aspect-[4/3] bg-[#f5efe4]">
-        <img
-          src={images[idx]}
-          alt={`${alt} ${idx + 1}`}
-          loading="lazy"
-          className="h-full w-full object-contain"
-        />
-      </div>
-
-      <div className="flex gap-2 overflow-x-auto p-3">
-        {images.map((src, n) => (
-          <button
-            key={src + n}
-            type="button"
-            onClick={() => setI(n)}
-            aria-label={`Ver opção ${n + 1}`}
-            className={`h-14 w-12 shrink-0 overflow-hidden rounded-md border bg-[#f5efe4] transition ${
-              n === idx ? "border-primary" : "border-border/50 opacity-60 hover:opacity-100"
-            }`}
-          >
-            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
-          </button>
-        ))}
-      </div>
-    </div>
+      <figcaption className="border-t border-border/60 p-4">
+        <div className="text-sm font-medium">{label}</div>
+        {caption ? <div className="mt-1 text-xs text-muted-foreground">{caption}</div> : null}
+      </figcaption>
+    </figure>
   );
 }
 
 function DresscodePage() {
-  const { data } = useSiteContent();
+  const { data, isLoading } = useSiteContent();
   const c = (data ?? DEFAULT_CONTENT).dresscode;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteNav />
+        <main className="mx-auto max-w-5xl px-5 py-14">
+          <div className="mb-10 flex flex-col items-center gap-3">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-9 w-56" />
+            <Skeleton className="h-4 w-full max-w-xl" />
+          </div>
+          {[0, 1, 2].map((s) => (
+            <div key={s} className="mb-14">
+              <Skeleton className="mb-6 h-7 w-64" />
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {[0, 1, 2].map((i) => (
+                  <Skeleton key={i} className="aspect-[3/4] w-full rounded-2xl" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
