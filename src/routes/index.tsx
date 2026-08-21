@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
 import { Countdown } from "@/components/countdown";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteContent, DEFAULT_CONTENT, type Manual } from "@/lib/site-content";
 
 
@@ -56,7 +57,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
               className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
             >
               <span>
-                <span className="block font-serif text-lg">{m.title}</span>
+                <span className="block font-helvetica text-lg">{m.title}</span>
                 {m.subtitle && (
                   <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
                 )}
@@ -86,7 +87,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
 
 function Home() {
   const [copied, setCopied] = useState(false);
-  const { data } = useSiteContent();
+  const { data, isLoading } = useSiteContent();
   const c = data ?? DEFAULT_CONTENT;
 
   const copyPix = async () => {
@@ -122,15 +123,32 @@ function Home() {
       </header>
 
 
+      {isLoading ? (
+        <div className="mx-auto max-w-5xl space-y-16 px-5 py-16">
+          {[0, 1, 2].map((s) => (
+            <div key={s} className="space-y-5">
+              <div className="flex flex-col items-center gap-3">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-9 w-64" />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <Skeleton className="h-48 w-full rounded-lg" />
+                <Skeleton className="h-48 w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+      <>
       {/* CERIMÔNIA */}
       <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
         <div className="grid gap-8 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-card p-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">Data e hora</div>
-            <div className="mt-2 font-serif text-2xl">{c.ceremony.dateLabel}</div>
-            <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
+            <div className="mt-2 font-helvetica text-2xl">{c.ceremony.dateLabel}</div>
+            <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
             <div className="mt-6 text-[11px] uppercase tracking-widest text-muted-foreground">Local</div>
-            <div className="mt-2 font-serif text-xl">{c.ceremony.venue}</div>
+            <div className="mt-2 font-helvetica text-xl">{c.ceremony.venue}</div>
             <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
             <a
               href={c.ceremony.mapsUrl}
@@ -146,7 +164,7 @@ function Home() {
             <ul className="mt-4 divide-y divide-border/60">
               {c.ceremony.timeline.map((t, i) => (
                 <li key={i} className="flex items-center justify-between py-2.5">
-                  <span className="font-serif text-sm text-muted-foreground tabular-nums">{t.time}</span>
+                  <span className="font-helvetica text-sm text-muted-foreground tabular-nums">{t.time}</span>
                   <span className="text-sm">{t.label}</span>
                 </li>
               ))}
@@ -168,7 +186,7 @@ function Home() {
           <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
           <div className="mt-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
-            <div className="mt-2 font-mono text-sm break-all">{c.gift.pixKey}</div>
+            <div className="mt-2 font-helvetica text-sm break-all">{c.gift.pixKey}</div>
           </div>
           <button
             onClick={copyPix}
@@ -191,6 +209,9 @@ function Home() {
           ))}
         </div>
       </Section>
+
+      </>
+      )}
 
       <SiteFooter />
       <div id="top" className="absolute top-0" />

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { useSiteContent, DEFAULT_CONTENT } from "@/lib/site-content";
 
@@ -158,6 +158,7 @@ function DresscodePage() {
               label="Noivo"
               caption="Terno e calça azul marinho, camisa branca, gravata azul marinho e sapato preto."
             />
+            <SecretCard label="Noiva" caption="O vestido é surpresa — revelado só no grande dia." />
           </div>
         </section>
 
@@ -216,27 +217,7 @@ function DresscodePage() {
             />
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Gallery title={c.menTitle} images={c.men} alt="Sugestão de traje masculino" />
-            <Gallery title={c.womenTitle} images={c.women} alt="Sugestão de traje feminino" />
-          </div>
         </section>
-
-        <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-5">
-          <div className="text-[11px] uppercase tracking-widest text-destructive">{c.avoidTitle}</div>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-pink-400" /> Rosa
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-white" /> Branco
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-[#1b2a4a]" /> Azul marinho completo
-            </span>
-            <span className="text-xs text-muted-foreground">— {c.avoidNote}</span>
-          </div>
-        </div>
       </main>
       <SiteFooter />
     </div>
