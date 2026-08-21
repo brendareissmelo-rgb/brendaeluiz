@@ -216,27 +216,7 @@ function DresscodePage() {
             />
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Gallery title={c.menTitle} images={c.men} alt="Sugestão de traje masculino" />
-            <Gallery title={c.womenTitle} images={c.women} alt="Sugestão de traje feminino" />
-          </div>
         </section>
-
-        <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-5">
-          <div className="text-[11px] uppercase tracking-widest text-destructive">{c.avoidTitle}</div>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-pink-400" /> Rosa
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-white" /> Branco
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-xs">
-              <span className="h-3 w-3 rounded-full bg-[#1b2a4a]" /> Azul marinho completo
-            </span>
-            <span className="text-xs text-muted-foreground">— {c.avoidNote}</span>
-          </div>
-        </div>
       </main>
       <SiteFooter />
     </div>
