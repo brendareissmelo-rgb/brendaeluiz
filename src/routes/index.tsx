@@ -56,7 +56,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
               className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
             >
               <span>
-                <span className="block font-serif text-lg">{m.title}</span>
+                <span className="block font-helvetica text-lg">{m.title}</span>
                 {m.subtitle && (
                   <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
                 )}
@@ -127,10 +127,10 @@ function Home() {
         <div className="grid gap-8 sm:grid-cols-2">
           <div className="rounded-lg border border-border/60 bg-card p-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">Data e hora</div>
-            <div className="mt-2 font-serif text-2xl">{c.ceremony.dateLabel}</div>
-            <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
+            <div className="mt-2 font-helvetica text-2xl">{c.ceremony.dateLabel}</div>
+            <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
             <div className="mt-6 text-[11px] uppercase tracking-widest text-muted-foreground">Local</div>
-            <div className="mt-2 font-serif text-xl">{c.ceremony.venue}</div>
+            <div className="mt-2 font-helvetica text-xl">{c.ceremony.venue}</div>
             <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
             <a
               href={c.ceremony.mapsUrl}
@@ -146,7 +146,7 @@ function Home() {
             <ul className="mt-4 divide-y divide-border/60">
               {c.ceremony.timeline.map((t, i) => (
                 <li key={i} className="flex items-center justify-between py-2.5">
-                  <span className="font-serif text-sm text-muted-foreground tabular-nums">{t.time}</span>
+                  <span className="font-helvetica text-sm text-muted-foreground tabular-nums">{t.time}</span>
                   <span className="text-sm">{t.label}</span>
                 </li>
               ))}
@@ -168,7 +168,7 @@ function Home() {
           <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
           <div className="mt-6">
             <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
-            <div className="mt-2 font-mono text-sm break-all">{c.gift.pixKey}</div>
+            <div className="mt-2 font-helvetica text-sm break-all">{c.gift.pixKey}</div>
           </div>
           <button
             onClick={copyPix}
