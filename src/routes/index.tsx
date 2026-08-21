@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
 import { Countdown } from "@/components/countdown";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteContent, DEFAULT_CONTENT, type Manual } from "@/lib/site-content";
 
 
@@ -86,7 +87,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
 
 function Home() {
   const [copied, setCopied] = useState(false);
-  const { data } = useSiteContent();
+  const { data, isLoading } = useSiteContent();
   const c = data ?? DEFAULT_CONTENT;
 
   const copyPix = async () => {
@@ -122,6 +123,23 @@ function Home() {
       </header>
 
 
+      {isLoading ? (
+        <div className="mx-auto max-w-5xl space-y-16 px-5 py-16">
+          {[0, 1, 2].map((s) => (
+            <div key={s} className="space-y-5">
+              <div className="flex flex-col items-center gap-3">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-9 w-64" />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <Skeleton className="h-48 w-full rounded-lg" />
+                <Skeleton className="h-48 w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+      <>
       {/* CERIMÔNIA */}
       <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
         <div className="grid gap-8 sm:grid-cols-2">
@@ -191,6 +209,9 @@ function Home() {
           ))}
         </div>
       </Section>
+
+      </>
+      )}
 
       <SiteFooter />
       <div id="top" className="absolute top-0" />
