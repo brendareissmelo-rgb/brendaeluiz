@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { useSiteContent, DEFAULT_CONTENT } from "@/lib/site-content";
 
