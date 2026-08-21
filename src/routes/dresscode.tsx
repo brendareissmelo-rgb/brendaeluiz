@@ -158,6 +158,7 @@ function DresscodePage() {
               label="Noivo"
               caption="Terno e calça azul marinho, camisa branca, gravata azul marinho e sapato preto."
             />
+            <SecretCard label="Noiva" caption="O vestido é surpresa — revelado só no grande dia." />
           </div>
         </section>
 
