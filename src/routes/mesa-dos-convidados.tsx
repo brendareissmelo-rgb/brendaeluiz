@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Users } from "lucide-react";
 
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/mesa-dos-convidados")({
   head: () => ({
@@ -94,6 +95,12 @@ const TABLES: { id: number; guests: string[] }[] = [
 
 function MesaPage() {
   const [open, setOpen] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const id = setTimeout(() => setLoading(false), 450);
+    return () => clearTimeout(id);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,6 +117,13 @@ function MesaPage() {
           </p>
         </div>
 
+        {loading ? (
+          <div className="space-y-3">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-[58px] w-full rounded-lg" />
+            ))}
+          </div>
+        ) : (
         <div className="space-y-3">
           {TABLES.map((t) => {
             const isOpen = open === t.id;
@@ -149,6 +163,7 @@ function MesaPage() {
             );
           })}
         </div>
+        )}
       </main>
       <SiteFooter />
     </div>
