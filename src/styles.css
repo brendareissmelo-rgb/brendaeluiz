@@ -8,6 +8,10 @@
   font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 
+@utility font-gotham {
+  font-family: "Gotham", "Montserrat", sans-serif;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

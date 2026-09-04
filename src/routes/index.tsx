@@ -57,7 +57,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
               className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
             >
               <span>
-                <span className="block font-helvetica text-lg font-bold">{m.title}</span>
+                <span className="block font-gotham text-lg font-bold">{m.title}</span>
                 {m.subtitle && (
                   <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
                 )}
