@@ -21,7 +21,7 @@ export function SiteNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   const cls =
-    "rounded px-2.5 py-1.5 text-[12px] tracking-wide text-muted-foreground transition-colors hover:text-primary";
+    "rounded px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:text-primary";
 
   const goHash = (href: string) => (e: React.MouseEvent) => {
     e.preventDefault();

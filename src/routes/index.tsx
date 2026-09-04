@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, CalendarDays, MapPin, ArrowRight } from "lucide-react";
 
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
 import { Countdown } from "@/components/countdown";
