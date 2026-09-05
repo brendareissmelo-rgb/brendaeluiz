@@ -6,10 +6,10 @@ export const ownerOf = (e: Expense): Owner =>
   (((e as any).owner as Owner) ?? "Ambos");
 
 export const OWNER_STYLES: Record<Owner, { text: string; bg: string; border: string; dot: string; stroke: string }> = {
-  Luiz: { text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/30", dot: "bg-sky-400", stroke: "#38bdf8" },
-  Brenda: { text: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/30", dot: "bg-pink-400", stroke: "#f472b6" },
+  Luiz: { text: "text-sky-700", bg: "bg-sky-500/10", border: "border-sky-500/30", dot: "bg-sky-600", stroke: "#0284c7" },
+  Brenda: { text: "text-pink-700", bg: "bg-pink-500/10", border: "border-pink-500/30", dot: "bg-pink-600", stroke: "#db2777" },
   Ambos: { text: "text-muted-foreground", bg: "bg-muted/40", border: "border-border", dot: "bg-muted-foreground", stroke: "#8b8b9a" },
-  Presente: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30", dot: "bg-amber-400", stroke: "#fbbf24" },
+  Presente: { text: "text-amber-700", bg: "bg-amber-500/10", border: "border-amber-500/30", dot: "bg-amber-600", stroke: "#d97706" },
 };
 
 export function OwnerTag({ owner, className = "" }: { owner: Owner; className?: string }) {
