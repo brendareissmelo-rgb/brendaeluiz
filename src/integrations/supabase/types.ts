@@ -27,7 +27,8 @@ export type Database = {
           notes: string | null
           owner: string
           paid_date: string | null
-          reserved: number
+          reserved_brenda: number
+          reserved_luiz: number
           status: Database["public"]["Enums"]["expense_status"]
           total_amount: number
           updated_at: string
@@ -45,7 +46,8 @@ export type Database = {
           notes?: string | null
           owner?: string
           paid_date?: string | null
-          reserved?: number
+          reserved_brenda?: number
+          reserved_luiz?: number
           status?: Database["public"]["Enums"]["expense_status"]
           total_amount: number
           updated_at?: string
@@ -63,7 +65,8 @@ export type Database = {
           notes?: string | null
           owner?: string
           paid_date?: string | null
-          reserved?: number
+          reserved_brenda?: number
+          reserved_luiz?: number
           status?: Database["public"]["Enums"]["expense_status"]
           total_amount?: number
           updated_at?: string
