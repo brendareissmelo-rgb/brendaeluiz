@@ -63,11 +63,10 @@ export function computeAmounts(e: Expense) {
     const per = e.installments_total > 0 ? base / e.installments_total : base;
     paid = down + per * Math.min(e.installments_paid, e.installments_total);
   }
-  const reserved = Math.min(
-    Math.max(Number((e as any).reserved ?? 0), 0),
-    Math.max(total - paid, 0)
-  );
-  return { paid, reserved, remaining: Math.max(total - paid - reserved, 0), total, down };
+  const reservedBrenda = Math.max(Number(e.reserved_brenda ?? 0), 0);
+  const reservedLuiz = Math.max(Number(e.reserved_luiz ?? 0), 0);
+  const reserved = Math.min(reservedBrenda + reservedLuiz, Math.max(total - paid, 0));
+  return { paid, reserved, reservedBrenda, reservedLuiz, remaining: Math.max(total - paid - reserved, 0), total, down };
 }
 
 export function summarize(items: Expense[]) {
@@ -109,7 +108,7 @@ export function summarizeByOwner(items: Expense[]) {
         : [{ key: owner as "Luiz" | "Brenda", share: 1 }];
     for (const t of targets) {
       result[t.key].paid += a.paid * t.share;
-      result[t.key].reserved += a.reserved * t.share;
+      result[t.key].reserved += t.key === "Brenda" ? a.reservedBrenda : a.reservedLuiz;
       result[t.key].remaining += a.remaining * t.share;
       result[t.key].total += a.total * t.share;
 

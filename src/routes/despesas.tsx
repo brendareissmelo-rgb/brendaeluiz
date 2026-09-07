@@ -86,7 +86,8 @@ type FormState = {
   owner: Owner;
   total_amount: string;
   down_payment: string;
-  reserved: string;
+  reserved_brenda: string;
+  reserved_luiz: string;
   status: Expense["status"];
   installments_total: string;
   installments_paid: string;
@@ -101,7 +102,8 @@ const empty: FormState = {
   owner: "Ambos",
   total_amount: "",
   down_payment: "",
-  reserved: "",
+  reserved_brenda: "",
+  reserved_luiz: "",
   status: "pending",
   installments_total: "1",
   installments_paid: "0",
@@ -159,7 +161,8 @@ function ExpensesPage() {
       owner: ownerOf(e),
       total_amount: String(e.total_amount),
       down_payment: e.down_payment ? String(e.down_payment) : "",
-      reserved: (e as any).reserved ? String((e as any).reserved) : "",
+      reserved_brenda: e.reserved_brenda ? String(e.reserved_brenda) : "",
+      reserved_luiz: e.reserved_luiz ? String(e.reserved_luiz) : "",
       status: e.status,
       installments_total: String(e.installments_total),
       installments_paid: String(e.installments_paid),
@@ -179,8 +182,10 @@ function ExpensesPage() {
     }
     const rawDown = parseFloat((form.down_payment || "0").replace(",", "."));
     const down = isNaN(rawDown) ? 0 : Math.min(Math.max(rawDown, 0), amount);
-    const rawReserved = parseFloat((form.reserved || "0").replace(",", "."));
-    const reserved = isNaN(rawReserved) ? 0 : Math.min(Math.max(rawReserved, 0), amount);
+    const rawReservedB = parseFloat((form.reserved_brenda || "0").replace(",", "."));
+    const reservedBrenda = isNaN(rawReservedB) ? 0 : Math.min(Math.max(rawReservedB, 0), amount);
+    const rawReservedL = parseFloat((form.reserved_luiz || "0").replace(",", "."));
+    const reservedLuiz = isNaN(rawReservedL) ? 0 : Math.min(Math.max(rawReservedL, 0), amount);
     const total = form.status === "installment" ? Math.max(1, parseInt(form.installments_total || "1")) : 1;
     const paidInst =
       form.status === "installment"
@@ -197,7 +202,8 @@ function ExpensesPage() {
         category: form.category.trim() || "Outros",
         total_amount: amount,
         down_payment: form.status === "paid" ? 0 : down,
-        reserved: form.status === "paid" ? 0 : reserved,
+        reserved_brenda: form.status === "paid" ? 0 : reservedBrenda,
+        reserved_luiz: form.status === "paid" ? 0 : reservedLuiz,
         status: form.status,
         installments_total: total,
         installments_paid: paidInst,
@@ -565,22 +571,36 @@ function ExpensesPage() {
               </div>
             )}
             {form.status !== "paid" && (
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label className="flex items-center gap-1.5 text-xs">
-                  <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
-                  Na Caixinha (R$) <span className="font-normal text-muted-foreground">— opcional</span>
-                </Label>
-                <Input
-                  inputMode="decimal"
-                  value={form.reserved}
-                  onChange={(e) => setForm({ ...form, reserved: e.target.value })}
-                  placeholder="0,00"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Valor guardado por fora (reserva no banco) para essa despesa. Não é um pagamento oficial, mas abate o
-                  valor a pagar.
+              <>
+                <div className="space-y-1.5">
+                  <Label className="flex items-center gap-1.5 text-xs">
+                    <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                    Caixinha Brenda (R$) <span className="font-normal text-muted-foreground">— opcional</span>
+                  </Label>
+                  <Input
+                    inputMode="decimal"
+                    value={form.reserved_brenda}
+                    onChange={(e) => setForm({ ...form, reserved_brenda: e.target.value })}
+                    placeholder="0,00"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="flex items-center gap-1.5 text-xs">
+                    <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                    Caixinha Luiz (R$) <span className="font-normal text-muted-foreground">— opcional</span>
+                  </Label>
+                  <Input
+                    inputMode="decimal"
+                    value={form.reserved_luiz}
+                    onChange={(e) => setForm({ ...form, reserved_luiz: e.target.value })}
+                    placeholder="0,00"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground sm:col-span-2">
+                  Valores guardados por fora (reserva no banco de cada um) para essa despesa. Não é um pagamento
+                  oficial, mas abate o valor a pagar.
                 </p>
-              </div>
+              </>
             )}
             {form.status === "installment" && (
               <>
