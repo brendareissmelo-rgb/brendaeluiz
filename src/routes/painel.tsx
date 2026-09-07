@@ -96,7 +96,7 @@ function PersonCard({
             e,
             share,
             paid: a.paid * share,
-            reserved: a.reserved * share,
+            reserved: person === "Brenda" ? a.reservedBrenda : a.reservedLuiz,
             remaining: a.remaining * share,
             total: a.total * share,
           };
