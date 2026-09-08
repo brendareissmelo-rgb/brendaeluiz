@@ -1,13 +1,21 @@
 import { Link } from "@tanstack/react-router";
+import { Gift, Home, Shirt, Users } from "lucide-react";
 
 import logo from "@/assets/logo-casal.png.asset.json";
-import AppMenuBar from "@/components/ui/app-menu-bar";
+import { NavBar } from "@/components/ui/tubelight-navbar";
+
+const navItems = [
+  { name: "Início", url: "/", icon: Home },
+  { name: "Dresscode", url: "/dresscode", icon: Shirt },
+  { name: "Mesa", url: "/mesa-dos-convidados", icon: Users },
+  { name: "Presente", url: "#presente", icon: Gift },
+];
 
 export function SiteNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-background/85 px-3 py-2 backdrop-blur sm:sticky sm:top-0 sm:border-b sm:border-t-0">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-0">
       <div className="mx-auto flex max-w-5xl items-center justify-center">
-        <AppMenuBar />
+        <NavBar items={navItems} />
       </div>
     </nav>
   );
