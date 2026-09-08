@@ -6,11 +6,11 @@ import { Link, useRouterState } from "@tanstack/react-router"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface NavItem {
+export interface NavItem {
   name: string
   url: string
   icon: LucideIcon
-  isHash?: boolean
+  highlighted?: boolean
 }
 
 interface NavBarProps {
@@ -78,8 +78,10 @@ export function NavBar({ items, className }: NavBarProps) {
               onClick={handleClick(item)}
               className={cn(
                 "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:py-2 sm:text-sm",
-                "text-muted-foreground hover:text-foreground",
-                isActive && "text-foreground",
+                item.highlighted
+                  ? "text-primary drop-shadow-[0_0_10px_var(--color-primary)] hover:text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+                isActive && !item.highlighted && "text-foreground",
               )}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -87,7 +89,10 @@ export function NavBar({ items, className }: NavBarProps) {
               {isActive && (
                 <motion.div
                   layoutId="tubelight-active"
-                  className="absolute inset-0 -z-10 rounded-full bg-background shadow-[0_0_12px_-3px_var(--color-primary)]"
+                  className={cn(
+                    "absolute inset-0 -z-10 rounded-full bg-background",
+                    item.highlighted && "shadow-[0_0_16px_-2px_var(--color-primary)]",
+                  )}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -98,3 +103,4 @@ export function NavBar({ items, className }: NavBarProps) {
     </div>
   )
 }
+
