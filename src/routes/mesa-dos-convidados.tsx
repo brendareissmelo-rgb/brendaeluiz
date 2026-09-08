@@ -145,7 +145,7 @@ function MesaPage() {
                   <span className="flex items-center gap-3">
                     <Users className="h-4 w-4 text-primary" />
                     <span className="font-serif text-lg">Mesa {t.id}</span>
-                    <span className="text-xs text-muted-foreground">{t.guests.length} lugares</span>
+                    <span className="text-xs text-muted-foreground">{t.guests.length} convidados</span>
                   </span>
                   <ChevronDown
                     className={
