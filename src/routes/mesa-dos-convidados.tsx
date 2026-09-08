@@ -103,6 +103,8 @@ function MesaPage() {
     return () => clearTimeout(id);
   }, []);
 
+  const totalGuests = TABLES.reduce((sum, t) => sum + t.guests.length, 0);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteNav />
@@ -116,6 +118,10 @@ function MesaPage() {
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
             Toque em uma mesa para ver quem vai sentar com você no salão.
           </p>
+          <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs text-muted-foreground">
+            <Users className="h-3.5 w-3.5 text-primary" />
+            {totalGuests} convidados distribuídos em {TABLES.length} mesas
+          </div>
         </div>
 
         {loading ? (
@@ -139,7 +145,7 @@ function MesaPage() {
                   <span className="flex items-center gap-3">
                     <Users className="h-4 w-4 text-primary" />
                     <span className="font-serif text-lg">Mesa {t.id}</span>
-                    <span className="text-xs text-muted-foreground">{t.guests.length} lugares</span>
+                    <span className="text-xs text-muted-foreground">{t.guests.length} convidados</span>
                   </span>
                   <ChevronDown
                     className={
