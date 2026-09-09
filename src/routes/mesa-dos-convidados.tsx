@@ -86,7 +86,6 @@ const TABLES: { id: number; guests: string[] }[] = [
       "Dayane Lobo",
       "Isaac Lobo",
       "Carol Barros",
-      "Henrique de Moraes",
       "Silvia",
       "Bené (Avô da Noiva)",
       "Carina Leray",
