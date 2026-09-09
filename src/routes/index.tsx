@@ -48,42 +48,120 @@ function Section({ id, eyebrow, title, children, delay = 0 }: { id: string; eyeb
 function ManualAccordion({ manuals }: { manuals: Manual[] }) {
   const [open, setOpen] = useState<string | null>(null);
   return (
-    <div className="mx-auto max-w-3xl space-y-3">
+    <StaggerContainer className="mx-auto max-w-3xl space-y-3" staggerDelay={0.08}>
       {manuals.map((m) => {
         const isOpen = open === m.id;
         return (
-          <div key={m.id} className="overflow-hidden rounded-lg border border-border/60 bg-card">
-            <button
-              type="button"
-              onClick={() => setOpen(isOpen ? null : m.id)}
-              aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
-            >
-              <span>
-              <span className="block font-serif text-lg">{m.title}</span>
-                {m.subtitle && (
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
-                )}
-              </span>
-              <ChevronDown
-                className={"h-4 w-4 shrink-0 text-primary transition-transform " + (isOpen ? "rotate-180" : "")}
-              />
-            </button>
-            {isOpen && (
-              <ol className="space-y-3 border-t border-border/60 px-5 py-5">
-                {m.items.map((item, i) => (
-                  <li key={i} className="flex gap-4">
-                    <span className="font-serif text-xl text-primary tabular-nums">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p className="text-sm leading-relaxed text-foreground/90">{item}</p>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </div>
+          <StaggerItem key={m.id}>
+            <div className="overflow-hidden rounded-lg border border-border/60 bg-card">
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : m.id)}
+                aria-expanded={isOpen}
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
+              >
+                <span>
+                  <span className="block font-serif text-lg">{m.title}</span>
+                  {m.subtitle && (
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
+                  )}
+                </span>
+                <ChevronDown
+                  className={"h-4 w-4 shrink-0 text-primary transition-transform " + (isOpen ? "rotate-180" : "")}
+                />
+              </button>
+              {isOpen && (
+                <ol className="space-y-3 border-t border-border/60 px-5 py-5">
+                  {m.items.map((item, i) => (
+                    <li key={i} className="flex gap-4">
+                      <span className="font-serif text-xl text-primary tabular-nums">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <p className="text-sm leading-relaxed text-foreground/90">{item}</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </StaggerItem>
         );
       })}
+    </StaggerContainer>
+  );
+}
+
+function HomeSkeleton() {
+  return (
+    <div className="mx-auto max-w-5xl space-y-16 px-5 py-16 sm:py-20">
+      {/* Cerimônia skeleton */}
+      <section className="space-y-8">
+        <div className="mb-10 space-y-3 text-center">
+          <Skeleton className="mx-auto h-3 w-24" />
+          <Skeleton className="mx-auto h-9 w-56" />
+        </div>
+        <Skeleton className="mx-auto h-28 w-full max-w-md rounded-2xl" />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Skeleton className="h-48 w-full rounded-2xl" />
+          <Skeleton className="h-48 w-full rounded-2xl" />
+        </div>
+      </section>
+
+      {/* Programação skeleton */}
+      <section className="space-y-8">
+        <div className="mb-10 space-y-3 text-center">
+          <Skeleton className="mx-auto h-3 w-24" />
+          <Skeleton className="mx-auto h-9 w-56" />
+        </div>
+        <div className="mx-auto max-w-2xl space-y-4">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-5 w-14" />
+              <Skeleton className="h-px flex-1" />
+              <Skeleton className="h-5 w-48" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Manuais skeleton */}
+      <section className="space-y-8">
+        <div className="mb-10 space-y-3 text-center">
+          <Skeleton className="mx-auto h-3 w-24" />
+          <Skeleton className="mx-auto h-9 w-56" />
+        </div>
+        <div className="mx-auto max-w-3xl space-y-3">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-lg" />
+          ))}
+        </div>
+      </section>
+
+      {/* Pré-wedding skeleton */}
+      <section className="space-y-8">
+        <div className="mb-10 space-y-3 text-center">
+          <Skeleton className="mx-auto h-3 w-24" />
+          <Skeleton className="mx-auto h-9 w-56" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="aspect-[3/4] w-full rounded-md" />
+          ))}
+        </div>
+      </section>
+
+      {/* Presente skeleton */}
+      <section className="space-y-8">
+        <div className="mb-10 space-y-3 text-center">
+          <Skeleton className="mx-auto h-3 w-24" />
+          <Skeleton className="mx-auto h-9 w-56" />
+        </div>
+        <div className="mx-auto max-w-2xl space-y-4 text-center">
+          <Skeleton className="mx-auto h-4 w-full" />
+          <Skeleton className="mx-auto h-4 w-5/6" />
+          <Skeleton className="mx-auto h-8 w-64" />
+          <Skeleton className="mx-auto h-10 w-40 rounded-md" />
+        </div>
+      </section>
     </div>
   );
 }
