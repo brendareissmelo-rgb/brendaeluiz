@@ -26,16 +26,18 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Section({ id, eyebrow, title, children }: { id: string; eyebrow?: string; title: string; children: React.ReactNode }) {
+function Section({ id, eyebrow, title, children, delay = 0 }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number }) {
   return (
     <section id={id} className="mx-auto max-w-5xl px-5 py-16 sm:py-20">
-      <div className="mb-10 text-center">
-        {eyebrow && (
-          <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{eyebrow}</div>
-        )}
-        <h2 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">{title}</h2>
-        <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
-      </div>
+      <FadeIn delay={delay}>
+        <div className="mb-10 text-center">
+          {eyebrow && (
+            <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{eyebrow}</div>
+          )}
+          <h2 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">{title}</h2>
+          <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
+        </div>
+      </FadeIn>
       {children}
     </section>
   );
