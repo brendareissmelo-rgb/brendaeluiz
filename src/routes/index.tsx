@@ -191,135 +191,136 @@ function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
         <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 text-center text-white">
-          <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
-          <h1 className="mt-3 font-serif text-5xl font-light tracking-tight sm:text-7xl">
-            Brenda <span className="text-primary">&</span> Luiz
-          </h1>
-          <div className="mt-4 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-white/90">
-            <span>12 · 12 · 2026</span>
-            <span className="h-px w-8 bg-white/60" />
-            <span>Belém · PA</span>
-          </div>
+          <FadeIn delay={0.2} direction="up">
+            <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
+          </FadeIn>
+          <FadeIn delay={0.4} direction="up">
+            <h1 className="mt-3 font-serif text-5xl font-light tracking-tight sm:text-7xl">
+              Brenda <span className="text-primary">&</span> Luiz
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.6} direction="up">
+            <div className="mt-4 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-white/90">
+              <span>12 · 12 · 2026</span>
+              <span className="h-px w-8 bg-white/60" />
+              <span>Belém · PA</span>
+            </div>
+          </FadeIn>
         </div>
       </header>
 
-
       {isLoading ? (
-        <div className="mx-auto max-w-5xl space-y-16 px-5 py-16">
-          {[0, 1, 2].map((s) => (
-            <div key={s} className="space-y-5">
-              <div className="flex flex-col items-center gap-3">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-9 w-64" />
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <Skeleton className="h-48 w-full rounded-lg" />
-                <Skeleton className="h-48 w-full rounded-lg" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <HomeSkeleton />
       ) : (
-      <>
-      {/* CERIMÔNIA */}
-      <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
-        <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
-          <Countdown />
-        </div>
+        <>
+          {/* CERIMÔNIA */}
+          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
+            <FadeIn delay={0.1}>
+              <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
+                <Countdown />
+              </div>
+            </FadeIn>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-            <div className="relative flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-                <CalendarDays className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Data e hora</div>
-                <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.dateLabel}</div>
-                <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
-              </div>
-            </div>
-          </div>
+            <StaggerContainer className="grid gap-5 sm:grid-cols-2" staggerDelay={0.12}>
+              <StaggerItem>
+                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
+                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
+                  <div className="relative flex items-start gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                      <CalendarDays className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Data e hora</div>
+                      <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.dateLabel}</div>
+                      <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
 
-          <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-            <div className="relative flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Local</div>
-                <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.venue}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
-                <a
-                  href={c.ceremony.mapsUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group/btn mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-medium tracking-wide text-primary transition hover:bg-primary hover:text-primary-foreground"
+              <StaggerItem>
+                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
+                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
+                  <div className="relative flex items-start gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Local</div>
+                      <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.venue}</div>
+                      <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
+                      <a
+                        href={c.ceremony.mapsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group/btn mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-medium tracking-wide text-primary transition hover:bg-primary hover:text-primary-foreground"
+                      >
+                        Ver no mapa
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
+          </Section>
+
+          {/* PROGRAMAÇÃO */}
+          <Section id="programacao" eyebrow="O grande dia" title="Programação do dia">
+            <StaggerContainer className="mx-auto max-w-2xl" staggerDelay={0.08}>
+              <ol className="relative space-y-1 border-l border-border/60 pl-6">
+                {c.ceremony.timeline.map((t, i) => (
+                  <StaggerItem key={i}>
+                    <li className="relative flex items-baseline justify-between gap-4 py-3">
+                      <span className="absolute -left-[1.62rem] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-primary ring-4 ring-background" />
+                      <span className="font-helvetica text-base tabular-nums text-primary">{t.time}</span>
+                      <span className="flex-1 border-b border-dashed border-border/50" />
+                      <span className="text-sm text-foreground/90">{t.label}</span>
+                    </li>
+                  </StaggerItem>
+                ))}
+              </ol>
+            </StaggerContainer>
+          </Section>
+
+          {/* MANUAIS */}
+          <Section id="manual" eyebrow={c.manuals.eyebrow} title={c.manuals.title}>
+            <ManualAccordion manuals={c.manuals.list} />
+          </Section>
+
+          {/* PRÉ-WEDDING */}
+          <Section id="prewedding" eyebrow={c.prewedding.eyebrow} title={c.prewedding.title}>
+            <StaggerContainer className="grid grid-cols-2 gap-3 sm:grid-cols-4" staggerDelay={0.08}>
+              {c.prewedding.photos.map((url, i) => (
+                <StaggerItem key={i}>
+                  <div className="group relative aspect-[3/4] overflow-hidden rounded-md">
+                    <img src={url} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/25" />
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </Section>
+
+          {/* PRESENTE / PIX */}
+          <Section id="presente" eyebrow={c.gift.eyebrow} title={c.gift.title}>
+            <FadeIn delay={0.1}>
+              <div className="mx-auto max-w-2xl p-2 text-center">
+                <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
+                <div className="mt-6">
+                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
+                  <div className="mt-2 font-helvetica text-sm break-all">{c.gift.pixKey}</div>
+                </div>
+                <button
+                  onClick={copyPix}
+                  className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                 >
-                  Ver no mapa
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                </a>
+                  {copied ? "Copiado ✓" : "Copiar chave Pix"}
+                </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* PROGRAMAÇÃO */}
-      <Section id="programacao" eyebrow="O grande dia" title="Programação do dia">
-        <div className="mx-auto max-w-2xl">
-          <ol className="relative space-y-1 border-l border-border/60 pl-6">
-            {c.ceremony.timeline.map((t, i) => (
-              <li key={i} className="relative flex items-baseline justify-between gap-4 py-3">
-                <span className="absolute -left-[1.62rem] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-primary ring-4 ring-background" />
-                <span className="font-helvetica text-base tabular-nums text-primary">{t.time}</span>
-                <span className="flex-1 border-b border-dashed border-border/50" />
-                <span className="text-sm text-foreground/90">{t.label}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </Section>
-
-      {/* MANUAIS */}
-      <Section id="manual" eyebrow={c.manuals.eyebrow} title={c.manuals.title}>
-        <ManualAccordion manuals={c.manuals.list} />
-      </Section>
-
-      {/* PRÉ-WEDDING */}
-      <Section id="prewedding" eyebrow={c.prewedding.eyebrow} title={c.prewedding.title}>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {c.prewedding.photos.map((url, i) => (
-            <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-md">
-              <img src={url} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/25" />
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* PRESENTE / PIX */}
-      <Section id="presente" eyebrow={c.gift.eyebrow} title={c.gift.title}>
-        <div className="mx-auto max-w-2xl p-2 text-center">
-          <p className="text-sm leading-relaxed text-muted-foreground">{c.gift.text}</p>
-          <div className="mt-6">
-            <div className="text-[11px] uppercase tracking-widest text-muted-foreground">{c.gift.pixLabel}</div>
-            <div className="mt-2 font-helvetica text-sm break-all">{c.gift.pixKey}</div>
-          </div>
-          <button
-            onClick={copyPix}
-            className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-          >
-            {copied ? "Copiado ✓" : "Copiar chave Pix"}
-          </button>
-        </div>
-
-      </Section>
-
-
-      </>
+            </FadeIn>
+          </Section>
+        </>
       )}
 
       <SiteFooter />
