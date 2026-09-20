@@ -13,7 +13,7 @@ const navItems = [
 
 export function SiteNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-0">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-0 sm:bottom-auto sm:h-0 sm:py-0">
       <div className="mx-auto flex max-w-5xl items-center justify-center">
         <NavBar items={navItems} />
       </div>
