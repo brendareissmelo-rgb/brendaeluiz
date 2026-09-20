@@ -7,8 +7,7 @@ import { useSiteContent, DEFAULT_CONTENT } from "@/lib/site-content";
 
 import trajeNoivo from "@/assets/traje-noivo.png.asset.json";
 import trajeConvidado from "@/assets/traje-convidado.png.asset.json";
-import convidadoNeutro from "@/assets/convidado-neutro.png.asset.json";
-import convidadaNeutra from "@/assets/convidada-neutra.png.asset.json";
+import convidadoRosa from "@/assets/convidado-rosa.png.asset.json";
 import vestidoBranco from "@/assets/vestido-branco.png.asset.json";
 import vestidoRosa from "@/assets/vestido-rosa-madrinha.png.asset.json";
 
