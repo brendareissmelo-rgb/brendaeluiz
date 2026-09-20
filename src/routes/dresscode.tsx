@@ -114,7 +114,7 @@ function DresscodePage() {
     return (
       <div className="min-h-screen bg-background">
         <SiteNav />
-        <main className="mx-auto max-w-5xl px-5 py-14">
+        <main className="mx-auto max-w-5xl px-5 pb-14 pt-28">
           <div className="mb-10 flex flex-col items-center gap-3">
             <Skeleton className="h-3 w-24" />
             <Skeleton className="h-9 w-56" />
