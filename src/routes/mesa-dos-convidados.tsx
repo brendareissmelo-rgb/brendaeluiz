@@ -74,7 +74,7 @@ const TABLES: { id: number; guests: string[] }[] = [
       "Sumano",
       "Mocotó",
       "Alan Rendrix",
-      "Jonatha David",
+      "Laura Couto",
       "Luiz Horizonte (Noivo)",
       "Brenda Melo (Noiva)",
     ],
@@ -82,7 +82,7 @@ const TABLES: { id: number; guests: string[] }[] = [
   {
     id: 5,
     guests: [
-      "Juliana",
+      "Jonatha David",
       "Dayane Lobo",
       "Isaac Lobo",
       "Carol Barros",
