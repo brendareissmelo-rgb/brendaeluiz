@@ -8,7 +8,7 @@ import { useSiteContent, DEFAULT_CONTENT } from "@/lib/site-content";
 import trajeNoivo from "@/assets/traje-noivo.png.asset.json";
 import trajeConvidado from "@/assets/traje-convidado.png.asset.json";
 import convidadoNeutro from "@/assets/convidado-neutro.png.asset.json";
-import convidadaNeutra from "@/assets/convidada-neutra.png.asset.json";
+import convidadoRosa from "@/assets/convidado-rosa.png.asset.json";
 import vestidoBranco from "@/assets/vestido-branco.png.asset.json";
 import vestidoRosa from "@/assets/vestido-rosa-madrinha.png.asset.json";
 
@@ -196,13 +196,15 @@ function DresscodePage() {
           <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <LookCard
               src={convidadoNeutro.url}
-              label="Convidado — sugestão masculina"
-              caption="Camisa social branca, calça social preta e sapato preto."
+              label="Convidado — camisa branca e calça preta"
+              caption="Esta combinação não será usada — por favor, evite."
+              forbidden
             />
             <LookCard
-              src={convidadaNeutra.url}
-              label="Convidada — sugestão feminina"
-              caption="Vestido longo em tom neutro ou terroso, com modelagem elegante."
+              src={convidadoRosa.url}
+              label="Camisa social rosa"
+              caption="Roupa social masculina rosa — por favor, evite."
+              forbidden
             />
             <LookCard
               src={trajeNoivo.url}
