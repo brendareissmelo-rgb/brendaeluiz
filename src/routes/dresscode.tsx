@@ -206,6 +206,7 @@ function DresscodePage() {
               caption="Roupa social masculina rosa — por favor, evite."
               forbidden
             />
+            <LookCard
               src={trajeNoivo.url}
               label="Terno azul marinho com gravata azul marinho"
               caption="Reservado ao noivo — por favor, evite esta combinação."
