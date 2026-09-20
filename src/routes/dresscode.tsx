@@ -194,8 +194,17 @@ function DresscodePage() {
 
           <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <LookCard
-              src={convidadoNeutro... }
+              src={convidadoNeutro.url}
+              label="Convidado — camisa branca e calça preta"
+              caption="Esta combinação não será usada — por favor, evite."
+              forbidden
+            />
             <LookCard
+              src={convidadoRosa.url}
+              label="Camisa social rosa"
+              caption="Roupa social masculina rosa — por favor, evite."
+              forbidden
+            />
               src={trajeNoivo.url}
               label="Terno azul marinho com gravata azul marinho"
               caption="Reservado ao noivo — por favor, evite esta combinação."
