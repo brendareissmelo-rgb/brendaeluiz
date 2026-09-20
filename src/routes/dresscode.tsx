@@ -194,15 +194,7 @@ function DresscodePage() {
 
           <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <LookCard
-              src={convidadoNeutro.url}
-              label="Convidado — sugestão masculina"
-              caption="Camisa social branca, calça social preta e sapato preto."
-            />
-            <LookCard
-              src={convidadaNeutra.url}
-              label="Convidada — sugestão feminina"
-              caption="Vestido longo em tom neutro ou terroso, com modelagem elegante."
-            />
+              src={convidadoNeutro... }
             <LookCard
               src={trajeNoivo.url}
               label="Terno azul marinho com gravata azul marinho"
