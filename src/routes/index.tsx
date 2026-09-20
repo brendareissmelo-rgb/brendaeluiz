@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
 
 function Section({ id, eyebrow, title, children, delay = 0 }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number }) {
   return (
-    <section id={id} className="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+    <section id={id} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-16 sm:py-20">
       <FadeIn delay={delay}>
         <div className="mb-10 text-center">
           {eyebrow && (
