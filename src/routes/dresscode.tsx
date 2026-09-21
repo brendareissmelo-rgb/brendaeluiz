@@ -139,7 +139,7 @@ function DresscodePage() {
   return (
     <div className="min-h-screen bg-background">
       <SiteNav />
-      <main className="mx-auto max-w-5xl px-5 py-14">
+      <main className="mx-auto max-w-5xl px-5 pb-14 pt-28">
         <div className="mb-10 text-center">
           <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{c.eyebrow}</div>
           <h1 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">{c.title}</h1>

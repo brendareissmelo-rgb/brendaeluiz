@@ -29,12 +29,12 @@ export function SiteNav() {
   }, []);
 
   return (
-    <nav
-      className={`fixed bottom-0 left-0 right-0 z-50 px-3 py-2 transition-transform duration-300 sm:sticky sm:top-5 sm:bottom-auto sm:h-0 sm:py-0 ${
-        hidden ? "-translate-y-[150%]" : "translate-y-0"
-      }`}
-    >
-      <div className="mx-auto flex max-w-5xl items-center justify-center">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-5 sm:bottom-auto sm:h-0 sm:py-0">
+      <div
+        className={`mx-auto flex max-w-5xl items-center justify-center transition-transform duration-300 ${
+          hidden ? "sm:-translate-y-[180%]" : "sm:translate-y-0"
+        }`}
+      >
         <NavBar items={navItems} />
       </div>
     </nav>
