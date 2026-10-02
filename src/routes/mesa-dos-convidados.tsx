@@ -36,7 +36,7 @@ const TABLES: { id: number; guests: string[] }[] = [
       "Suzete Lopes (Avó da Noiva)",
       "Rayla Cristina",
       "Alberto Melo (Pai da Noiva)",
-      "Verônica Souza",
+      "Gabrielly Cristina",
     ],
   },
   {
@@ -57,7 +57,7 @@ const TABLES: { id: number; guests: string[] }[] = [
     guests: [
       "Brubs",
       "Maria Rita",
-      "Gabrielly Cristina",
+      "Verônica Souza",
       "Ana Reis (Avó da Noiva)",
       "Milena Reis",
       "Andrei Souza",
