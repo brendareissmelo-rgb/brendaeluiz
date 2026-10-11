@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-serif font-light" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
+function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-sora font-bold" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
   return (
     <section id={id} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-16 sm:py-20">
       <FadeIn delay={delay}>
