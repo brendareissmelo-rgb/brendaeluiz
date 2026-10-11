@@ -9,43 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SiteRouteImport } from './routes/site'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PainelRouteImport } from './routes/painel'
-import { Route as MesaDosConvidadosRouteImport } from './routes/mesa-dos-convidados'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DresscodeRouteImport } from './routes/dresscode'
-import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DespesasRouteImport } from './routes/despesas'
+import { Route as DresscodeRouteImport } from './routes/dresscode'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MesaDosConvidadosRouteImport } from './routes/mesa-dos-convidados'
+import { Route as PainelRouteImport } from './routes/painel'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SiteRouteImport } from './routes/site'
 
-const SiteRoute = SiteRouteImport.update({
-  id: '/site',
-  path: '/site',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PainelRoute = PainelRouteImport.update({
-  id: '/painel',
-  path: '/painel',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MesaDosConvidadosRoute = MesaDosConvidadosRouteImport.update({
-  id: '/mesa-dos-convidados',
-  path: '/mesa-dos-convidados',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DresscodeRoute = DresscodeRouteImport.update({
-  id: '/dresscode',
-  path: '/dresscode',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DespesasRoute = DespesasRouteImport.update({
@@ -53,9 +28,34 @@ const DespesasRoute = DespesasRouteImport.update({
   path: '/despesas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DresscodeRoute = DresscodeRouteImport.update({
+  id: '/dresscode',
+  path: '/dresscode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MesaDosConvidadosRoute = MesaDosConvidadosRouteImport.update({
+  id: '/mesa-dos-convidados',
+  path: '/mesa-dos-convidados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PainelRoute = PainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SiteRoute = SiteRouteImport.update({
+  id: '/site',
+  path: '/site',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -136,46 +136,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/site': {
-      id: '/site'
-      path: '/site'
-      fullPath: '/site'
-      preLoaderRoute: typeof SiteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/painel': {
-      id: '/painel'
-      path: '/painel'
-      fullPath: '/painel'
-      preLoaderRoute: typeof PainelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mesa-dos-convidados': {
-      id: '/mesa-dos-convidados'
-      path: '/mesa-dos-convidados'
-      fullPath: '/mesa-dos-convidados'
-      preLoaderRoute: typeof MesaDosConvidadosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dresscode': {
-      id: '/dresscode'
-      path: '/dresscode'
-      fullPath: '/dresscode'
-      preLoaderRoute: typeof DresscodeRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/despesas': {
@@ -185,11 +150,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DespesasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/dresscode': {
+      id: '/dresscode'
+      path: '/dresscode'
+      fullPath: '/dresscode'
+      preLoaderRoute: typeof DresscodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mesa-dos-convidados': {
+      id: '/mesa-dos-convidados'
+      path: '/mesa-dos-convidados'
+      fullPath: '/mesa-dos-convidados'
+      preLoaderRoute: typeof MesaDosConvidadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/painel': {
+      id: '/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof PainelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/site': {
+      id: '/site'
+      path: '/site'
+      fullPath: '/site'
+      preLoaderRoute: typeof SiteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
