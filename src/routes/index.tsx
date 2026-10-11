@@ -232,15 +232,15 @@ function Home() {
                     aria-hidden="true"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
-                  <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.15)]" />
-                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-background/70 text-primary backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 via-40% to-transparent to-85%" />
+                  <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]" />
+                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-background backdrop-blur-sm">
                     <CalendarDays className="h-4 w-4" />
                   </div>
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <div className="text-[11px] font-medium uppercase tracking-[0.25em] text-primary">Data e hora</div>
-                    <div className="mt-1.5 font-sora text-xl leading-snug text-foreground">{c.ceremony.dateLabel}</div>
-                    <div className="mt-1 font-helvetica text-sm text-foreground/70">{c.ceremony.timeLabel}</div>
+                    <div className="mt-1.5 font-sora text-xl leading-snug text-background">{c.ceremony.dateLabel}</div>
+                    <div className="mt-1 font-helvetica text-sm text-background/75">{c.ceremony.timeLabel}</div>
                   </div>
                 </div>
               </StaggerItem>
@@ -253,24 +253,24 @@ function Home() {
                     aria-hidden="true"
                     className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
-                  <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.15)]" />
-                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-background/70 text-primary backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 via-40% to-transparent to-85%" />
+                  <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]" />
+                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-background backdrop-blur-sm">
                     <MapPin className="h-4 w-4" />
                   </div>
                   <a
                     href={c.ceremony.mapsUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="group/btn absolute right-6 top-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-background/70 px-4 py-2 text-xs font-medium tracking-wide text-primary backdrop-blur-sm transition hover:bg-primary hover:text-primary-foreground"
+                    className="group/btn absolute right-6 top-6 inline-flex items-center gap-2 rounded-full border border-background/25 bg-foreground/35 px-4 py-2 text-xs font-medium tracking-wide text-background backdrop-blur-sm transition hover:bg-background hover:text-foreground"
                   >
                     Ver no mapa
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                   </a>
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <div className="text-[11px] font-medium uppercase tracking-[0.25em] text-primary">Local</div>
-                    <div className="mt-1.5 font-sora text-xl leading-snug text-foreground">{c.ceremony.venue}</div>
-                    <div className="mt-1 font-helvetica text-sm text-foreground/70">{c.ceremony.address}</div>
+                    <div className="mt-1.5 font-sora text-xl leading-snug text-background">{c.ceremony.venue}</div>
+                    <div className="mt-1 font-helvetica text-sm text-background/75">{c.ceremony.address}</div>
                   </div>
                 </div>
               </StaggerItem>
