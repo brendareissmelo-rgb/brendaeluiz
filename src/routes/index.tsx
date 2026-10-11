@@ -214,7 +214,7 @@ function Home() {
       ) : (
         <>
           {/* CERIMÔNIA */}
-          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title} titleClass="font-sora font-bold">
+          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
             <FadeIn delay={0.1}>
               <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
                 <Countdown />
