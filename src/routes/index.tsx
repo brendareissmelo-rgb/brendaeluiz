@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-serif" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
+function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-serif font-light" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
   return (
     <section id={id} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-16 sm:py-20">
       <FadeIn delay={delay}>
@@ -34,7 +34,7 @@ function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-s
           {eyebrow && (
             <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{eyebrow}</div>
           )}
-          <h2 className={titleClass + " text-3xl font-light tracking-tight sm:text-4xl"}>{title}</h2>
+          <h2 className={titleClass + " text-3xl tracking-tight sm:text-4xl"}>{title}</h2>
           <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
         </div>
       </FadeIn>
@@ -214,7 +214,7 @@ function Home() {
       ) : (
         <>
           {/* CERIMÔNIA */}
-          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title} titleClass="font-sora">
+          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title} titleClass="font-sora font-bold">
             <FadeIn delay={0.1}>
               <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
                 <Countdown />
