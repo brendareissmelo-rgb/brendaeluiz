@@ -61,7 +61,7 @@ function ManualAccordion({ manuals }: { manuals: Manual[] }) {
                 className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
               >
                 <span>
-                  <span className="block font-serif text-lg">{m.title}</span>
+                  <span className="block font-sora text-lg">{m.title}</span>
                   {m.subtitle && (
                     <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
                   )}
@@ -231,7 +231,7 @@ function Home() {
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Data e hora</div>
-                      <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.dateLabel}</div>
+                      <div className="mt-1.5 font-sora text-xl leading-snug">{c.ceremony.dateLabel}</div>
                       <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
                     </div>
                   </div>
@@ -247,7 +247,7 @@ function Home() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Local</div>
-                      <div className="mt-1.5 font-serif text-xl font-light leading-snug">{c.ceremony.venue}</div>
+                      <div className="mt-1.5 font-sora text-xl leading-snug">{c.ceremony.venue}</div>
                       <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
                       <a
                         href={c.ceremony.mapsUrl}

@@ -77,7 +77,7 @@ export function NavBar({ items, className }: NavBarProps) {
               hash={item.url.startsWith("#") ? item.url.slice(1) : undefined}
               onClick={handleClick(item)}
               className={cn(
-                "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:py-2 sm:text-sm",
+                "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 font-sora text-xs font-normal transition-colors sm:px-4 sm:py-2 sm:text-sm",
                 item.highlighted
                   ? "text-primary drop-shadow-[0_0_10px_var(--color-primary)] hover:text-primary"
                   : "text-muted-foreground hover:text-foreground",
