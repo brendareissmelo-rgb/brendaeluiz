@@ -34,7 +34,7 @@ function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-s
           {eyebrow && (
             <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{eyebrow}</div>
           )}
-          <h2 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">{title}</h2>
+          <h2 className={titleClass + " text-3xl font-light tracking-tight sm:text-4xl"}>{title}</h2>
           <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
         </div>
       </FadeIn>
@@ -214,7 +214,7 @@ function Home() {
       ) : (
         <>
           {/* CERIMÔNIA */}
-          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
+          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title} titleClass="font-sora">
             <FadeIn delay={0.1}>
               <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
                 <Countdown />
