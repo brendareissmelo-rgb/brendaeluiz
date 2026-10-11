@@ -223,42 +223,52 @@ function Home() {
 
             <StaggerContainer className="grid gap-5 sm:grid-cols-2" staggerDelay={0.12}>
               <StaggerItem>
-                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
-                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-                  <div className="relative flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-                      <CalendarDays className="h-5 w-5" />
+                <div className="group relative flex h-[300px] flex-col justify-end overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_18px_40px_-18px_rgba(0,0,0,0.7)]">
+                  <img
+                    src={datePhoto.url}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
+                  <div className="absolute inset-0 shadow-[inset_0_0_48px_rgba(0,0,0,0.45)]" />
+                  <div className="relative p-6">
+                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-primary/15 text-primary backdrop-blur-sm">
+                      <CalendarDays className="h-4 w-4" />
                     </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Data e hora</div>
-                      <div className="mt-1.5 font-sora text-xl leading-snug">{c.ceremony.dateLabel}</div>
-                      <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
-                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-primary">Data e hora</div>
+                    <div className="mt-1.5 font-sora text-xl leading-snug text-foreground">{c.ceremony.dateLabel}</div>
+                    <div className="mt-1 font-helvetica text-sm text-muted-foreground">{c.ceremony.timeLabel}</div>
                   </div>
                 </div>
               </StaggerItem>
 
               <StaggerItem>
-                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6">
-                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-                  <div className="relative flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-                      <MapPin className="h-5 w-5" />
+                <div className="group relative flex h-[300px] flex-col justify-end overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_18px_40px_-18px_rgba(0,0,0,0.7)]">
+                  <img
+                    src={venuePhoto.url}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
+                  <div className="absolute inset-0 shadow-[inset_0_0_48px_rgba(0,0,0,0.45)]" />
+                  <div className="relative p-6">
+                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-primary/40 bg-primary/15 text-primary backdrop-blur-sm">
+                      <MapPin className="h-4 w-4" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Local</div>
-                      <div className="mt-1.5 font-sora text-xl leading-snug">{c.ceremony.venue}</div>
-                      <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
-                      <a
-                        href={c.ceremony.mapsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group/btn mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-medium tracking-wide text-primary transition hover:bg-primary hover:text-primary-foreground"
-                      >
-                        Ver no mapa
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                      </a>
-                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.25em] text-primary">Local</div>
+                    <div className="mt-1.5 font-sora text-xl leading-snug text-foreground">{c.ceremony.venue}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">{c.ceremony.address}</div>
+                    <a
+                      href={c.ceremony.mapsUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group/btn mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-2 text-xs font-medium tracking-wide text-primary backdrop-blur-sm transition hover:bg-primary hover:text-primary-foreground"
+                    >
+                      Ver no mapa
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+                    </a>
                   </div>
                 </div>
               </StaggerItem>
