@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-serif font-light" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
+function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-sora font-bold" }: { id: string; eyebrow?: string; title: string; children: React.ReactNode; delay?: number; titleClass?: string }) {
   return (
     <section id={id} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-16 sm:py-20">
       <FadeIn delay={delay}>
@@ -214,7 +214,7 @@ function Home() {
       ) : (
         <>
           {/* CERIMÔNIA */}
-          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title} titleClass="font-sora font-bold">
+          <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
             <FadeIn delay={0.1}>
               <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
                 <Countdown />
