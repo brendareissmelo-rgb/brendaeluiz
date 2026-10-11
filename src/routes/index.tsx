@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { ChevronDown, CalendarDays, MapPin, ArrowRight } from "lucide-react";
 
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
+import datePhoto from "@/assets/ceremony-date.png.asset.json";
+import venuePhoto from "@/assets/ceremony-venue.png.asset.json";
 import { Countdown } from "@/components/countdown";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
