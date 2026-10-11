@@ -12,6 +12,10 @@
   font-family: "Gotham", "Montserrat", sans-serif;
 }
 
+@utility font-sora {
+  font-family: "Sora", ui-sans-serif, sans-serif;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
