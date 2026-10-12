@@ -225,7 +225,7 @@ function Home() {
 
             <StaggerContainer className="grid gap-5 sm:grid-cols-2" staggerDelay={0.12}>
               <StaggerItem>
-                <div className="group relative h-[300px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)]">
+                <div className="group relative h-[190px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:h-[300px]">
                   <img
                     src={datePhoto.url}
                     alt=""
@@ -234,19 +234,25 @@ function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 via-40% to-transparent to-85%" />
                   <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]" />
-                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-background backdrop-blur-sm">
+                  <div className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-white backdrop-blur-sm sm:left-6 sm:top-6 sm:h-9 sm:w-9">
                     <CalendarDays className="h-4 w-4" />
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 p-6">
-                    <div className="text-[11px] font-medium uppercase tracking-[0.25em] text-primary">Data e hora</div>
-                    <div className="mt-1.5 font-sora text-xl leading-snug text-background">{c.ceremony.dateLabel}</div>
-                    <div className="mt-1 font-helvetica text-sm text-background/75">{c.ceremony.timeLabel}</div>
+                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
+                    <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white sm:text-[11px] sm:tracking-[0.25em]">
+                      Data e hora
+                    </div>
+                    <div className="mt-1 font-sora text-base leading-snug text-white sm:mt-1.5 sm:text-xl">
+                      {c.ceremony.dateLabel}
+                    </div>
+                    <div className="mt-1 font-helvetica text-xs text-white/80 sm:text-sm">
+                      {c.ceremony.timeLabel}
+                    </div>
                   </div>
                 </div>
               </StaggerItem>
 
               <StaggerItem>
-                <div className="group relative h-[300px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)]">
+                <div className="group relative h-[190px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:h-[300px]">
                   <img
                     src={venuePhoto.url}
                     alt=""
@@ -255,22 +261,28 @@ function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 via-40% to-transparent to-85%" />
                   <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]" />
-                  <div className="absolute left-6 top-6 flex h-9 w-9 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-background backdrop-blur-sm">
+                  <div className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-white backdrop-blur-sm sm:left-6 sm:top-6 sm:h-9 sm:w-9">
                     <MapPin className="h-4 w-4" />
                   </div>
                   <a
                     href={c.ceremony.mapsUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="group/btn absolute right-6 top-6 inline-flex items-center gap-2 rounded-full border border-background/25 bg-foreground/35 px-4 py-2 text-xs font-medium tracking-wide text-background backdrop-blur-sm transition hover:bg-background hover:text-foreground"
+                    className="group/btn absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-background/25 bg-foreground/35 px-3 py-1.5 text-[11px] font-medium tracking-wide text-white backdrop-blur-sm transition hover:bg-background hover:text-foreground sm:right-6 sm:top-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
                   >
                     Ver no mapa
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                   </a>
-                  <div className="absolute inset-x-0 bottom-0 p-6">
-                    <div className="text-[11px] font-medium uppercase tracking-[0.25em] text-primary">Local</div>
-                    <div className="mt-1.5 font-sora text-xl leading-snug text-background">{c.ceremony.venue}</div>
-                    <div className="mt-1 font-helvetica text-sm text-background/75">{c.ceremony.address}</div>
+                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
+                    <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white sm:text-[11px] sm:tracking-[0.25em]">
+                      Local
+                    </div>
+                    <div className="mt-1 font-sora text-base leading-snug text-white sm:mt-1.5 sm:text-xl">
+                      {c.ceremony.venue}
+                    </div>
+                    <div className="mt-1 font-helvetica text-xs text-white/80 sm:text-sm">
+                      {c.ceremony.address}
+                    </div>
                   </div>
                 </div>
               </StaggerItem>
