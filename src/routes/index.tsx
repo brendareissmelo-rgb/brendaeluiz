@@ -50,27 +50,44 @@ function Section({ id, eyebrow, title, children, delay = 0, titleClass = "font-s
 function ManualAccordion({ manuals }: { manuals: Manual[] }) {
   const [open, setOpen] = useState<string | null>(null);
   return (
-    <StaggerContainer className="mx-auto max-w-3xl space-y-3" staggerDelay={0.08}>
+    <StaggerContainer className="mx-auto max-w-3xl space-y-5" staggerDelay={0.08}>
       {manuals.map((m) => {
         const isOpen = open === m.id;
         return (
           <StaggerItem key={m.id}>
-            <div className="overflow-hidden rounded-lg border border-border/60 bg-card">
+            <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)]">
               <button
                 type="button"
                 onClick={() => setOpen(isOpen ? null : m.id)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-accent/40"
+                className="group relative block h-[190px] w-full text-left sm:h-[300px]"
               >
-                <span>
-                  <span className="block font-sora text-lg">{m.title}</span>
+                {m.image && (
+                  <img
+                    src={m.image}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/55 via-40% to-transparent to-85%" />
+                <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.2)]" />
+                <span className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-xl border border-background/25 bg-foreground/35 text-white backdrop-blur-sm sm:right-6 sm:top-6 sm:h-9 sm:w-9">
+                  <ChevronDown className={"h-4 w-4 transition-transform " + (isOpen ? "rotate-180" : "")} />
+                </span>
+                <span className="absolute inset-x-0 bottom-0 block p-4 sm:p-6">
+                  <span className="block text-[10px] font-medium uppercase tracking-[0.22em] text-white sm:text-[11px] sm:tracking-[0.25em]">
+                    Manual
+                  </span>
+                  <span className="mt-1 block font-sora text-base font-bold leading-snug text-white sm:mt-1.5 sm:text-xl">
+                    {m.title}
+                  </span>
                   {m.subtitle && (
-                    <span className="mt-0.5 block text-xs text-muted-foreground">{m.subtitle}</span>
+                    <span className="mt-1 block font-helvetica text-xs text-white/80 sm:text-sm">
+                      {m.subtitle}
+                    </span>
                   )}
                 </span>
-                <ChevronDown
-                  className={"h-4 w-4 shrink-0 text-primary transition-transform " + (isOpen ? "rotate-180" : "")}
-                />
               </button>
               {isOpen && (
                 <ol className="space-y-3 border-t border-border/60 px-5 py-5">
