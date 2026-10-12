@@ -312,6 +312,16 @@ function SiteEditor() {
               </Field>
             </div>
             <div className="mt-4">
+              <Field label="Imagem do card (URL)">
+                <Input
+                  className="h-9 text-sm"
+                  value={m.image ?? ""}
+                  placeholder="https://..."
+                  onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, image: e.target.value } : x)) })}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
               <div className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Tópicos</div>
               <StringList
                 multiline
