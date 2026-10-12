@@ -155,19 +155,6 @@ function HomeSkeleton() {
         </div>
       </section>
 
-      {/* Pré-wedding skeleton */}
-      <section className="space-y-8">
-        <div className="mb-10 space-y-3 text-center">
-          <Skeleton className="mx-auto h-3 w-24" />
-          <Skeleton className="mx-auto h-9 w-56" />
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} className="aspect-[3/4] w-full rounded-md" />
-          ))}
-        </div>
-      </section>
-
       {/* Presente skeleton */}
       <section className="space-y-8">
         <div className="mb-10 space-y-3 text-center">
@@ -327,20 +314,6 @@ function Home() {
           {/* MANUAIS */}
           <Section id="manual" eyebrow={c.manuals.eyebrow} title={c.manuals.title}>
             <ManualAccordion manuals={c.manuals.list} />
-          </Section>
-
-          {/* PRÉ-WEDDING */}
-          <Section id="prewedding" eyebrow={c.prewedding.eyebrow} title={c.prewedding.title}>
-            <StaggerContainer className="grid grid-cols-2 gap-3 sm:grid-cols-4" staggerDelay={0.08}>
-              {c.prewedding.photos.map((url, i) => (
-                <StaggerItem key={i}>
-                  <div className="group relative aspect-[3/4] overflow-hidden rounded-md">
-                    <img src={url} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/25" />
-                  </div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
           </Section>
 
           {/* PRESENTE / PIX */}
