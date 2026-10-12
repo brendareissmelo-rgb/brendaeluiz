@@ -68,7 +68,7 @@ export type PreWedding = {
   photos: string[];
 };
 
-export type Manual = { id: string; title: string; subtitle: string; items: string[] };
+export type Manual = { id: string; title: string; subtitle: string; image?: string; items: string[] };
 export type Manuals = { eyebrow: string; title: string; list: Manual[] };
 
 export type SiteContent = {
@@ -118,6 +118,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "convidado",
         title: "Manual do Convidado",
         subtitle: "Orientações para todos que estarão conosco",
+        image: foto17.url,
         items: [
           "Evite usar o celular durante a entrada do noivo, da noiva e dos familiares — este é o momento do fotógrafo. Você poderá fazer seus registros logo em seguida.",
           "Evite conversas paralelas durante a cerimônia. Cada palavra faz parte do nosso momento.",
@@ -130,6 +131,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "familia",
         title: "Manual da Família",
         subtitle: "Para pais, irmãos e familiares próximos",
+        image: foto18.url,
         items: [
           "Cheguem com 40 minutos de antecedência para as fotos de família antes da cerimônia.",
           "Os lugares das primeiras fileiras estarão reservados para os familiares.",
@@ -141,6 +143,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         id: "padrinhos",
         title: "Manual do Padrinho e Madrinha",
         subtitle: "Para quem caminha ao nosso lado",
+        image: foto20.url,
         items: [
           "Chegada às 16h00 para organização das entradas e fotos prévias.",
           "As entradas serão em duplas, na ordem combinada com a cerimonialista.",
