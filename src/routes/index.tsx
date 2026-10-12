@@ -194,7 +194,7 @@ function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
         <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 text-center text-white">
           <FadeIn delay={0.2} direction="up">
-            <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">Casamento de</div>
+            <div className="text-[11px] uppercase tracking-[0.4em] text-white/80">VOCÊ FOI CONVIDADO(A)<br />PARA O CASAMENTO DE</div>
           </FadeIn>
           <FadeIn delay={0.4} direction="up">
             <h1 className="mt-3 font-serif text-5xl font-light tracking-tight sm:text-7xl">
