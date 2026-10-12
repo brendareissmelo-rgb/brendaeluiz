@@ -241,7 +241,7 @@ function Home() {
                     <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white sm:text-[11px] sm:tracking-[0.25em]">
                       Data e hora
                     </div>
-                    <div className="mt-1 font-sora text-base leading-snug text-white sm:mt-1.5 sm:text-xl">
+                    <div className="mt-1 font-sora text-base font-bold leading-snug text-white sm:mt-1.5 sm:text-xl">
                       {c.ceremony.dateLabel}
                     </div>
                     <div className="mt-1 font-helvetica text-xs text-white/80 sm:text-sm">
@@ -277,7 +277,7 @@ function Home() {
                     <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white sm:text-[11px] sm:tracking-[0.25em]">
                       Local
                     </div>
-                    <div className="mt-1 font-sora text-base leading-snug text-white sm:mt-1.5 sm:text-xl">
+                    <div className="mt-1 font-sora text-base font-bold leading-snug text-white sm:mt-1.5 sm:text-xl">
                       {c.ceremony.venue}
                     </div>
                     <div className="mt-1 font-helvetica text-xs text-white/80 sm:text-sm">
