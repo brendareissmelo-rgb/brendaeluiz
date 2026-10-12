@@ -29,10 +29,10 @@ export function SiteNav() {
   }, []);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-5 sm:bottom-auto sm:h-0 sm:py-0">
+    <nav className="fixed top-3 left-0 right-0 z-50 px-3 py-2 sm:sticky sm:top-5 sm:bottom-auto sm:h-0 sm:py-0">
       <div
         className={`mx-auto flex max-w-5xl items-center justify-center transition-transform duration-300 ${
-          hidden ? "sm:-translate-y-[180%]" : "sm:translate-y-0"
+          hidden ? "-translate-y-[200%]" : "translate-y-0"
         }`}
       >
         <NavBar items={navItems} />
@@ -43,7 +43,7 @@ export function SiteNav() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/60 bg-card/30 pb-16 sm:pb-0">
+    <footer className="border-t border-border/60 bg-card/30">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-5 py-10 text-center">
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
           Obrigado por fazer parte deste momento tão especial das nossas vidas. A presença de vocês
