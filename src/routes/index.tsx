@@ -118,7 +118,6 @@ function HomeSkeleton() {
           <Skeleton className="mx-auto h-3 w-24" />
           <Skeleton className="mx-auto h-9 w-56" />
         </div>
-        <Skeleton className="mx-auto h-28 w-full max-w-md rounded-2xl" />
         <div className="grid gap-5 sm:grid-cols-2">
           <Skeleton className="h-48 w-full rounded-2xl" />
           <Skeleton className="h-48 w-full rounded-2xl" />
@@ -212,6 +211,11 @@ function Home() {
               <span>Belém · PA</span>
             </div>
           </FadeIn>
+          <FadeIn delay={0.8} direction="up">
+            <div className="mt-8 border-t border-white/20 px-6 pt-6 sm:mt-10">
+              <Countdown />
+            </div>
+          </FadeIn>
         </div>
       </header>
 
@@ -221,12 +225,6 @@ function Home() {
         <>
           {/* CERIMÔNIA */}
           <Section id="cerimonia" eyebrow={c.ceremony.eyebrow} title={c.ceremony.title}>
-            <FadeIn delay={0.1}>
-              <div className="mx-auto mb-10 flex justify-center rounded-2xl border border-border/60 bg-card/70 px-6 py-7 backdrop-blur sm:w-fit">
-                <Countdown />
-              </div>
-            </FadeIn>
-
             <StaggerContainer className="grid gap-5 sm:grid-cols-2" staggerDelay={0.12}>
               <StaggerItem>
                 <div className="group relative h-[190px] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:h-[300px]">
