@@ -36,7 +36,7 @@ function SectionTitle({ eyebrow, title, note }: { eyebrow: string; title: string
   return (
     <div className="mb-6">
       <div className="text-[11px] uppercase tracking-[0.25em] text-primary">{eyebrow}</div>
-      <h2 className="mt-1 font-serif text-2xl font-light tracking-tight sm:text-[28px]">{title}</h2>
+      <h2 className="mt-1 font-sora text-2xl font-bold tracking-tight sm:text-[28px]">{title}</h2>
       {note ? <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{note}</p> : null}
     </div>
   );
@@ -142,7 +142,7 @@ function DresscodePage() {
       <main className="mx-auto max-w-5xl px-5 pb-14 pt-28">
         <div className="mb-10 text-center">
           <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{c.eyebrow}</div>
-          <h1 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">{c.title}</h1>
+          <h1 className="font-sora text-3xl font-bold tracking-tight sm:text-4xl">{c.title}</h1>
           <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
           <p className="mx-auto mt-5 max-w-2xl text-sm text-muted-foreground">{c.intro}</p>
         </div>
