@@ -56,15 +56,15 @@ const TABLES: { id: number; guests: string[] }[] = [
   {
     id: 3,
     guests: [
-      "Brubs",
+"Brubs",
       "Maria Rita",
       "Verônica Souza",
       "Ana Reis (Avó da Noiva)",
       "Milena Reis",
       "Andrei Souza",
       "Naza Melo",
-      "Ronildo",
-      "Joelma",
+      "Erica",
+      "Pedro",
     ],
   },
   {
@@ -83,12 +83,12 @@ const TABLES: { id: number; guests: string[] }[] = [
   {
     id: 5,
     guests: [
-      "Jonatha David",
+"Jonatha David",
       "Dayane Lobo",
       "Isaac Lobo",
       "Carol Barros",
-      "Silvia",
-      "Bené (Avô da Noiva)",
+      "Ronildo",
+      "Joelma",
       "Carina Leray",
     ],
   },
