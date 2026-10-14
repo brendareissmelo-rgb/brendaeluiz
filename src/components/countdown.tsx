@@ -33,10 +33,10 @@ export function Countdown() {
     <div className="flex items-center gap-3 sm:gap-5">
       {parts.map((p) => (
         <div key={p.l} className="flex min-w-14 flex-col items-center">
-          <span className="font-helvetica text-3xl font-bold tabular-nums sm:text-4xl">
+          <span className="font-serif text-3xl font-light tabular-nums sm:text-4xl">
             {p.v === undefined || p.v === null ? "--" : String(p.v).padStart(2, "0")}
           </span>
-          <span className="mt-1 text-[10px] uppercase tracking-[0.25em] opacity-70">{p.l}</span>
+          <span className="mt-1 text-[10px] uppercase tracking-[0.25em] opacity-90">{p.l}</span>
         </div>
       ))}
     </div>
