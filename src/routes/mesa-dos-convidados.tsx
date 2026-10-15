@@ -59,9 +59,10 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
         <span className="relative font-sora text-[11px] font-bold leading-none tracking-wide text-gold-900 sm:text-sm">
           Mesa {id}
         </span>
-        <span className="relative mt-1 text-[9px] leading-none text-gold-900/75 sm:text-[10px]">
+        <span className="relative mt-1 text-[9px] font-medium leading-none text-gold-900/85 sm:text-[10px]">
           {n} cadeiras
         </span>
+
       </div>
 
       {guests.map((g, i) => {
@@ -94,9 +95,10 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
                 {g.name}
               </span>
               {g.relation ? (
-                <span className="mt-0.5 block text-[8px] uppercase tracking-[0.08em] text-gold-600 sm:text-[9px]">
+                <span className="mt-0.5 block text-[8px] font-medium uppercase tracking-[0.08em] text-gold-700 sm:text-[9px]">
                   {g.relation}
                 </span>
+
               ) : null}
             </span>
           </div>
