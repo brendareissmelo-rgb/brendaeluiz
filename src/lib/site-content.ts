@@ -71,12 +71,16 @@ export type PreWedding = {
 export type Manual = { id: string; title: string; subtitle: string; image?: string; items: string[] };
 export type Manuals = { eyebrow: string; title: string; list: Manual[] };
 
+export type GuestTable = { id: number; guests: string[] };
+export type Tables = { eyebrow: string; title: string; list: GuestTable[] };
+
 export type SiteContent = {
   ceremony: Ceremony;
   dresscode: Dresscode;
   manuals: Manuals;
   gift: GiftSection;
   prewedding: PreWedding;
+  tables: Tables;
 };
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -167,6 +171,77 @@ export const DEFAULT_CONTENT: SiteContent = {
     title: "Pré-Wedding",
     photos: [foto17.url, foto18.url, foto20.url, foto11.url],
   },
+  tables: {
+    eyebrow: "Recepção",
+    title: "Mesa dos Convidados",
+    list: [
+      {
+        id: 1,
+        guests: [
+          "Manoel Gomes (Pai do Noivo)",
+          "Maria do Socorro (Mãe do Noivo)",
+          "João Souza",
+          "Mirian Souza (Mãe da Noiva)",
+          "Suzete Lopes (Avó da Noiva)",
+          "Rayla Cristina",
+          "Alberto Melo (Pai da Noiva)",
+          "Gabrielly Cristina",
+        ],
+      },
+      {
+        id: 2,
+        guests: [
+          "Thaline Costa (Madrinha)",
+          "Henrique",
+          "Cássia Costa",
+          "Antony Gabriel",
+          "Marluce Silva",
+          "Paloma Silva",
+          "Sandro Gaia",
+          "Cybelle Botelho",
+        ],
+      },
+      {
+        id: 3,
+        guests: [
+          "Brubs",
+          "Maria Rita",
+          "Verônica Souza",
+          "Ana Reis (Avó da Noiva)",
+          "Milena Reis",
+          "Andrei Souza",
+          "Naza Melo",
+          "Erica",
+          "Pedro",
+        ],
+      },
+      {
+        id: 4,
+        guests: [
+          "Renan Carvalho (Padrinho)",
+          "Lirian Barros",
+          "Sumano",
+          "Mocotó",
+          "Alan Rendrix",
+          "Laura Couto",
+          "Luiz Horizonte (Noivo)",
+          "Brenda Melo (Noiva)",
+        ],
+      },
+      {
+        id: 5,
+        guests: [
+          "Jonatha David",
+          "Dayane Lobo",
+          "Isaac Lobo",
+          "Carol Barros",
+          "Ronildo",
+          "Joelma",
+          "Carina Leray",
+        ],
+      },
+    ],
+  },
 };
 
 export const HERO_IMAGE = capa.url;
@@ -195,6 +270,7 @@ export function useSiteContent() {
         manuals: merge(DEFAULT_CONTENT.manuals, map.get("manuals")),
         gift: merge(DEFAULT_CONTENT.gift, map.get("gift")),
         prewedding: merge(DEFAULT_CONTENT.prewedding, map.get("prewedding")),
+        tables: merge(DEFAULT_CONTENT.tables, map.get("tables")),
       };
     },
   });

@@ -5,6 +5,7 @@ import { Users } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSiteContent, type GuestTable } from "@/lib/site-content";
 
 export const Route = createFileRoute("/mesa-dos-convidados")({
   head: () => ({
@@ -25,74 +26,6 @@ export const Route = createFileRoute("/mesa-dos-convidados")({
   }),
   component: MesaPage,
 });
-
-const TABLES: { id: number; guests: string[] }[] = [
-  {
-    id: 1,
-    guests: [
-      "Manoel Gomes (Pai do Noivo)",
-      "Maria do Socorro (Mãe do Noivo)",
-      "João Souza",
-      "Mirian Souza (Mãe da Noiva)",
-      "Suzete Lopes (Avó da Noiva)",
-      "Rayla Cristina",
-      "Alberto Melo (Pai da Noiva)",
-      "Gabrielly Cristina",
-    ],
-  },
-  {
-    id: 2,
-    guests: [
-      "Thaline Costa (Madrinha)",
-      "Henrique",
-      "Cássia Costa",
-      "Antony Gabriel",
-      "Marluce Silva",
-      "Paloma Silva",
-      "Sandro Gaia",
-      "Cybelle Botelho",
-    ],
-  },
-  {
-    id: 3,
-    guests: [
-"Brubs",
-      "Maria Rita",
-      "Verônica Souza",
-      "Ana Reis (Avó da Noiva)",
-      "Milena Reis",
-      "Andrei Souza",
-      "Naza Melo",
-      "Erica",
-      "Pedro",
-    ],
-  },
-  {
-    id: 4,
-    guests: [
-      "Renan Carvalho (Padrinho)",
-      "Lirian Barros",
-      "Sumano",
-      "Mocotó",
-      "Alan Rendrix",
-      "Laura Couto",
-      "Luiz Horizonte (Noivo)",
-      "Brenda Melo (Noiva)",
-    ],
-  },
-  {
-    id: 5,
-    guests: [
-"Jonatha David",
-      "Dayane Lobo",
-      "Isaac Lobo",
-      "Carol Barros",
-      "Ronildo",
-      "Joelma",
-      "Carina Leray",
-    ],
-  },
-];
 
 type Guest = { name: string; relation?: string };
 
@@ -167,7 +100,7 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
   );
 }
 
-function TableCard({ table }: { table: { id: number; guests: string[] } }) {
+function TableCard({ table }: { table: GuestTable }) {
   const guests = table.guests.map(parseGuest);
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:p-7">
@@ -186,14 +119,17 @@ function TableCard({ table }: { table: { id: number; guests: string[] } }) {
 }
 
 function MesaPage() {
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useSiteContent();
+  const [minWait, setMinWait] = useState(true);
 
   useEffect(() => {
-    const id = setTimeout(() => setLoading(false), 450);
+    const id = setTimeout(() => setMinWait(false), 450);
     return () => clearTimeout(id);
   }, []);
 
-  const totalGuests = TABLES.reduce((sum, t) => sum + t.guests.length, 0);
+  const tables = data?.tables.list ?? [];
+  const loading = isLoading || minWait;
+  const totalGuests = tables.reduce((sum, t) => sum + t.guests.length, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -202,10 +138,10 @@ function MesaPage() {
         <FadeIn>
           <div className="mb-10 text-center">
             <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">
-              Recepção
+              {data?.tables.eyebrow ?? "Recepção"}
             </div>
             <h1 className="font-sora text-3xl font-bold tracking-tight sm:text-4xl">
-              Mesa dos Convidados
+              {data?.tables.title ?? "Mesa dos Convidados"}
             </h1>
             <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
             <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
@@ -214,7 +150,7 @@ function MesaPage() {
             </p>
             <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs text-muted-foreground">
               <Users className="h-3.5 w-3.5 text-primary" />
-              {totalGuests} convidados distribuídos em {TABLES.length} mesas
+              {totalGuests} convidados distribuídos em {tables.length} mesas
             </div>
           </div>
         </FadeIn>
@@ -227,7 +163,7 @@ function MesaPage() {
           </div>
         ) : (
           <StaggerContainer className="space-y-6" staggerDelay={0.08}>
-            {TABLES.map((t) => (
+            {tables.map((t) => (
               <StaggerItem key={t.id}>
                 <TableCard table={t} />
               </StaggerItem>
