@@ -110,13 +110,13 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
 function TableCard({ table }: { table: GuestTable }) {
   const guests = table.guests.map(parseGuest);
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:p-7">
+    <div className="card-warm rounded-2xl border border-gold-300/70 p-5 shadow-[0_18px_44px_-20px_var(--gold-600)] sm:p-7">
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="font-sora text-base font-bold tracking-tight text-foreground sm:text-lg">
           Mesa {table.id}
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
-          <Users className="h-3 w-3 text-primary" />
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-300 bg-gold-100/70 px-3 py-1 text-[11px] text-gold-800">
+          <Users className="h-3 w-3 text-gold-600" />
           {table.guests.length} convidados
         </span>
       </div>
@@ -124,6 +124,7 @@ function TableCard({ table }: { table: GuestTable }) {
     </div>
   );
 }
+
 
 function MesaPage() {
   const { data, isLoading } = useSiteContent();
@@ -144,21 +145,22 @@ function MesaPage() {
       <main className="mx-auto max-w-3xl px-5 pb-14 pt-28">
         <FadeIn>
           <div className="mb-10 text-center">
-            <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">
+            <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-gold-600">
               {data?.tables.eyebrow ?? "Recepção"}
             </div>
             <h1 className="font-sora text-3xl font-bold tracking-tight sm:text-4xl">
               {data?.tables.title ?? "Mesa dos Convidados"}
             </h1>
-            <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
+            <div className="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
             <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
               Cada cadeira ao redor da mesa é um convidado. Toque no nome da mesa para saber quem
               senta com você.
             </p>
-            <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs text-muted-foreground">
-              <Users className="h-3.5 w-3.5 text-primary" />
+            <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-100/70 px-4 py-1.5 text-xs text-gold-800">
+              <Users className="h-3.5 w-3.5 text-gold-600" />
               {totalGuests} convidados distribuídos em {tables.length} mesas
             </div>
+
           </div>
         </FadeIn>
 
