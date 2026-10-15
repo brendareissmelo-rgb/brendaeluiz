@@ -5,6 +5,7 @@ import { Users } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSiteContent, type GuestTable } from "@/lib/site-content";
 
 export const Route = createFileRoute("/mesa-dos-convidados")({
   head: () => ({
