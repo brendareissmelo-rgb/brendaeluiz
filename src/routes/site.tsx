@@ -17,6 +17,7 @@ import {
   type GiftSection,
   type Manuals,
   type PreWedding,
+  type Tables,
 } from "@/lib/site-content";
 
 export const Route = createFileRoute("/site")({

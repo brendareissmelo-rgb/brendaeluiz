@@ -138,10 +138,10 @@ function MesaPage() {
         <FadeIn>
           <div className="mb-10 text-center">
             <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">
-              Recepção
+              {data?.tables.eyebrow ?? "Recepção"}
             </div>
             <h1 className="font-sora text-3xl font-bold tracking-tight sm:text-4xl">
-              Mesa dos Convidados
+              {data?.tables.title ?? "Mesa dos Convidados"}
             </h1>
             <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
             <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
