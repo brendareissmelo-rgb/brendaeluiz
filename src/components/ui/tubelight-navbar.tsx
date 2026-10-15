@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -21,6 +21,7 @@ interface NavBarProps {
 export function NavBar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0]?.name ?? "")
   const [isMobile, setIsMobile] = useState(false)
+  const navigate = useNavigate()
   const path = useRouterState({ select: (state) => state.location.pathname })
   const hash = useRouterState({ select: (state) => state.location.hash })
 
@@ -55,6 +56,19 @@ export function NavBar({ items, className }: NavBarProps) {
       }
       const element = document.getElementById(item.url.slice(1))
       element?.scrollIntoView({ behavior: "smooth", block: "start" })
+      return
+    }
+    // "Início" sempre leva ao topo do site, mesmo se a pessoa já estiver na home
+    if (item.url === "/") {
+      e.preventDefault()
+      if (path !== "/") {
+        void navigate({ to: "/" }).then(() => window.scrollTo({ top: 0 }))
+      } else {
+        if (hash) {
+          void navigate({ to: "/" })
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      }
     }
   }
 
@@ -103,4 +117,3 @@ export function NavBar({ items, className }: NavBarProps) {
     </div>
   )
 }
-
