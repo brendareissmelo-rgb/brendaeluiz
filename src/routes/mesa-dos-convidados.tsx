@@ -150,7 +150,7 @@ function MesaPage() {
             </p>
             <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs text-muted-foreground">
               <Users className="h-3.5 w-3.5 text-primary" />
-              {totalGuests} convidados distribuídos em {TABLES.length} mesas
+              {totalGuests} convidados distribuídos em {tables.length} mesas
             </div>
           </div>
         </FadeIn>
@@ -163,7 +163,7 @@ function MesaPage() {
           </div>
         ) : (
           <StaggerContainer className="space-y-6" staggerDelay={0.08}>
-            {TABLES.map((t) => (
+            {tables.map((t) => (
               <StaggerItem key={t.id}>
                 <TableCard table={t} />
               </StaggerItem>
