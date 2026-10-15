@@ -45,15 +45,21 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[460px] [--rc:21%] [--rn:36%] sm:[--rc:23%] sm:[--rn:39%]">
+      {/* Halo dourado atrás da planta */}
+      <div className="table-halo absolute -inset-[6%] rounded-full" />
+
       {/* Anel pontilhado onde as cadeiras se apoiam */}
-      <div className="absolute left-1/2 top-1/2 h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-border/70 sm:h-[46%] sm:w-[46%]" />
+      <div className="absolute left-1/2 top-1/2 h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-gold-400/80 sm:h-[46%] sm:w-[46%]" />
+      {/* Anel externo do salão */}
+      <div className="absolute left-1/2 top-1/2 h-[56%] w-[56%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-300/60 sm:h-[60%] sm:w-[60%]" />
 
       {/* Mesa */}
-      <div className="absolute left-1/2 top-1/2 flex h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-center sm:h-[32%] sm:w-[32%]">
-        <span className="font-sora text-[11px] font-bold leading-none tracking-wide text-primary sm:text-sm">
+      <div className="table-surface absolute left-1/2 top-1/2 flex h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center overflow-hidden rounded-full border border-gold-200/80 text-center shadow-[0_18px_38px_-14px_var(--gold-700)] sm:h-[32%] sm:w-[32%]">
+        <div className="table-shine pointer-events-none absolute inset-0" />
+        <span className="relative font-sora text-[11px] font-bold leading-none tracking-wide text-gold-900 sm:text-sm">
           Mesa {id}
         </span>
-        <span className="mt-1 text-[9px] leading-none text-muted-foreground sm:text-[10px]">
+        <span className="relative mt-1 text-[9px] leading-none text-gold-900/75 sm:text-[10px]">
           {n} cadeiras
         </span>
       </div>
@@ -68,7 +74,7 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
           <div key={g.name}>
             {/* Cadeira */}
             <span
-              className="absolute h-[8px] w-[18px] rounded-full border border-primary/40 bg-primary/25 sm:h-[10px] sm:w-[24px]"
+              className="chair-surface absolute h-[9px] w-[19px] rounded-full border border-gold-200 shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px]"
               style={{
                 left: `calc(50% + var(--rc) * ${c})`,
                 top: `calc(50% + var(--rc) * ${s})`,
@@ -84,11 +90,11 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <span className="block font-sora text-[9px] text-foreground/85 sm:text-[11px]">
+              <span className="block font-sora text-[9px] text-foreground sm:text-[11px]">
                 {g.name}
               </span>
               {g.relation ? (
-                <span className="mt-0.5 block text-[8px] uppercase tracking-[0.08em] text-primary/70 sm:text-[9px]">
+                <span className="mt-0.5 block text-[8px] uppercase tracking-[0.08em] text-gold-600 sm:text-[9px]">
                   {g.relation}
                 </span>
               ) : null}
@@ -98,6 +104,7 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
       })}
     </div>
   );
+
 }
 
 function TableCard({ table }: { table: GuestTable }) {
