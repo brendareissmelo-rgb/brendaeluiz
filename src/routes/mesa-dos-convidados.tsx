@@ -100,7 +100,7 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
   );
 }
 
-function TableCard({ table }: { table: { id: number; guests: string[] } }) {
+function TableCard({ table }: { table: GuestTable }) {
   const guests = table.guests.map(parseGuest);
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:p-7">
@@ -119,14 +119,17 @@ function TableCard({ table }: { table: { id: number; guests: string[] } }) {
 }
 
 function MesaPage() {
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useSiteContent();
+  const [minWait, setMinWait] = useState(true);
 
   useEffect(() => {
-    const id = setTimeout(() => setLoading(false), 450);
+    const id = setTimeout(() => setMinWait(false), 450);
     return () => clearTimeout(id);
   }, []);
 
-  const totalGuests = TABLES.reduce((sum, t) => sum + t.guests.length, 0);
+  const tables = data?.tables.list ?? [];
+  const loading = isLoading || minWait;
+  const totalGuests = tables.reduce((sum, t) => sum + t.guests.length, 0);
 
   return (
     <div className="min-h-screen bg-background">
