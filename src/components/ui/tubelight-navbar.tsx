@@ -85,7 +85,7 @@ export function NavBar({ items, className }: NavBarProps) {
               )}
             >
               <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              {!isMobile && <span>{item.name}</span>}
+              {(!isMobile || isActive) && <span>{item.name}</span>}
               {isActive && (
                 <motion.div
                   layoutId="tubelight-active"
