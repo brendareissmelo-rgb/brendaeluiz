@@ -45,17 +45,24 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[460px] [--rc:21%] [--rn:36%] sm:[--rc:23%] sm:[--rn:39%]">
+      {/* Halo dourado atrás da planta */}
+      <div className="table-halo absolute -inset-[6%] rounded-full" />
+
       {/* Anel pontilhado onde as cadeiras se apoiam */}
-      <div className="absolute left-1/2 top-1/2 h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-border/70 sm:h-[46%] sm:w-[46%]" />
+      <div className="absolute left-1/2 top-1/2 h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-gold-400/80 sm:h-[46%] sm:w-[46%]" />
+      {/* Anel externo do salão */}
+      <div className="absolute left-1/2 top-1/2 h-[56%] w-[56%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-300/60 sm:h-[60%] sm:w-[60%]" />
 
       {/* Mesa */}
-      <div className="absolute left-1/2 top-1/2 flex h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-center sm:h-[32%] sm:w-[32%]">
-        <span className="font-sora text-[11px] font-bold leading-none tracking-wide text-primary sm:text-sm">
+      <div className="table-surface absolute left-1/2 top-1/2 flex h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center overflow-hidden rounded-full border border-gold-200/80 text-center shadow-[0_18px_38px_-14px_var(--gold-700)] sm:h-[32%] sm:w-[32%]">
+        <div className="table-shine pointer-events-none absolute inset-0" />
+        <span className="relative font-sora text-[11px] font-bold leading-none tracking-wide text-gold-900 sm:text-sm">
           Mesa {id}
         </span>
-        <span className="mt-1 text-[9px] leading-none text-muted-foreground sm:text-[10px]">
+        <span className="relative mt-1 text-[9px] font-medium leading-none text-gold-900/85 sm:text-[10px]">
           {n} cadeiras
         </span>
+
       </div>
 
       {guests.map((g, i) => {
@@ -68,7 +75,7 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
           <div key={g.name}>
             {/* Cadeira */}
             <span
-              className="absolute h-[8px] w-[18px] rounded-full border border-primary/40 bg-primary/25 sm:h-[10px] sm:w-[24px]"
+              className="chair-surface absolute h-[9px] w-[19px] rounded-full border border-gold-200 shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px]"
               style={{
                 left: `calc(50% + var(--rc) * ${c})`,
                 top: `calc(50% + var(--rc) * ${s})`,
@@ -84,13 +91,14 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              <span className="block font-sora text-[9px] text-foreground/85 sm:text-[11px]">
+              <span className="block font-sora text-[9px] text-foreground sm:text-[11px]">
                 {g.name}
               </span>
               {g.relation ? (
-                <span className="mt-0.5 block text-[8px] uppercase tracking-[0.08em] text-primary/70 sm:text-[9px]">
+                <span className="mt-0.5 block text-[8px] font-medium uppercase tracking-[0.08em] text-gold-700 sm:text-[9px]">
                   {g.relation}
                 </span>
+
               ) : null}
             </span>
           </div>
@@ -98,18 +106,19 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
       })}
     </div>
   );
+
 }
 
 function TableCard({ table }: { table: GuestTable }) {
   const guests = table.guests.map(parseGuest);
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_16px_36px_-18px_rgba(0,0,0,0.35)] sm:p-7">
+    <div className="card-warm rounded-2xl border border-gold-300/70 p-5 shadow-[0_18px_44px_-20px_var(--gold-600)] sm:p-7">
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="font-sora text-base font-bold tracking-tight text-foreground sm:text-lg">
           Mesa {table.id}
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
-          <Users className="h-3 w-3 text-primary" />
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-300 bg-gold-100/70 px-3 py-1 text-[11px] text-gold-800">
+          <Users className="h-3 w-3 text-gold-600" />
           {table.guests.length} convidados
         </span>
       </div>
@@ -117,6 +126,7 @@ function TableCard({ table }: { table: GuestTable }) {
     </div>
   );
 }
+
 
 function MesaPage() {
   const { data, isLoading } = useSiteContent();
@@ -137,21 +147,22 @@ function MesaPage() {
       <main className="mx-auto max-w-3xl px-5 pb-14 pt-28">
         <FadeIn>
           <div className="mb-10 text-center">
-            <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">
+            <div className="mb-2 text-[11px] uppercase tracking-[0.25em] text-gold-600">
               {data?.tables.eyebrow ?? "Recepção"}
             </div>
             <h1 className="font-sora text-3xl font-bold tracking-tight sm:text-4xl">
               {data?.tables.title ?? "Mesa dos Convidados"}
             </h1>
-            <div className="mx-auto mt-4 h-px w-12 bg-primary/50" />
+            <div className="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
             <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
               Cada cadeira ao redor da mesa é um convidado. Toque no nome da mesa para saber quem
               senta com você.
             </p>
-            <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-1.5 text-xs text-muted-foreground">
-              <Users className="h-3.5 w-3.5 text-primary" />
+            <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-100/70 px-4 py-1.5 text-xs text-gold-800">
+              <Users className="h-3.5 w-3.5 text-gold-600" />
               {totalGuests} convidados distribuídos em {tables.length} mesas
             </div>
+
           </div>
         </FadeIn>
 

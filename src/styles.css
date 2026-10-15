@@ -16,6 +16,61 @@
   font-family: "Sora", ui-sans-serif, sans-serif;
 }
 
+/* Mesa dos convidados: superfícies douradas vivas (todas as cores vêm dos tokens) */
+@utility table-surface {
+  background-image: radial-gradient(
+    circle at 38% 28%,
+    var(--gold-400) 0%,
+    var(--gold-500) 48%,
+    var(--gold-700) 100%
+  );
+}
+
+@utility table-shine {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--popover) 62%, transparent) 0%,
+    transparent 58%
+  );
+}
+
+@utility table-halo {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--gold-glow) 60%, transparent) 0%,
+    color-mix(in oklab, var(--gold-glow) 24%, transparent) 46%,
+    transparent 74%
+  );
+}
+
+@utility chair-surface {
+  background-image: linear-gradient(
+    145deg,
+    var(--gold-200) 0%,
+    var(--gold-400) 52%,
+    var(--gold-600) 100%
+  );
+}
+
+@utility card-warm {
+  background-image: linear-gradient(
+    165deg,
+    var(--card) 0%,
+    var(--gold-wash) 55%,
+    var(--gold-100) 100%
+  );
+}
+
+@utility title-gilt {
+  background-image: linear-gradient(
+    96deg,
+    var(--gold-600) 0%,
+    var(--gold-400) 42%,
+    var(--gold-600) 100%
+  );
+}
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -53,7 +108,19 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  --color-gold-800: var(--gold-800);
+  --color-gold-900: var(--gold-900);
+  --color-gold-wash: var(--gold-wash);
+  --color-gold-glow: var(--gold-glow);
 }
+
 
 :root {
   --radius: 0.5rem;
@@ -91,7 +158,21 @@
   --sidebar-accent-foreground: oklch(0.3 0.025 65);
   --sidebar-border: oklch(0.88 0.012 80);
   --sidebar-ring: oklch(0.55 0.11 72);
+
+  /* Escala champagne — usada nas plantas de mesa */
+  --gold-100: oklch(0.965 0.038 88);
+  --gold-200: oklch(0.905 0.078 86);
+  --gold-300: oklch(0.845 0.115 84);
+  --gold-400: oklch(0.765 0.145 80);
+  --gold-500: oklch(0.675 0.158 76);
+  --gold-600: oklch(0.575 0.14 70);
+  --gold-700: oklch(0.475 0.115 64);
+  --gold-800: oklch(0.385 0.09 60);
+  --gold-900: oklch(0.3 0.07 56);
+  --gold-wash: oklch(0.978 0.019 86);
+  --gold-glow: oklch(0.86 0.1 84);
 }
+
 
 @layer base {
   * {
