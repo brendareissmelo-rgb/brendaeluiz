@@ -116,6 +116,7 @@ function SiteEditor() {
   const [manuals, setManuals] = useState<Manuals>(DEFAULT_CONTENT.manuals);
   const [gift, setGift] = useState<GiftSection>(DEFAULT_CONTENT.gift);
   const [prewedding, setPrewedding] = useState<PreWedding>(DEFAULT_CONTENT.prewedding);
+  const [tables, setTables] = useState<Tables>(DEFAULT_CONTENT.tables);
 
   useEffect(() => {
     if (!data) return;
@@ -124,6 +125,7 @@ function SiteEditor() {
     setManuals(data.manuals);
     setGift(data.gift);
     setPrewedding(data.prewedding);
+    setTables(data.tables);
   }, [data]);
 
   const doSave = (key: keyof SiteContent, value: unknown) =>
@@ -374,6 +376,62 @@ function SiteEditor() {
             <Input className="h-9 text-sm" value={gift.pixKey} onChange={(e) => setGift({ ...gift, pixKey: e.target.value })} />
           </Field>
         </div>
+      </Panel>
+
+      {/* MESAS */}
+      <Panel
+        title="Mesa dos Convidados"
+        description="Distribua os convidados entre as mesas da recepção. Use parênteses para o parentesco, ex.: Maria (Mãe da Noiva)."
+        saving={save.isPending}
+        onSave={() => doSave("tables", tables)}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Etiqueta">
+            <Input className="h-9 text-sm" value={tables.eyebrow} onChange={(e) => setTables({ ...tables, eyebrow: e.target.value })} />
+          </Field>
+          <Field label="Título da página">
+            <Input className="h-9 text-sm" value={tables.title} onChange={(e) => setTables({ ...tables, title: e.target.value })} />
+          </Field>
+        </div>
+
+        {tables.list.map((t, i) => (
+          <div key={t.id} className="rounded-lg border border-border/60 bg-background/40 p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="text-[11px] uppercase tracking-widest text-primary">
+                Mesa {t.id} · {t.guests.length} convidado(s)
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => setTables({ ...tables, list: tables.list.filter((_, j) => j !== i) })}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <StringList
+              values={t.guests}
+              onChange={(guests) =>
+                setTables({ ...tables, list: tables.list.map((x, j) => (j === i ? { ...x, guests } : x)) })
+              }
+              placeholder="Nome do convidado"
+              addLabel="Adicionar convidado"
+            />
+          </div>
+        ))}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 px-3 text-xs"
+          onClick={() =>
+            setTables({
+              ...tables,
+              list: [...tables.list, { id: Math.max(0, ...tables.list.map((t) => t.id)) + 1, guests: [""] }],
+            })
+          }
+        >
+          <Plus className="h-3.5 w-3.5" /> Adicionar mesa
+        </Button>
       </Panel>
 
       {/* PRÉ-WEDDING */}
