@@ -71,8 +71,25 @@ export type PreWedding = {
 export type Manual = { id: string; title: string; subtitle: string; image?: string; items: string[] };
 export type Manuals = { eyebrow: string; title: string; list: Manual[] };
 
-export type GuestTable = { id: number; guests: string[] };
+export type Guest = { name: string; invited?: boolean };
+export type GuestTable = { id: number; guests: Guest[] };
 export type Tables = { eyebrow: string; title: string; list: GuestTable[] };
+
+/** Aceita o formato antigo (strings) e o novo ({ name, invited }) — tudo vira Guest. */
+export function guestsOf(raw: unknown): Guest[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((g) => {
+      if (typeof g === "string") return { name: g.trim(), invited: false };
+      const name = typeof (g as { name?: unknown })?.name === "string" ? (g as { name: string }).name.trim() : "";
+      return { name, invited: !!(g as { invited?: unknown })?.invited };
+    })
+    .filter((g) => g.name !== "");
+}
+
+export function normalizeTables(value: Tables): Tables {
+  return { ...value, list: value.list.map((t) => ({ id: t.id, guests: guestsOf(t.guests) })) };
+}
 
 export type SiteContent = {
   ceremony: Ceremony;
@@ -178,66 +195,66 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         id: 1,
         guests: [
-          "Manoel Gomes (Pai do Noivo)",
-          "Maria do Socorro (Mãe do Noivo)",
-          "João Souza",
-          "Mirian Souza (Mãe da Noiva)",
-          "Suzete Lopes (Avó da Noiva)",
-          "Rayla Cristina",
-          "Alberto Melo (Pai da Noiva)",
-          "Gabrielly Cristina",
+          { name: "Manoel Gomes (Pai do Noivo)", invited: false },
+          { name: "Maria do Socorro (Mãe do Noivo)", invited: false },
+          { name: "João Souza", invited: false },
+          { name: "Mirian Souza (Mãe da Noiva)", invited: false },
+          { name: "Suzete Lopes (Avó da Noiva)", invited: false },
+          { name: "Rayla Cristina", invited: false },
+          { name: "Alberto Melo (Pai da Noiva)", invited: false },
+          { name: "Gabrielly Cristina", invited: false },
         ],
       },
       {
         id: 2,
         guests: [
-          "Thaline Costa (Madrinha)",
-          "Henrique",
-          "Cássia Costa",
-          "Antony Gabriel",
-          "Marluce Silva",
-          "Paloma Silva",
-          "Sandro Gaia",
-          "Cybelle Botelho",
+          { name: "Thaline Costa (Madrinha)", invited: false },
+          { name: "Henrique", invited: false },
+          { name: "Cássia Costa", invited: false },
+          { name: "Antony Gabriel", invited: false },
+          { name: "Marluce Silva", invited: false },
+          { name: "Paloma Silva", invited: false },
+          { name: "Sandro Gaia", invited: false },
+          { name: "Cybelle Botelho", invited: false },
         ],
       },
       {
         id: 3,
         guests: [
-          "Brubs",
-          "Maria Rita",
-          "Verônica Souza",
-          "Ana Reis (Avó da Noiva)",
-          "Milena Reis",
-          "Andrei Souza",
-          "Naza Melo",
-          "Erica",
-          "Pedro",
+          { name: "Brubs", invited: false },
+          { name: "Maria Rita", invited: false },
+          { name: "Verônica Souza", invited: false },
+          { name: "Ana Reis (Avó da Noiva)", invited: false },
+          { name: "Milena Reis", invited: false },
+          { name: "Andrei Souza", invited: false },
+          { name: "Naza Melo", invited: false },
+          { name: "Erica", invited: false },
+          { name: "Pedro", invited: false },
         ],
       },
       {
         id: 4,
         guests: [
-          "Renan Carvalho (Padrinho)",
-          "Lirian Barros",
-          "Sumano",
-          "Mocotó",
-          "Alan Rendrix",
-          "Laura Couto",
-          "Luiz Horizonte (Noivo)",
-          "Brenda Melo (Noiva)",
+          { name: "Renan Carvalho (Padrinho)", invited: false },
+          { name: "Lirian Barros", invited: false },
+          { name: "Sumano", invited: false },
+          { name: "Mocotó", invited: false },
+          { name: "Alan Rendrix", invited: false },
+          { name: "Laura Couto", invited: false },
+          { name: "Luiz Horizonte (Noivo)", invited: false },
+          { name: "Brenda Melo (Noiva)", invited: false },
         ],
       },
       {
         id: 5,
         guests: [
-          "Jonatha David",
-          "Dayane Lobo",
-          "Isaac Lobo",
-          "Carol Barros",
-          "Ronildo",
-          "Joelma",
-          "Carina Leray",
+          { name: "Jonatha David", invited: false },
+          { name: "Dayane Lobo", invited: false },
+          { name: "Isaac Lobo", invited: false },
+          { name: "Carol Barros", invited: false },
+          { name: "Ronildo", invited: false },
+          { name: "Joelma", invited: false },
+          { name: "Carina Leray", invited: false },
         ],
       },
     ],
@@ -270,7 +287,7 @@ export function useSiteContent() {
         manuals: merge(DEFAULT_CONTENT.manuals, map.get("manuals")),
         gift: merge(DEFAULT_CONTENT.gift, map.get("gift")),
         prewedding: merge(DEFAULT_CONTENT.prewedding, map.get("prewedding")),
-        tables: merge(DEFAULT_CONTENT.tables, map.get("tables")),
+        tables: normalizeTables(merge(DEFAULT_CONTENT.tables, map.get("tables"))),
       };
     },
   });

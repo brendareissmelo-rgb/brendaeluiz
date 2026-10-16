@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Save, Trash2, GripVertical } from "lucide-react";
+import { Plus, Save, Trash2, GripVertical, Check } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   type GiftSection,
   type Manuals,
   type PreWedding,
+  type Guest,
   type Tables,
 } from "@/lib/site-content";
 
@@ -102,6 +103,49 @@ function StringList({
       ))}
       <Button variant="outline" size="sm" className="h-8 gap-1.5 px-3 text-xs" onClick={() => onChange([...values, ""])}>
         <Plus className="h-3.5 w-3.5" /> {addLabel}
+      </Button>
+    </div>
+  );
+}
+
+function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[]) => void }) {
+  const set = (i: number, patch: Partial<Guest>) =>
+    onChange(guests.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  return (
+    <div className="space-y-2">
+      {guests.map((g, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <button
+            type="button"
+            title={g.invited ? "Convite entregue — clique para desmarcar" : "Marcar convite como entregue"}
+            aria-label={g.invited ? "Convite entregue" : "Convite não entregue"}
+            onClick={() => set(i, { invited: !g.invited })}
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors ${
+              g.invited
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-muted-foreground/40 text-transparent hover:border-primary/60"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+          </button>
+          <Input
+            value={g.name}
+            onChange={(e) => set(i, { name: e.target.value })}
+            placeholder="Nome do convidado"
+            className="h-9 text-sm"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            onClick={() => onChange(guests.filter((_, j) => j !== i))}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ))}
+      <Button variant="outline" size="sm" className="h-8 gap-1.5 px-3 text-xs" onClick={() => onChange([...guests, { name: "", invited: false }])}>
+        <Plus className="h-3.5 w-3.5" /> Adicionar convidado
       </Button>
     </div>
   );
@@ -381,7 +425,7 @@ function SiteEditor() {
       {/* MESAS */}
       <Panel
         title="Mesa dos Convidados"
-        description="Distribua os convidados entre as mesas da recepção. Use parênteses para o parentesco, ex.: Maria (Mãe da Noiva)."
+        description="Distribua os convidados entre as mesas da recepção. Use parênteses para o parentesco (ex.: Maria (Mãe da Noiva)) e marque o check quando o convite for entregue."
         saving={save.isPending}
         onSave={() => doSave("tables", tables)}
       >
@@ -409,13 +453,11 @@ function SiteEditor() {
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <StringList
-              values={t.guests}
+            <GuestRows
+              guests={t.guests}
               onChange={(guests) =>
                 setTables({ ...tables, list: tables.list.map((x, j) => (j === i ? { ...x, guests } : x)) })
               }
-              placeholder="Nome do convidado"
-              addLabel="Adicionar convidado"
             />
           </div>
         ))}
@@ -426,7 +468,7 @@ function SiteEditor() {
           onClick={() =>
             setTables({
               ...tables,
-              list: [...tables.list, { id: Math.max(0, ...tables.list.map((t) => t.id)) + 1, guests: [""] }],
+              list: [...tables.list, { id: Math.max(0, ...tables.list.map((t) => t.id)) + 1, guests: [{ name: "", invited: false }] }],
             })
           }
         >
