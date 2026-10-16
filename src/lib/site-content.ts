@@ -71,8 +71,25 @@ export type PreWedding = {
 export type Manual = { id: string; title: string; subtitle: string; image?: string; items: string[] };
 export type Manuals = { eyebrow: string; title: string; list: Manual[] };
 
-export type GuestTable = { id: number; guests: string[] };
+export type Guest = { name: string; invited?: boolean };
+export type GuestTable = { id: number; guests: Guest[] };
 export type Tables = { eyebrow: string; title: string; list: GuestTable[] };
+
+/** Aceita o formato antigo (strings) e o novo ({ name, invited }) — tudo vira Guest. */
+export function guestsOf(raw: unknown): Guest[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((g) => {
+      if (typeof g === "string") return { name: g.trim(), invited: false };
+      const name = typeof (g as { name?: unknown })?.name === "string" ? (g as { name: string }).name.trim() : "";
+      return { name, invited: !!(g as { invited?: unknown })?.invited };
+    })
+    .filter((g) => g.name !== "");
+}
+
+export function normalizeTables(value: Tables): Tables {
+  return { ...value, list: value.list.map((t) => ({ id: t.id, guests: guestsOf(t.guests) })) };
+}
 
 export type SiteContent = {
   ceremony: Ceremony;
