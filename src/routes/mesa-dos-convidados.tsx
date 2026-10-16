@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Users } from "lucide-react";
+import { Users, Check } from "lucide-react";
 
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
 import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSiteContent, type GuestTable } from "@/lib/site-content";
+import { useSiteContent, type GuestTable, type Guest } from "@/lib/site-content";
 
 export const Route = createFileRoute("/mesa-dos-convidados")({
   head: () => ({
@@ -27,12 +27,15 @@ export const Route = createFileRoute("/mesa-dos-convidados")({
   component: MesaPage,
 });
 
-type Guest = { name: string; relation?: string };
+type GuestInfo = { name: string; relation?: string; invited: boolean };
 
-function parseGuest(raw: string): Guest {
-  const m = raw.match(/^(.*?)\s*\((.*)\)\s*$/);
-  if (m) return { name: m[1].trim(), relation: m[2].trim() };
-  return { name: raw.trim() };
+function parseGuest(g: Guest): GuestInfo {
+  const m = g.name.match(/^(.*?)\s*\((.*)\)\s*$/);
+  return {
+    name: (m ? m[1] : g.name).trim(),
+    relation: m ? m[2].trim() : undefined,
+    invited: !!g.invited,
+  };
 }
 
 /**
@@ -40,7 +43,7 @@ function parseGuest(raw: string): Guest {
  * da mesa, com o nome logo fora dela. As distâncias vêm de variáveis CSS
  * (--rc = anel das cadeiras, --rn = anel dos nomes) para poder mudar no mobile.
  */
-function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
+function TablePlan({ id, guests }: { id: number; guests: GuestInfo[] }) {
   const n = guests.length;
 
   return (
@@ -75,7 +78,9 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
           <div key={g.name}>
             {/* Cadeira */}
             <span
-              className="chair-surface absolute h-[9px] w-[19px] rounded-full border border-gold-200 shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px]"
+              className={`chair-surface absolute h-[9px] w-[19px] rounded-full border shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px] ${
+                g.invited ? "border-gold-400 bg-gold-300/70" : "border-gold-200"
+              }`}
               style={{
                 left: `calc(50% + var(--rc) * ${c})`,
                 top: `calc(50% + var(--rc) * ${s})`,
@@ -94,6 +99,14 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
               <span className="block font-sora text-[9px] text-foreground sm:text-[11px]">
                 {g.name}
               </span>
+              {g.invited ? (
+                <span
+                  className="mx-auto mt-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold-400 text-gold-900"
+                  title="Convite entregue"
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+              ) : null}
               {g.relation ? (
                 <span className="mt-0.5 block text-[8px] font-medium uppercase tracking-[0.08em] text-gold-700 sm:text-[9px]">
                   {g.relation}
@@ -111,16 +124,23 @@ function TablePlan({ id, guests }: { id: number; guests: Guest[] }) {
 
 function TableCard({ table }: { table: GuestTable }) {
   const guests = table.guests.map(parseGuest);
+  const invitedCount = guests.filter((g) => g.invited).length;
   return (
     <div className="card-warm rounded-2xl border border-gold-300/70 p-5 shadow-[0_18px_44px_-20px_var(--gold-600)] sm:p-7">
       <div className="mb-4 flex items-center justify-between gap-3">
         <span className="font-sora text-base font-bold tracking-tight text-foreground sm:text-lg">
           Mesa {table.id}
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-300 bg-gold-100/70 px-3 py-1 text-[11px] text-gold-800">
-          <Users className="h-3 w-3 text-gold-600" />
-          {table.guests.length} convidados
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-300 bg-gold-100/70 px-3 py-1 text-[11px] text-gold-800">
+            <Users className="h-3 w-3 text-gold-600" />
+            {table.guests.length} convidados
+          </span>
+          <span className="hidden items-center gap-1.5 rounded-full border border-gold-300 bg-gold-100/70 px-3 py-1 text-[11px] text-gold-800 sm:inline-flex">
+            <Check className="h-3 w-3 text-gold-600" />
+            {invitedCount}/{table.guests.length} convites entregues
+          </span>
+        </div>
       </div>
       <TablePlan id={table.id} guests={guests} />
     </div>
@@ -155,8 +175,8 @@ function MesaPage() {
             </h1>
             <div className="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
             <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground">
-              Cada cadeira ao redor da mesa é um convidado. Toque no nome da mesa para saber quem
-              senta com você.
+              Cada cadeira ao redor da mesa é um convidado. O check dourado indica quem já
+              recebeu o convite.
             </p>
             <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-100/70 px-4 py-1.5 text-xs text-gold-800">
               <Users className="h-3.5 w-3.5 text-gold-600" />
