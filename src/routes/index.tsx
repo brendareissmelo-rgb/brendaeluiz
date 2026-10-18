@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  ChevronDown,
   ArrowUpRight,
   Car,
   Check,
@@ -77,48 +78,57 @@ function DateSeal({ className = "" }: { className?: string }) {
 
 function Hero() {
   return (
-    <header className="relative overflow-hidden px-5 pb-14 pt-24 sm:pt-32">
-      <div className="watercolor absolute -left-32 -top-20 h-96 w-96" />
-      <div className="watercolor absolute -right-40 top-1/3 h-96 w-96 opacity-70" />
-      <Branch className="absolute -left-8 top-20 h-40 w-40 -scale-x-100 rotate-[200deg] text-caramel/45" />
+    <>
+      {/* Foto do casal em tela cheia, por baixo do menu */}
+      <header className="relative h-[100svh] min-h-[620px] w-full overflow-hidden bg-cocoa">
+        <motion.img
+          src={capa.url}
+          alt="Brenda e Luiz"
+          initial={{ scale: 1.08 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-cocoa/45 via-transparent via-30% to-cocoa/90" />
+        <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-cocoa/85 to-transparent" />
 
-      <div className="relative mx-auto grid max-w-5xl items-center gap-10 md:grid-cols-[1.05fr_1fr] md:gap-14">
-        {/* Nomes */}
-        <div className="text-center md:text-left">
-          <FadeIn delay={0.1}>
-            <div className="eyebrow text-primary">Vamos nos casar</div>
+        <div className="relative z-10 flex h-full flex-col items-center justify-end px-6 pb-[calc(env(safe-area-inset-bottom)+64px)] text-center text-white sm:pb-24">
+          <FadeIn delay={0.3}>
+            <div className="eyebrow leading-[2] text-white/85">
+              Você foi convidado(a)
+              <br />
+              para o casamento de
+            </div>
           </FadeIn>
-          <FadeIn delay={0.25}>
-            <h1 className="mt-4 font-script text-[84px] leading-[0.82] text-primary sm:text-[120px]">
+          <FadeIn delay={0.5}>
+            <h1 className="mt-3 font-script text-[84px] leading-[0.86] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] sm:text-[124px]">
               Brenda
-              <span className="my-1 block font-display text-[30px] font-light italic leading-none text-caramel sm:text-[40px]">
+              <span className="my-1 block font-display text-[32px] font-light italic leading-none text-blush sm:mx-5 sm:inline sm:text-6xl">
                 &amp;
               </span>
               Luiz
             </h1>
           </FadeIn>
-          <FadeIn delay={0.4}>
-            <p className="mx-auto mt-6 max-w-xs font-display text-[19px] font-light italic leading-snug text-foreground/75 md:mx-0">
-              Você foi convidado(a) para celebrar o nosso casamento.
-            </p>
+          <FadeIn delay={0.7}>
+            <div className="mt-6 flex items-center gap-4 font-display text-[15px] font-light tracking-[0.18em] text-white/90">
+              <span>12 · 12 · 2026</span>
+              <span className="h-4 w-px bg-white/50" />
+              <span>Belém · PA</span>
+            </div>
           </FadeIn>
+          <a
+            href="#contagem"
+            aria-label="Rolar para baixo"
+            className="animate-cue mt-8 flex h-10 w-10 items-center justify-center rounded-full border border-white/35 text-white/90 backdrop-blur-sm"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </a>
         </div>
 
-        {/* Foto em arco + selo */}
-        <FadeIn delay={0.3} className="relative mx-auto w-[82%] max-w-[380px] md:w-full">
-          <motion.div
-            initial={{ clipPath: "inset(100% 0 0 0 round 999px 999px 0 0)" }}
-            animate={{ clipPath: "inset(0% 0 0 0 round 999px 999px 0 0)" }}
-            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-            className="arch relative aspect-[3/4.3] overflow-hidden border-[6px] border-card bg-sand shadow-[0_30px_60px_-30px_rgba(58,40,32,0.7)]"
-          >
-            <img src={capa.url} alt="Brenda e Luiz" className="h-full w-full object-cover object-[50%_40%]" />
-          </motion.div>
-          <DateSeal className="absolute -bottom-6 -right-4 h-[104px] w-[104px] sm:-right-8" />
-          <OakLeaf className="absolute -left-6 bottom-10 h-20 w-14 -rotate-[24deg] text-caramel/80" />
-        </FadeIn>
-      </div>
+        <DateSeal className="absolute bottom-6 right-5 z-10 hidden h-[104px] w-[104px] sm:flex" />
+      </header>
 
+      <section id="contagem" className="relative overflow-hidden px-5 pb-14">
       {/* Contagem */}
       <FadeIn delay={0.5} className="relative mx-auto mt-16 max-w-md">
         <div className="mb-4 flex items-center justify-center gap-3 text-[11px] font-medium uppercase tracking-[0.26em] text-muted-foreground">
@@ -126,7 +136,8 @@ function Hero() {
         </div>
         <Countdown />
       </FadeIn>
-    </header>
+      </section>
+    </>
   );
 }
 
