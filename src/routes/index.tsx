@@ -62,7 +62,7 @@ function Section({ id, className = "", children }: { id: string; className?: str
 /** Selo giratório com a data em volta. */
 function DateSeal({ className = "" }: { className?: string }) {
   return (
-    <div className={"relative flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_30px_-12px_var(--color-primary)] " + className}>
+    <div className={"flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_30px_-12px_var(--color-primary)] " + className}>
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full animate-[spin_22s_linear_infinite]" aria-hidden="true">
         <defs>
           <path id="seal-circle" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
@@ -125,10 +125,11 @@ function Hero() {
           </a>
         </div>
 
-        <DateSeal className="absolute bottom-6 right-5 z-10 hidden h-[104px] w-[104px] sm:flex" />
       </header>
 
-      <section id="contagem" className="relative overflow-hidden px-5 pb-14">
+      <section id="contagem" className="relative flow-root px-5 pb-14">
+        {/* Selo por cima da divisa entre a foto e a contagem */}
+        <DateSeal className="absolute -top-[52px] right-5 z-20 h-[104px] w-[104px] sm:right-10" />
       {/* Contagem */}
       <FadeIn delay={0.5} className="relative mx-auto mt-16 max-w-md">
         <div className="mb-4 flex items-center justify-center gap-3 text-[11px] font-medium uppercase tracking-[0.26em] text-muted-foreground">

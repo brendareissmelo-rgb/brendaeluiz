@@ -51,6 +51,8 @@ export function SiteNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const hash = useRouterState({ select: (s) => s.location.hash });
   const goTo = useGoTo(() => setOpen(false));
+  // Na home, antes de rolar, o menu fica sobre a foto: textos em branco.
+  const overHero = path === "/" && !scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -77,7 +79,9 @@ export function SiteNav() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
           <a href="/" onClick={goTo(LINKS[0])} aria-label="Início" className="flex items-center gap-2.5">
             <Monogram className="h-10 w-10 bg-card/70 text-[19px] backdrop-blur" />
-            <span className="hidden font-display text-[15px] tracking-tight sm:inline">Brenda &amp; Luiz</span>
+            <span className={cn("hidden font-display text-[15px] tracking-tight transition-colors sm:inline", overHero && "text-white")}>
+              Brenda &amp; Luiz
+            </span>
           </a>
 
           {/* Desktop: links compactos, sem ícones */}
@@ -100,7 +104,12 @@ export function SiteNav() {
             })}
           </nav>
 
-          <span className="hidden text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground md:inline">
+          <span
+            className={cn(
+              "hidden text-[11px] font-medium uppercase tracking-[0.28em] transition-colors md:inline",
+              overHero ? "text-white" : "text-muted-foreground",
+            )}
+          >
             12 · 12 · 26
           </span>
 
