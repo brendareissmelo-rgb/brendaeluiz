@@ -1,20 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import {
-  CheckCircle2,
-  CreditCard,
-  Gift,
-  Pencil,
-  Plus,
-  Receipt,
-  PiggyBank,
-  Search,
-  Timer,
-  Trash2,
-  Users,
-  Wallet,
-} from "lucide-react";
-import { AppShell, PageTitle } from "@/components/AppShell";
+import { ChevronDown, CreditCard, Gift, Pencil, PiggyBank, Plus, Search, Trash2, X } from "lucide-react";
+import { AppShell, PageTitle, panelCard } from "@/components/AppShell";
 import {
   useExpenses,
   useUpsertExpense,
@@ -26,23 +13,9 @@ import {
 } from "@/lib/expenses";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
@@ -55,16 +28,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import {
-  DonutRing,
-  FIN_COLORS as C,
-  LegendDot,
-  Meter,
-  OwnerTag,
-  StatusBadge,
-  ownerOf,
-  OWNER_STYLES,
-} from "@/components/finance-ui";
+import { DonutRing, FIN_COLORS as C, Meter, OwnerTag, ownerOf, OWNER_STYLES } from "@/components/finance-ui";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/despesas")({
   component: () => (
@@ -74,23 +39,19 @@ export const Route = createFileRoute("/despesas")({
   ),
 });
 
-const cardBase = "rounded-[22px] border-border/70 bg-card/90 shadow-[0_18px_36px_-28px_rgba(58,40,32,0.55)]";
-const chip =
-  "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-colors";
-const fieldLabel = "text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground";
-const field = "h-11 rounded-xl bg-background/70";
-
 const STATUS_LABEL: Record<Expense["status"], string> = {
   paid: "Pago",
   pending: "A pagar",
   installment: "Parcelado",
 };
 
-const STATUS_ICON: Record<Expense["status"], React.ElementType> = {
-  paid: CheckCircle2,
-  pending: Timer,
-  installment: CreditCard,
-};
+/** Ordem dos grupos na lista: o que exige atenção primeiro. */
+const GROUPS: Expense["status"][] = ["pending", "installment", "paid"];
+
+const CATEGORIES = ["Buffet", "Local", "Decoração", "Vestido", "Traje", "Fotografia", "Vídeo", "Música", "Convites", "Lua de mel", "Cerimônia", "Outros"];
+
+const fieldLabel = "text-[12.5px] font-semibold text-foreground/80";
+const field = "h-12 rounded-2xl border-border/80 bg-[#f6f1ea] text-[15px] shadow-none focus-visible:ring-2 focus-visible:ring-primary/30";
 
 type FormState = {
   id?: string;
@@ -125,6 +86,36 @@ const empty: FormState = {
   notes: "",
 };
 
+/** Controle segmentado (pílulas lado a lado). */
+function Segmented<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string; count?: number }[];
+}) {
+  return (
+    <div className="flex rounded-2xl bg-[#ece3d7] p-1">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          onClick={() => onChange(o.value)}
+          className={cn(
+            "flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-[13px] font-bold transition-all",
+            value === o.value ? "bg-card text-foreground shadow-sm" : "text-muted-foreground",
+          )}
+        >
+          {o.label}
+          {o.count !== undefined && <span className="text-[11px] font-semibold opacity-60">{o.count}</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function ExpensesPage() {
   const { user } = useAuth();
   const { data: items = [], isLoading } = useExpenses();
@@ -134,6 +125,8 @@ function ExpensesPage() {
   const [filter, setFilter] = useState<"all" | Expense["status"]>("all");
   const [ownerFilter, setOwnerFilter] = useState<"all" | Owner>("all");
   const [q, setQ] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(empty);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -261,414 +254,399 @@ function ExpensesPage() {
     Presente: items.filter((e) => ownerOf(e) === "Presente").length,
   };
 
+  const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-16 sm:pb-0">
       <PageTitle
-        icon={Receipt}
         title="Despesas"
-        subtitle="Adicione, edite ou remova. Tudo sincroniza com o resumo."
+        subtitle={`${items.length} itens · tudo sincroniza com o resumo`}
         action={
-          <Button onClick={openNew} className="hidden h-10 rounded-full px-5 sm:inline-flex">
-            <Plus className="h-4 w-4" /> Nova despesa
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              aria-label="Buscar"
+              className={cn(
+                "flex h-11 w-11 items-center justify-center rounded-full ring-1 ring-border/70",
+                searchOpen ? "bg-foreground text-background" : "bg-card",
+              )}
+            >
+              <Search className="h-[18px] w-[18px]" />
+            </button>
+            <Button onClick={openNew} className="hidden h-11 rounded-full bg-foreground px-5 font-bold text-background hover:bg-foreground/90 sm:inline-flex">
+              <Plus className="h-4 w-4" /> Nova despesa
+            </Button>
+          </div>
         }
       />
 
-      {/* RESUMO DO FILTRO */}
-      <Card className={`${cardBase} p-5`}>
-        <div className="flex items-center gap-4">
-          <DonutRing
-            size={84}
-            thickness={8}
-            segments={[
-              { value: totals.paid, color: C.paid },
-              { value: totals.reserved, color: C.reserved },
-              { value: totals.remaining, color: C.remaining },
-            ]}
-          >
-            <span className="text-base font-semibold tabular-nums">{totals.pct}%</span>
-            <span className="text-[8.5px] uppercase tracking-widest text-muted-foreground">coberto</span>
-          </DonutRing>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Seleção atual · {filtered.length} item(ns)
-            </div>
-            <div className="mt-1.5 truncate font-display text-[30px] leading-none tabular-nums">{BRL(totals.total)}</div>
-            <div className="mt-3">
-              <Meter
-                height={7}
-                segments={[
-                  { value: totals.paid, color: C.paid },
-                  { value: totals.reserved, color: C.reserved },
-                  { value: totals.remaining, color: C.remaining },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 px-3 py-2.5">
-          <LegendDot color={C.paid} label="Pago" value={BRL(totals.paid)} />
-          <LegendDot color={C.reserved} label="Caixinha" value={BRL(totals.reserved)} />
-          <LegendDot color={C.remaining} label="A pagar" value={BRL(totals.remaining)} />
-        </div>
-      </Card>
-
-      {/* FILTROS */}
-      <div className="space-y-2.5">
+      {searchOpen && (
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por nome ou categoria"
-            className="h-11 rounded-full bg-card/80 pl-11 text-[14px]"
-          />
+          <Input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nome ou categoria" className={`${field} bg-card pl-11`} />
+          {q && (
+            <button onClick={() => setQ("")} aria-label="Limpar" className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-muted p-1.5">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
+      )}
 
-        <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
-          {(["all", "paid", "installment", "pending"] as const).map((k) => {
-            const Icon = k === "all" ? Wallet : STATUS_ICON[k];
-            return (
-              <button
-                key={k}
-                onClick={() => setFilter(k)}
-                className={
-                  chip +
-                  " " +
-                  (filter === k
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border/70 bg-card/80 text-muted-foreground hover:text-foreground")
-                }
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {k === "all" ? "Todas" : STATUS_LABEL[k]}
-                <span className="tabular-nums opacity-70">{counts[k]}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Filtros */}
+      <Segmented
+        value={filter}
+        onChange={setFilter}
+        options={[
+          { value: "all", label: "Todas", count: counts.all },
+          { value: "pending", label: "A pagar", count: counts.pending },
+          { value: "installment", label: "Parcel.", count: counts.installment },
+          { value: "paid", label: "Pagas", count: counts.paid },
+        ]}
+      />
+      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        {(["all", "Brenda", "Luiz", "Ambos", "Presente"] as const).map((k) => {
+          const style = k === "all" ? null : OWNER_STYLES[k];
+          const active = ownerFilter === k;
+          return (
+            <button
+              key={k}
+              onClick={() => setOwnerFilter(k)}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold ring-1 transition-colors",
+                active ? "bg-foreground text-background ring-foreground" : "bg-card text-muted-foreground ring-border/70",
+              )}
+            >
+              {style && <span className={`h-2 w-2 rounded-full ${style.dot}`} />}
+              {k === "all" ? "Todos" : k}
+              <span className="text-[11px] opacity-60">{ownerCounts[k]}</span>
+            </button>
+          );
+        })}
+      </div>
 
-        <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
-          {(["all", "Luiz", "Brenda", "Ambos", "Presente"] as const).map((k) => {
-            const style = k === "all" ? null : OWNER_STYLES[k];
-            const active = ownerFilter === k;
-            return (
-              <button
-                key={k}
-                onClick={() => setOwnerFilter(k)}
-                className={
-                  chip +
-                  " " +
-                  (active
-                    ? style
-                      ? `${style.bg} ${style.text} ${style.border}`
-                      : "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border/70 bg-card/80 text-muted-foreground hover:text-foreground")
-                }
-              >
-                {k === "all" ? <Users className="h-3.5 w-3.5" /> : <span className={`h-2 w-2 rounded-full ${style!.dot}`} />}
-                {k === "all" ? "Todos" : k}
-                <span className="tabular-nums opacity-70">{ownerCounts[k]}</span>
-              </button>
-            );
-          })}
+      {/* Resumo da seleção */}
+      <div className={`${panelCard} flex items-center gap-4 p-4`}>
+        <DonutRing
+          size={56}
+          thickness={7}
+          segments={[
+            { value: totals.paid, color: C.paid },
+            { value: totals.reserved, color: C.reserved },
+            { value: totals.remaining, color: C.remaining },
+          ]}
+        >
+          <span className="text-[12px] font-extrabold tabular-nums">{totals.pct}%</span>
+        </DonutRing>
+        <div className="min-w-0 flex-1">
+          <div className="text-[12px] font-semibold text-muted-foreground">Seleção · {filtered.length} itens</div>
+          <div className="truncate text-[22px] font-extrabold leading-tight tabular-nums">{BRL(totals.total)}</div>
+          <div className="mt-0.5 flex gap-3 text-[11.5px] font-semibold tabular-nums text-muted-foreground">
+            <span className="text-warning">falta {BRL(totals.remaining)}</span>
+          </div>
         </div>
       </div>
 
-      {/* LISTA */}
+      {/* Lista agrupada */}
       {isLoading ? (
-        <Card className={`${cardBase} p-8 text-center text-xs text-muted-foreground`}>Carregando...</Card>
+        <div className={`${panelCard} p-8 text-center text-[13px] text-muted-foreground`}>Carregando…</div>
       ) : filtered.length === 0 ? (
-        <Card className={`${cardBase} p-10 text-center`}>
-          <Receipt className="mx-auto h-6 w-6 text-muted-foreground/60" />
-          <p className="mt-2 text-xs text-muted-foreground">Nenhuma despesa nesta seleção.</p>
-        </Card>
+        <div className={`${panelCard} p-10 text-center text-[13px] text-muted-foreground`}>Nenhuma despesa nesta seleção.</div>
       ) : (
-        <div className="grid gap-3 lg:grid-cols-2 [&>*]:min-w-0">
-          {filtered.map((e) => {
-            const a = computeAmounts(e);
-            const p = a.total > 0 ? Math.round(((a.paid + a.reserved) / a.total) * 100) : 0;
-            const owner = ownerOf(e);
-            const Icon = STATUS_ICON[e.status];
-            const isGift = owner === "Presente";
+        <div className="space-y-6">
+          {GROUPS.map((g) => {
+            const list = filtered.filter((e) => e.status === g);
+            if (!list.length) return null;
+            const sum = list.reduce((n, e) => n + computeAmounts(e).remaining, 0);
             return (
-              <Card
-                key={e.id}
-                className={`${cardBase} p-4 transition-colors hover:border-primary/30 ${isGift ? "border-[#d9a54a]/35" : ""}`}
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-                      isGift
-                        ? "bg-[#d9a54a]/15 text-[#9a6a2c]"
-                        : e.status === "paid"
-                          ? "bg-success/10 text-success"
-                          : e.status === "installment"
-                            ? "bg-primary/10 text-primary"
-                            : "bg-warning/10 text-warning"
-                    }`}
-                  >
-                    {isGift ? <Gift className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="pt-0.5 text-[15px] font-semibold leading-snug">{e.name}</h3>
-                      <div className="-mr-1.5 -mt-1 flex shrink-0">
-                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => openEdit(e)} aria-label="Editar">
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive"
-                          onClick={() => setDeleteId(e.id)}
-                          aria-label="Excluir"
+              <section key={g}>
+                <div className="mb-2 flex items-baseline justify-between px-1">
+                  <h2 className="text-[14px] font-extrabold uppercase tracking-wide text-muted-foreground">
+                    {STATUS_LABEL[g]} <span className="font-semibold opacity-60">· {list.length}</span>
+                  </h2>
+                  {g !== "paid" && <span className="text-[12.5px] font-bold tabular-nums text-warning">falta {BRL(sum)}</span>}
+                </div>
+                <ul className={`${panelCard} divide-y divide-border/60 overflow-hidden`}>
+                  {list.map((e) => {
+                    const a = computeAmounts(e);
+                    const p = a.total > 0 ? Math.round(((a.paid + a.reserved) / a.total) * 100) : 0;
+                    const owner = ownerOf(e);
+                    const isGift = owner === "Presente";
+                    const isOpen = expanded === e.id;
+                    return (
+                      <li key={e.id}>
+                        <button
+                          onClick={() => setExpanded(isOpen ? null : e.id)}
+                          aria-expanded={isOpen}
+                          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted/50"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <OwnerTag owner={owner} />
-                      <StatusBadge status={e.status} />
-                      <span className="text-[11px] text-muted-foreground">{e.category}</span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
-                      {e.status === "installment" && (
-                        <span className="tabular-nums">
-                          {e.installments_paid}/{e.installments_total} parcelas
-                        </span>
-                      )}
-                      {e.due_date && e.status !== "paid" && (
-                        <span className="tabular-nums">
-                          vence {new Date(e.due_date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                          {isGift ? (
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#d9a54a]/15 text-[#9a6a2c]">
+                              <Gift className="h-[18px] w-[18px]" />
+                            </span>
+                          ) : (
+                            <DonutRing
+                              size={44}
+                              thickness={5}
+                              segments={[
+                                { value: a.paid, color: C.paid },
+                                { value: a.reserved, color: C.reserved },
+                                { value: a.remaining, color: "transparent" },
+                              ]}
+                            >
+                              <span className="text-[10.5px] font-extrabold tabular-nums">{p}%</span>
+                            </DonutRing>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="line-clamp-2 text-[14.5px] font-bold leading-snug">{e.name}</div>
+                            <div className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${OWNER_STYLES[owner].dot}`} />
+                              <span className="truncate">
+                                {owner} · {e.category}
+                                {e.status === "installment" && ` · ${e.installments_paid}/${e.installments_total}x`}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            {g === "paid" || isGift ? (
+                              <div className="text-[14.5px] font-extrabold tabular-nums">{BRL(a.total)}</div>
+                            ) : (
+                              <>
+                                <div className="text-[14.5px] font-extrabold tabular-nums text-warning">{BRL(a.remaining)}</div>
+                                <div className="text-[11px] font-semibold tabular-nums text-muted-foreground">de {BRL(a.total)}</div>
+                              </>
+                            )}
+                          </div>
+                          <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                        </button>
 
-                {!isGift && (
-                  <div className="mt-3 flex items-center gap-2.5">
-                    <Meter
-                      height={6}
-                      segments={[
-                        { value: a.paid, color: C.paid },
-                        { value: a.reserved, color: C.reserved },
-                        { value: a.remaining, color: C.remaining },
-                      ]}
-                    />
-                    <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">{p}%</span>
-                  </div>
-                )}
-
-                <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 rounded-2xl bg-muted/60 px-3.5 py-3 tabular-nums sm:grid-cols-4">
-                  <div className="min-w-0">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Pago</div>
-                    <div className="truncate text-[13.5px] font-semibold text-success">{BRL(a.paid)}</div>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Caixinha</div>
-                    <div className="truncate text-[13.5px] font-semibold text-info">{BRL(a.reserved)}</div>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Restante</div>
-                    <div className="truncate text-[13.5px] font-semibold text-warning">{BRL(a.remaining)}</div>
-                  </div>
-                  <div className="min-w-0 sm:text-right">
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Total</div>
-                    <div className="truncate text-[14px] font-bold">{BRL(a.total)}</div>
-                  </div>
-                </div>
-              </Card>
+                        {isOpen && (
+                          <div className="bg-[#faf6f0] px-4 pb-4 pt-1">
+                            {!isGift && (
+                              <Meter
+                                height={6}
+                                segments={[
+                                  { value: a.paid, color: C.paid },
+                                  { value: a.reserved, color: C.reserved },
+                                  { value: a.remaining, color: C.remaining },
+                                ]}
+                              />
+                            )}
+                            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[12.5px]">
+                              <div>
+                                <dt className="text-muted-foreground">Pago</dt>
+                                <dd className="font-bold tabular-nums text-success">{BRL(a.paid)}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-muted-foreground">Caixinha</dt>
+                                <dd className="font-bold tabular-nums text-info">{BRL(a.reserved)}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-muted-foreground">Restante</dt>
+                                <dd className="font-bold tabular-nums text-warning">{BRL(a.remaining)}</dd>
+                              </div>
+                              <div>
+                                <dt className="text-muted-foreground">{e.due_date && e.status !== "paid" ? "Vencimento" : "Responsável"}</dt>
+                                <dd className="font-bold">
+                                  {e.due_date && e.status !== "paid" ? (
+                                    new Date(e.due_date).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+                                  ) : (
+                                    <OwnerTag owner={owner} />
+                                  )}
+                                </dd>
+                              </div>
+                            </dl>
+                            {e.notes && <p className="mt-3 rounded-xl bg-card px-3 py-2 text-[12.5px] text-muted-foreground">{e.notes}</p>}
+                            <div className="mt-4 flex gap-2">
+                              <Button onClick={() => openEdit(e)} className="h-10 flex-1 rounded-full bg-foreground font-bold text-background hover:bg-foreground/90">
+                                <Pencil className="h-3.5 w-3.5" /> Editar
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => setDeleteId(e.id)}
+                                className="h-10 rounded-full border-border bg-card px-4 font-bold text-destructive hover:bg-destructive/5 hover:text-destructive"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Excluir
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
             );
           })}
         </div>
       )}
 
-      {/* Botão flutuante (celular) */}
+      {/* Botão flutuante (mobile) */}
       <button
         onClick={openNew}
         aria-label="Nova despesa"
-        className="fixed bottom-[calc(env(safe-area-inset-bottom)+92px)] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_30px_-10px_var(--color-primary)] transition active:scale-95 sm:hidden"
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+80px)] right-4 z-40 flex h-14 items-center gap-2 rounded-full bg-foreground pl-4 pr-5 text-[14px] font-bold text-background shadow-[0_16px_30px_-10px_rgba(58,40,32,0.6)] transition active:scale-95 sm:hidden"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-5 w-5" /> Nova
       </button>
 
+      {/* Formulário (bottom sheet no mobile) */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[92svh] max-w-lg overflow-y-auto rounded-[26px] border-border/70 bg-card">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-display text-[22px] font-normal">
-              {form.id ? <Pencil className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
-              {form.id ? "Editar despesa" : "Nova despesa"}
-            </DialogTitle>
+        <DialogContent className="font-ui max-h-[92svh] max-w-lg gap-0 overflow-y-auto rounded-[28px] border-0 bg-card p-0 max-sm:bottom-0 max-sm:top-auto max-sm:max-w-none max-sm:translate-y-0 max-sm:rounded-b-none">
+          <DialogHeader className="sticky top-0 z-10 border-b border-border/60 bg-card/95 px-5 pb-4 pt-5 text-left backdrop-blur">
+            <DialogTitle className="text-[20px] font-extrabold">{form.id ? "Editar despesa" : "Nova despesa"}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
-            <div className="space-y-1.5 sm:col-span-2">
+
+          <div className="space-y-5 px-5 py-5">
+            <div className="space-y-1.5">
               <Label className={fieldLabel}>Nome</Label>
-              <Input className={field}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Ex.: Buffet, Vestido, Decoração..."
-              />
+              <Input className={field} value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Ex.: Buffet, Vestido, Decoração…" />
             </div>
-            <div className="space-y-1.5">
-              <Label className={fieldLabel}>Categoria</Label>
-              <Input className={field} list="cats" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-              <datalist id="cats">
-                {["Buffet", "Local", "Decoração", "Vestido", "Traje", "Fotografia", "Vídeo", "Música", "Convites", "Lua de mel", "Cerimônia", "Outros"].map((c) => (
-                  <option key={c} value={c} />
-                ))}
-              </datalist>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className={fieldLabel}>Valor total (R$)</Label>
+                <Input className={field} inputMode="decimal" value={form.total_amount} onChange={(e) => set({ total_amount: e.target.value })} placeholder="0,00" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className={fieldLabel}>Categoria</Label>
+                <Input className={field} list="cats" value={form.category} onChange={(e) => set({ category: e.target.value })} />
+                <datalist id="cats">
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className={fieldLabel}>Valor total (R$)</Label>
-              <Input className={field}
-                inputMode="decimal"
-                value={form.total_amount}
-                onChange={(e) => setForm({ ...form, total_amount: e.target.value })}
-                placeholder="0,00"
-              />
-            </div>
+
             <div className="space-y-1.5">
               <Label className={fieldLabel}>Status</Label>
-              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Expense["status"] })}>
-                <SelectTrigger className="h-11 rounded-xl bg-background/70"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">A pagar</SelectItem>
-                  <SelectItem value="installment">Parcelado</SelectItem>
-                  <SelectItem value="paid">Pago</SelectItem>
-                </SelectContent>
-              </Select>
+              <Segmented
+                value={form.status}
+                onChange={(v) => set({ status: v })}
+                options={[
+                  { value: "pending", label: "A pagar" },
+                  { value: "installment", label: "Parcelado" },
+                  { value: "paid", label: "Pago" },
+                ]}
+              />
             </div>
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label className={fieldLabel}>Responsável</Label>
-              <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as Owner })}>
-                <SelectTrigger className="h-11 rounded-xl bg-background/70"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
-                  <SelectItem value="Luiz">Luiz</SelectItem>
-                  <SelectItem value="Brenda">Brenda</SelectItem>
-                  <SelectItem value="Presente">Presente (não sai do bolso)</SelectItem>
-                </SelectContent>
-              </Select>
+
+            <div className="space-y-1.5">
+              <Label className={fieldLabel}>Quem paga</Label>
+              <div className="grid grid-cols-4 gap-2">
+                {(["Ambos", "Brenda", "Luiz", "Presente"] as const).map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => set({ owner: o })}
+                    className={cn(
+                      "flex flex-col items-center gap-1.5 rounded-2xl px-1 py-2.5 text-[12px] font-bold ring-1 transition-colors",
+                      form.owner === o ? "bg-foreground text-background ring-foreground" : "bg-[#f6f1ea] text-muted-foreground ring-border/70",
+                    )}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full ${OWNER_STYLES[o].dot}`} />
+                    {o}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11.5px] text-muted-foreground">
+                {form.owner === "Ambos" ? "Dividido 50/50." : form.owner === "Presente" ? "Não sai do bolso — não entra no orçamento." : " "}
+              </p>
             </div>
+
             {form.status !== "paid" && (
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label className={fieldLabel}>
-                  Valor de entrada (R$) <span className="font-normal text-muted-foreground">— opcional</span>
-                </Label>
-                <Input className={field}
-                  inputMode="decimal"
-                  value={form.down_payment}
-                  onChange={(e) => setForm({ ...form, down_payment: e.target.value })}
-                  placeholder="0,00"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  {form.status === "installment"
-                    ? "Será descontado do total e o restante dividido nas parcelas."
-                    : "Valor já adiantado dessa despesa."}
-                </p>
+              <div className="space-y-4 rounded-3xl bg-[#faf6f0] p-4 ring-1 ring-border/60">
+                <div className="text-[13px] font-extrabold">Pagamento</div>
+                <div className="space-y-1.5">
+                  <Label className={fieldLabel}>Entrada (R$) · opcional</Label>
+                  <Input className={`${field} bg-card`} inputMode="decimal" value={form.down_payment} onChange={(e) => set({ down_payment: e.target.value })} placeholder="0,00" />
+                  <p className="text-[11.5px] text-muted-foreground">
+                    {form.status === "installment" ? "Descontada do total; o restante é dividido nas parcelas." : "Valor já adiantado dessa despesa."}
+                  </p>
+                </div>
+                {form.status === "installment" && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className={fieldLabel}>Parcelas</Label>
+                        <Input className={`${field} bg-card`} type="number" min={1} value={form.installments_total} onChange={(e) => set({ installments_total: e.target.value })} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className={fieldLabel}>Já pagas</Label>
+                        <Input className={`${field} bg-card`} type="number" min={0} value={form.installments_paid} onChange={(e) => set({ installments_paid: e.target.value })} />
+                      </div>
+                    </div>
+                    <InstallmentPreview
+                      total={parseFloat(form.total_amount.replace(",", ".")) || 0}
+                      down={parseFloat((form.down_payment || "0").replace(",", ".")) || 0}
+                      parts={Math.max(1, parseInt(form.installments_total || "1"))}
+                      paid={Math.max(0, parseInt(form.installments_paid || "0"))}
+                    />
+                  </>
+                )}
+                <div className="space-y-1.5">
+                  <Label className={fieldLabel}>Vencimento</Label>
+                  <Input className={`${field} bg-card`} type="date" value={form.due_date} onChange={(e) => set({ due_date: e.target.value })} />
+                </div>
               </div>
             )}
+
             {form.status !== "paid" && (
-              <>
-                <div className="space-y-1.5">
-                  <Label className={`flex items-center gap-1.5 ${fieldLabel}`}>
-                    <PiggyBank className="h-3.5 w-3.5 text-info" />
-                    Caixinha Brenda (R$) <span className="font-normal text-muted-foreground">— opcional</span>
-                  </Label>
-                  <Input className={field}
-                    inputMode="decimal"
-                    value={form.reserved_brenda}
-                    onChange={(e) => setForm({ ...form, reserved_brenda: e.target.value })}
-                    placeholder="0,00"
-                  />
+              <div className="space-y-3 rounded-3xl bg-[#eef2f5] p-4 ring-1 ring-[#7d97ad]/25">
+                <div className="flex items-center gap-2 text-[13px] font-extrabold">
+                  <PiggyBank className="h-4 w-4 text-info" /> Caixinha · opcional
                 </div>
-                <div className="space-y-1.5">
-                  <Label className={`flex items-center gap-1.5 ${fieldLabel}`}>
-                    <PiggyBank className="h-3.5 w-3.5 text-info" />
-                    Caixinha Luiz (R$) <span className="font-normal text-muted-foreground">— opcional</span>
-                  </Label>
-                  <Input className={field}
-                    inputMode="decimal"
-                    value={form.reserved_luiz}
-                    onChange={(e) => setForm({ ...form, reserved_luiz: e.target.value })}
-                    placeholder="0,00"
-                  />
-                </div>
-                <p className="text-[11px] text-muted-foreground sm:col-span-2">
-                  Valores guardados por fora (reserva no banco de cada um) para essa despesa. Não é um pagamento
-                  oficial, mas abate o valor a pagar.
+                <p className="text-[11.5px] text-muted-foreground">
+                  Dinheiro guardado por fora para essa despesa. Não é pagamento oficial, mas abate o valor a pagar.
                 </p>
-              </>
-            )}
-            {form.status === "installment" && (
-              <>
-                <div className="space-y-1.5">
-                  <Label className={fieldLabel}>Parcelas totais</Label>
-                  <Input className={field}
-                    type="number"
-                    min={1}
-                    value={form.installments_total}
-                    onChange={(e) => setForm({ ...form, installments_total: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className={fieldLabel}>Brenda (R$)</Label>
+                    <Input className={`${field} bg-card`} inputMode="decimal" value={form.reserved_brenda} onChange={(e) => set({ reserved_brenda: e.target.value })} placeholder="0,00" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className={fieldLabel}>Luiz (R$)</Label>
+                    <Input className={`${field} bg-card`} inputMode="decimal" value={form.reserved_luiz} onChange={(e) => set({ reserved_luiz: e.target.value })} placeholder="0,00" />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className={fieldLabel}>Parcelas pagas</Label>
-                  <Input className={field}
-                    type="number"
-                    min={0}
-                    value={form.installments_paid}
-                    onChange={(e) => setForm({ ...form, installments_paid: e.target.value })}
-                  />
-                </div>
-                <InstallmentPreview
-                  total={parseFloat(form.total_amount.replace(",", ".")) || 0}
-                  down={parseFloat((form.down_payment || "0").replace(",", ".")) || 0}
-                  parts={Math.max(1, parseInt(form.installments_total || "1"))}
-                  paid={Math.max(0, parseInt(form.installments_paid || "0"))}
-                />
-              </>
-            )}
-            {form.status !== "paid" && (
-              <div className="space-y-1.5">
-                <Label className={fieldLabel}>Vencimento</Label>
-                <Input className={field} type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
               </div>
             )}
+
             {form.status === "paid" && (
               <div className="space-y-1.5">
                 <Label className={fieldLabel}>Data do pagamento</Label>
-                <Input className={field} type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} />
+                <Input className={field} type="date" value={form.paid_date} onChange={(e) => set({ paid_date: e.target.value })} />
               </div>
             )}
-            <div className="space-y-1.5 sm:col-span-2">
+
+            <div className="space-y-1.5">
               <Label className={fieldLabel}>Observações</Label>
-              <Textarea className="rounded-xl bg-background/70" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+              <Textarea className="rounded-2xl border-border/80 bg-[#f6f1ea] text-[15px] shadow-none" rows={2} value={form.notes} onChange={(e) => set({ notes: e.target.value })} />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" className="h-11 rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="h-11 rounded-full px-6" onClick={save} disabled={upsert.isPending}>
-              {upsert.isPending ? "Salvando..." : "Salvar"}
+
+          <div className="sticky bottom-0 flex gap-2 border-t border-border/60 bg-card/95 px-5 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-4 backdrop-blur">
+            <Button variant="ghost" className="h-12 rounded-full px-5 font-bold" onClick={() => setOpen(false)}>
+              Cancelar
             </Button>
-          </DialogFooter>
+            <Button className="h-12 flex-1 rounded-full bg-foreground text-[15px] font-bold text-background hover:bg-foreground/90" onClick={save} disabled={upsert.isPending}>
+              {upsert.isPending ? "Salvando…" : "Salvar"}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent className="rounded-[26px] border-border/70 bg-card">
+        <AlertDialogContent className="font-ui rounded-[28px] border-0 bg-card">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-[22px] font-normal">Excluir despesa?</AlertDialogTitle>
-            <AlertDialogDescription className="text-xs">
-              Essa ação não pode ser desfeita.
-            </AlertDialogDescription>
+            <AlertDialogTitle className="text-[19px] font-extrabold">Excluir despesa?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13.5px]">Essa ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="h-11 rounded-full">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="h-11 rounded-full bg-destructive hover:bg-destructive/90" onClick={confirmDelete}>Excluir</AlertDialogAction>
+            <AlertDialogCancel className="h-11 rounded-full font-bold">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="h-11 rounded-full bg-destructive font-bold hover:bg-destructive/90" onClick={confirmDelete}>
+              Excluir
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -686,9 +664,9 @@ function InstallmentPreview({ total, down, parts, paid }: { total: number; down:
   const remainingAmount = Math.max(total - paidTotal, 0);
   const remainingParts = Math.max(parts - cappedPaid, 0);
   return (
-    <div className="rounded-2xl border border-border/70 bg-muted/50 p-3.5 text-xs sm:col-span-2">
-      <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-        <CreditCard className="h-3 w-3" /> Resumo do parcelamento
+    <div className="rounded-2xl bg-card p-3.5 ring-1 ring-border/60">
+      <div className="mb-2.5 flex items-center gap-1.5 text-[12px] font-bold text-muted-foreground">
+        <CreditCard className="h-3.5 w-3.5" /> {parts}x de {BRL(per || 0)}
       </div>
       <Meter
         height={6}
@@ -697,22 +675,14 @@ function InstallmentPreview({ total, down, parts, paid }: { total: number; down:
           { value: remainingAmount, color: C.remaining },
         ]}
       />
-      <div className="mt-3 grid grid-cols-2 gap-2 tabular-nums sm:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
         <div>
-          <div className="text-[10px] text-muted-foreground">Entrada</div>
-          <div className="font-semibold text-success">{BRL(cappedDown || 0)}</div>
+          <div className="text-muted-foreground">Já pago ({cappedPaid}x + entrada)</div>
+          <div className="font-bold tabular-nums text-success">{BRL(paidTotal || 0)}</div>
         </div>
         <div>
-          <div className="text-[10px] text-muted-foreground">Parcela ({parts}x)</div>
-          <div className="font-semibold">{BRL(per || 0)}</div>
-        </div>
-        <div>
-          <div className="text-[10px] text-muted-foreground">Já pago ({cappedPaid}x + entrada)</div>
-          <div className="font-semibold text-success">{BRL(paidTotal || 0)}</div>
-        </div>
-        <div>
-          <div className="text-[10px] text-muted-foreground">Restante ({remainingParts}x)</div>
-          <div className="font-semibold text-warning">{BRL(remainingAmount || 0)}</div>
+          <div className="text-muted-foreground">Restante ({remainingParts}x)</div>
+          <div className="font-bold tabular-nums text-warning">{BRL(remainingAmount || 0)}</div>
         </div>
       </div>
     </div>

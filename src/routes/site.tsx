@@ -1,10 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Save, Trash2, GripVertical, Check, Settings } from "lucide-react";
-import { AppShell, PageTitle } from "@/components/AppShell";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  Check,
+  ChevronDown,
+  Church,
+  ExternalLink,
+  Gift,
+  Images,
+  Armchair,
+  BookOpen,
+  PartyPopper,
+  Plus,
+  Shirt,
+  Trash2,
+} from "lucide-react";
+import { AppShell, PageTitle, panelCard } from "@/components/AppShell";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -12,14 +23,9 @@ import {
   useSaveSection,
   DEFAULT_CONTENT,
   type SiteContent,
-  type Ceremony,
-  type Dresscode,
-  type GiftSection,
-  type Manuals,
-  type PreWedding,
   type Guest,
-  type Tables,
 } from "@/lib/site-content";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/site")({
   component: () => (
@@ -29,41 +35,69 @@ export const Route = createFileRoute("/site")({
   ),
 });
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+type Key = keyof SiteContent;
+
+const TABS: { key: Key; label: string; icon: React.ElementType; hint: string; anchor: string }[] = [
+  { key: "ceremony", label: "Cerimônia", icon: Church, hint: "Data, igreja, mapa e programação do dia.", anchor: "/#roteiro" },
+  { key: "reception", label: "Festa", icon: PartyPopper, hint: "Salão da recepção depois da cerimônia.", anchor: "/#roteiro" },
+  { key: "manuals", label: "Manuais", icon: BookOpen, hint: "Convidado, família, padrinhos e madrinhas.", anchor: "/#manual" },
+  { key: "gift", label: "Presente", icon: Gift, hint: "Texto e chave Pix.", anchor: "/#presente" },
+  { key: "tables", label: "Mesas", icon: Armchair, hint: "Use parênteses para o parentesco — ex.: Maria (Mãe da Noiva).", anchor: "/mesa-dos-convidados" },
+  { key: "dresscode", label: "Traje", icon: Shirt, hint: "Textos da página de dresscode.", anchor: "/dresscode" },
+  { key: "prewedding", label: "Fotos", icon: Images, hint: "Fotos do pré-wedding exibidas na home.", anchor: "/#registros" },
+];
+
+const input = "h-12 rounded-2xl border-border/80 bg-[#f6f1ea] text-[15px] shadow-none focus-visible:ring-2 focus-visible:ring-primary/30";
+const area = "rounded-2xl border-border/80 bg-[#f6f1ea] text-[15px] shadow-none focus-visible:ring-2 focus-visible:ring-primary/30";
+
+function Field({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
+    <label className={cn("block", className)}>
+      <span className="mb-1.5 block text-[12.5px] font-semibold text-foreground/80">{label}</span>
       {children}
     </label>
   );
 }
 
-function Panel({
-  title,
-  description,
-  onSave,
-  saving,
-  children,
-}: {
-  title: string;
-  description: string;
-  onSave: () => void;
-  saving: boolean;
-  children: React.ReactNode;
-}) {
+function Card({ title, children, action }: { title?: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <Card className="rounded-[24px] border-border/70 bg-card/90 p-5 shadow-[0_18px_36px_-28px_rgba(58,40,32,0.55)] sm:p-6">
-      <div className="mb-5 flex items-start justify-between gap-4 border-b border-dashed border-border pb-4">
-        <div>
-          <h2 className="font-display text-[21px] font-normal leading-tight">{title}</h2>
-          <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">{description}</p>
+    <div className={`${panelCard} p-5`}>
+      {(title || action) && (
+        <div className="mb-4 flex items-center justify-between gap-3">
+          {title && <h3 className="text-[15px] font-extrabold">{title}</h3>}
+          {action}
         </div>
-        <Button size="sm" onClick={onSave} disabled={saving} className="h-9 shrink-0 gap-1.5 rounded-full px-4 text-xs">
-          <Save className="h-3.5 w-3.5" /> Salvar
-        </Button>
-      </div>
+      )}
       <div className="space-y-4">{children}</div>
-    </Card>
+    </div>
+  );
+}
+
+function IconButton({ onClick, label, danger }: { onClick: () => void; label: string; danger?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={cn(
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors",
+        danger ? "hover:bg-destructive/10 hover:text-destructive" : "hover:bg-muted",
+      )}
+    >
+      <Trash2 className="h-4 w-4" />
+    </button>
+  );
+}
+
+function AddButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-transparent text-[13.5px] font-bold text-muted-foreground transition hover:border-primary/50 hover:text-primary"
+    >
+      <Plus className="h-4 w-4" /> {children}
+    </button>
   );
 }
 
@@ -85,68 +119,76 @@ function StringList({
     <div className="space-y-2">
       {values.map((v, i) => (
         <div key={i} className="flex items-start gap-2">
-          <span className="mt-2.5 text-[11px] tabular-nums text-muted-foreground">{i + 1}</span>
+          <span className="mt-3.5 w-5 shrink-0 text-center text-[12px] font-bold tabular-nums text-muted-foreground">{i + 1}</span>
           {multiline ? (
-            <Textarea value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="min-h-[70px] rounded-xl bg-background/70 text-sm" />
+            <Textarea value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className={`${area} min-h-[84px]`} />
           ) : (
-            <Input value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="h-10 rounded-xl bg-background/70 text-sm" />
+            <Input value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className={input} />
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mt-0.5 h-8 w-8 text-muted-foreground hover:text-destructive"
-            onClick={() => onChange(values.filter((_, j) => j !== i))}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+          <div className="mt-1">
+            <IconButton danger label="Remover" onClick={() => onChange(values.filter((_, j) => j !== i))} />
+          </div>
         </div>
       ))}
-      <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-full px-4 text-xs" onClick={() => onChange([...values, ""])}>
-        <Plus className="h-3.5 w-3.5" /> {addLabel}
-      </Button>
+      <AddButton onClick={() => onChange([...values, ""])}>{addLabel}</AddButton>
     </div>
   );
 }
 
 function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[]) => void }) {
-  const set = (i: number, patch: Partial<Guest>) =>
-    onChange(guests.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  const set = (i: number, patch: Partial<Guest>) => onChange(guests.map((g, j) => (j === i ? { ...g, ...patch } : g)));
   return (
     <div className="space-y-2">
       {guests.map((g, i) => (
         <div key={i} className="flex items-center gap-2">
           <button
             type="button"
-            title={g.invited ? "Convite entregue — clique para desmarcar" : "Marcar convite como entregue"}
+            title={g.invited ? "Convite entregue — toque para desmarcar" : "Marcar convite como entregue"}
             aria-label={g.invited ? "Convite entregue" : "Convite não entregue"}
             onClick={() => set(i, { invited: !g.invited })}
-            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors ${
-              g.invited
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-muted-foreground/40 text-transparent hover:border-primary/60"
-            }`}
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+              g.invited ? "border-success bg-success text-white" : "border-border text-transparent hover:border-success/60",
+            )}
           >
-            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            <Check className="h-4 w-4" strokeWidth={3} />
           </button>
-          <Input
-            value={g.name}
-            onChange={(e) => set(i, { name: e.target.value })}
-            placeholder="Nome do convidado"
-            className="h-10 rounded-xl bg-background/70 text-sm"
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            onClick={() => onChange(guests.filter((_, j) => j !== i))}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+          <Input value={g.name} onChange={(e) => set(i, { name: e.target.value })} placeholder="Nome do convidado" className={input} />
+          <IconButton danger label="Remover convidado" onClick={() => onChange(guests.filter((_, j) => j !== i))} />
         </div>
       ))}
-      <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-full px-4 text-xs" onClick={() => onChange([...guests, { name: "", invited: false }])}>
-        <Plus className="h-3.5 w-3.5" /> Adicionar convidado
-      </Button>
+      <AddButton onClick={() => onChange([...guests, { name: "", invited: false }])}>Adicionar convidado</AddButton>
+    </div>
+  );
+}
+
+function Collapsible({
+  title,
+  meta,
+  children,
+  onRemove,
+  defaultOpen,
+}: {
+  title: string;
+  meta?: React.ReactNode;
+  children: React.ReactNode;
+  onRemove?: () => void;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(!!defaultOpen);
+  return (
+    <div className={`${panelCard} overflow-hidden`}>
+      <div className="flex items-center gap-2 pr-2">
+        <button type="button" onClick={() => setOpen((v) => !v)} className="flex min-w-0 flex-1 items-center gap-3 px-5 py-4 text-left" aria-expanded={open}>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[15px] font-extrabold">{title}</div>
+            {meta && <div className="mt-0.5 text-[12px] text-muted-foreground">{meta}</div>}
+          </div>
+          <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </button>
+        {onRemove && <IconButton danger label="Remover" onClick={onRemove} />}
+      </div>
+      {open && <div className="space-y-4 border-t border-border/60 px-5 pb-5 pt-4">{children}</div>}
     </div>
   );
 }
@@ -154,356 +196,397 @@ function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[
 function SiteEditor() {
   const { data, isLoading } = useSiteContent();
   const save = useSaveSection();
+  const [tab, setTab] = useState<Key>("ceremony");
+  const [draft, setDraft] = useState<SiteContent>(DEFAULT_CONTENT);
 
-  const [ceremony, setCeremony] = useState<Ceremony>(DEFAULT_CONTENT.ceremony);
-  const [dresscode, setDresscode] = useState<Dresscode>(DEFAULT_CONTENT.dresscode);
-  const [manuals, setManuals] = useState<Manuals>(DEFAULT_CONTENT.manuals);
-  const [gift, setGift] = useState<GiftSection>(DEFAULT_CONTENT.gift);
-  const [prewedding, setPrewedding] = useState<PreWedding>(DEFAULT_CONTENT.prewedding);
-  const [tables, setTables] = useState<Tables>(DEFAULT_CONTENT.tables);
-
+  // Ao recarregar do banco (ex.: depois de salvar uma aba), atualiza só as abas sem edição pendente.
+  const lastData = useRef<SiteContent | null>(null);
   useEffect(() => {
     if (!data) return;
-    setCeremony(data.ceremony);
-    setDresscode(data.dresscode);
-    setManuals(data.manuals);
-    setGift(data.gift);
-    setPrewedding(data.prewedding);
-    setTables(data.tables);
+    const prev = lastData.current;
+    lastData.current = data;
+    setDraft((d) => {
+      if (!prev) return data;
+      const next = { ...d };
+      for (const k of Object.keys(data) as Key[]) {
+        if (JSON.stringify(d[k]) === JSON.stringify(prev[k])) (next as Record<Key, unknown>)[k] = data[k];
+      }
+      return next;
+    });
   }, [data]);
 
-  const doSave = (key: keyof SiteContent, value: unknown) =>
+  const dirty = useMemo(() => {
+    if (!data) return {} as Record<Key, boolean>;
+    return Object.fromEntries(
+      (Object.keys(draft) as Key[]).map((k) => [k, JSON.stringify(draft[k]) !== JSON.stringify(data[k])]),
+    ) as Record<Key, boolean>;
+  }, [draft, data]);
+
+  const update = <K extends Key>(key: K, value: SiteContent[K]) => setDraft((d) => ({ ...d, [key]: value }));
+
+  const doSave = () =>
     save.mutate(
-      { key, value },
+      { key: tab, value: draft[tab] },
       {
-        onSuccess: () => toast.success("Conteúdo atualizado"),
+        onSuccess: () => toast.success("Conteúdo atualizado no site"),
         onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erro ao salvar"),
       },
     );
 
   if (isLoading) {
-    return <div className="py-20 text-center text-xs text-muted-foreground">Carregando conteúdo...</div>;
+    return <div className="py-20 text-center text-[13px] text-muted-foreground">Carregando conteúdo…</div>;
   }
 
+  const current = TABS.find((t) => t.key === tab)!;
+  const { ceremony, reception, manuals, gift, tables, dresscode, prewedding } = draft;
+
   return (
-    <div className="space-y-5">
-      <PageTitle
-        icon={Settings}
-        title="Conteúdo do site"
-        subtitle="Edite os textos e imagens que aparecem no convite digital. Cada bloco é salvo separadamente."
-      />
+    <div className="space-y-5 pb-20">
+      <PageTitle title="Conteúdo do site" subtitle="Edite o que os convidados veem. Cada aba é salva separadamente." />
+
+      {/* Abas */}
+      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+        {TABS.map((t) => {
+          const Icon = t.icon;
+          const active = tab === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "relative inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-[13.5px] font-bold ring-1 transition-colors",
+                active ? "bg-foreground text-background ring-foreground" : "bg-card text-muted-foreground ring-border/70",
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {t.label}
+              {dirty[t.key] && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-warning ring-2 ring-card" />}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center justify-between gap-3 px-1">
+        <p className="text-[13px] text-muted-foreground">{current.hint}</p>
+        <a href={current.anchor} target="_blank" rel="noopener noreferrer" className="flex shrink-0 items-center gap-1 text-[12.5px] font-bold text-primary">
+          Ver no site <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      </div>
 
       {/* CERIMÔNIA */}
-      <Panel
-        title="A Cerimônia"
-        description="Data, local, mapa e programação do dia."
-        saving={save.isPending}
-        onSave={() => doSave("ceremony", ceremony)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.eyebrow} onChange={(e) => setCeremony({ ...ceremony, eyebrow: e.target.value })} />
-          </Field>
-          <Field label="Título">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.title} onChange={(e) => setCeremony({ ...ceremony, title: e.target.value })} />
-          </Field>
-          <Field label="Data">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.dateLabel} onChange={(e) => setCeremony({ ...ceremony, dateLabel: e.target.value })} />
-          </Field>
-          <Field label="Horário">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.timeLabel} onChange={(e) => setCeremony({ ...ceremony, timeLabel: e.target.value })} />
-          </Field>
-          <Field label="Local">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.venue} onChange={(e) => setCeremony({ ...ceremony, venue: e.target.value })} />
-          </Field>
-          <Field label="Endereço">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.address} onChange={(e) => setCeremony({ ...ceremony, address: e.target.value })} />
-          </Field>
-          <div className="sm:col-span-2">
-            <Field label="Link do mapa">
-              <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.mapsUrl} onChange={(e) => setCeremony({ ...ceremony, mapsUrl: e.target.value })} />
+      {tab === "ceremony" && (
+        <>
+          <Card title="Informações">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Data">
+                <Input className={input} value={ceremony.dateLabel} onChange={(e) => update("ceremony", { ...ceremony, dateLabel: e.target.value })} />
+              </Field>
+              <Field label="Horário">
+                <Input className={input} value={ceremony.timeLabel} onChange={(e) => update("ceremony", { ...ceremony, timeLabel: e.target.value })} />
+              </Field>
+              <Field label="Igreja">
+                <Input className={input} value={ceremony.venue} onChange={(e) => update("ceremony", { ...ceremony, venue: e.target.value })} />
+              </Field>
+              <Field label="Endereço">
+                <Input className={input} value={ceremony.address} onChange={(e) => update("ceremony", { ...ceremony, address: e.target.value })} />
+              </Field>
+              <Field label="Link do mapa" className="sm:col-span-2">
+                <Input className={input} value={ceremony.mapsUrl} onChange={(e) => update("ceremony", { ...ceremony, mapsUrl: e.target.value })} />
+              </Field>
+            </div>
+          </Card>
+          <Card title="Programação do dia">
+            <div className="space-y-2">
+              {ceremony.timeline.map((t, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Input
+                    className={`${input} w-24 shrink-0 text-center font-bold tabular-nums`}
+                    value={t.time}
+                    onChange={(e) =>
+                      update("ceremony", { ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, time: e.target.value } : x)) })
+                    }
+                  />
+                  <Input
+                    className={input}
+                    value={t.label}
+                    onChange={(e) =>
+                      update("ceremony", { ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })
+                    }
+                  />
+                  <IconButton danger label="Remover horário" onClick={() => update("ceremony", { ...ceremony, timeline: ceremony.timeline.filter((_, j) => j !== i) })} />
+                </div>
+              ))}
+              <AddButton onClick={() => update("ceremony", { ...ceremony, timeline: [...ceremony.timeline, { time: "00:00", label: "" }] })}>
+                Adicionar horário
+              </AddButton>
+            </div>
+          </Card>
+          <Card title="Títulos da seção">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Etiqueta">
+                <Input className={input} value={ceremony.eyebrow} onChange={(e) => update("ceremony", { ...ceremony, eyebrow: e.target.value })} />
+              </Field>
+              <Field label="Título do cartão">
+                <Input className={input} value={ceremony.title} onChange={(e) => update("ceremony", { ...ceremony, title: e.target.value })} />
+              </Field>
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* FESTA */}
+      {tab === "reception" && (
+        <Card title="Recepção">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Local">
+              <Input className={input} value={reception.venue} onChange={(e) => update("reception", { ...reception, venue: e.target.value })} />
+            </Field>
+            <Field label="Endereço">
+              <Input className={input} value={reception.address} onChange={(e) => update("reception", { ...reception, address: e.target.value })} />
+            </Field>
+            <Field label="Horário de início">
+              <Input className={input} value={reception.timeLabel} onChange={(e) => update("reception", { ...reception, timeLabel: e.target.value })} />
+            </Field>
+            <Field label="Encerramento">
+              <Input className={input} value={reception.endLabel} onChange={(e) => update("reception", { ...reception, endLabel: e.target.value })} />
+            </Field>
+            <Field label="Descrição" className="sm:col-span-2">
+              <Textarea className={`${area} min-h-[90px]`} value={reception.description} onChange={(e) => update("reception", { ...reception, description: e.target.value })} />
+            </Field>
+            <Field label="Link do mapa" className="sm:col-span-2">
+              <Input className={input} value={reception.mapsUrl} onChange={(e) => update("reception", { ...reception, mapsUrl: e.target.value })} />
+            </Field>
+            <Field label="Etiqueta">
+              <Input className={input} value={reception.eyebrow} onChange={(e) => update("reception", { ...reception, eyebrow: e.target.value })} />
+            </Field>
+            <Field label="Título do cartão">
+              <Input className={input} value={reception.title} onChange={(e) => update("reception", { ...reception, title: e.target.value })} />
             </Field>
           </div>
-        </div>
-
-        <div>
-          <div className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Programação</div>
-          <div className="space-y-2">
-            {ceremony.timeline.map((t, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <GripVertical className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <Input
-                  className="h-9 w-24 text-sm tabular-nums"
-                  value={t.time}
-                  onChange={(e) =>
-                    setCeremony({ ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, time: e.target.value } : x)) })
-                  }
-                />
-                <Input
-                  className="h-9 flex-1 text-sm"
-                  value={t.label}
-                  onChange={(e) =>
-                    setCeremony({ ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })
-                  }
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                  onClick={() => setCeremony({ ...ceremony, timeline: ceremony.timeline.filter((_, j) => j !== i) })}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            ))}
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1.5 rounded-full px-4 text-xs"
-              onClick={() => setCeremony({ ...ceremony, timeline: [...ceremony.timeline, { time: "00:00", label: "" }] })}
-            >
-              <Plus className="h-3.5 w-3.5" /> Adicionar horário
-            </Button>
-          </div>
-        </div>
-      </Panel>
-
-      {/* DRESSCODE */}
-      <Panel
-        title="Dresscode"
-        description="Textos e imagens das sugestões de traje (uma URL de imagem por item)."
-        saving={save.isPending}
-        onSave={() => doSave("dresscode", dresscode)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.eyebrow} onChange={(e) => setDresscode({ ...dresscode, eyebrow: e.target.value })} />
-          </Field>
-          <Field label="Título">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.title} onChange={(e) => setDresscode({ ...dresscode, title: e.target.value })} />
-          </Field>
-        </div>
-        <Field label="Texto de introdução">
-          <Textarea className="min-h-[80px] text-sm" value={dresscode.intro} onChange={(e) => setDresscode({ ...dresscode, intro: e.target.value })} />
-        </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Título masculino">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.menTitle} onChange={(e) => setDresscode({ ...dresscode, menTitle: e.target.value })} />
-          </Field>
-          <Field label="Título feminino">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.womenTitle} onChange={(e) => setDresscode({ ...dresscode, womenTitle: e.target.value })} />
-          </Field>
-        </div>
-        <div>
-          <div className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Imagens — {dresscode.menTitle}</div>
-          <StringList values={dresscode.men} onChange={(men) => setDresscode({ ...dresscode, men })} placeholder="URL da imagem" addLabel="Adicionar imagem" />
-        </div>
-        <div>
-          <div className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Imagens — {dresscode.womenTitle}</div>
-          <StringList values={dresscode.women} onChange={(women) => setDresscode({ ...dresscode, women })} placeholder="URL da imagem" addLabel="Adicionar imagem" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Título do aviso">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.avoidTitle} onChange={(e) => setDresscode({ ...dresscode, avoidTitle: e.target.value })} />
-          </Field>
-          <Field label="Texto do aviso">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.avoidNote} onChange={(e) => setDresscode({ ...dresscode, avoidNote: e.target.value })} />
-          </Field>
-        </div>
-      </Panel>
+        </Card>
+      )}
 
       {/* MANUAIS */}
-      <Panel
-        title="Manuais"
-        description="Convidado, Família, Padrinhos e Madrinhas — cada manual vira um item clicável na home."
-        saving={save.isPending}
-        onSave={() => doSave("manuals", manuals)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={manuals.eyebrow} onChange={(e) => setManuals({ ...manuals, eyebrow: e.target.value })} />
-          </Field>
-          <Field label="Título da seção">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={manuals.title} onChange={(e) => setManuals({ ...manuals, title: e.target.value })} />
-          </Field>
-        </div>
-
-        {manuals.list.map((m, i) => (
-          <div key={m.id} className="rounded-2xl border border-border/70 bg-background/60 p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="font-display text-[15px] italic text-primary">Manual {i + 1}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => setManuals({ ...manuals, list: manuals.list.filter((_, j) => j !== i) })}
+      {tab === "manuals" && (
+        <div className="space-y-3">
+          {manuals.list.map((m, i) => {
+            const patch = (p: Partial<typeof m>) => update("manuals", { ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, ...p } : x)) });
+            return (
+              <Collapsible
+                key={m.id}
+                title={m.title || "Sem título"}
+                meta={`${m.items.length} tópicos`}
+                onRemove={() => update("manuals", { ...manuals, list: manuals.list.filter((_, j) => j !== i) })}
               >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Título">
+                    <Input className={input} value={m.title} onChange={(e) => patch({ title: e.target.value })} />
+                  </Field>
+                  <Field label="Subtítulo">
+                    <Input className={input} value={m.subtitle} onChange={(e) => patch({ subtitle: e.target.value })} />
+                  </Field>
+                </div>
+                <Field label="Imagem do cartão (URL)">
+                  <div className="flex items-center gap-3">
+                    {m.image && <img src={m.image} alt="" className="h-12 w-12 shrink-0 rounded-xl object-cover" />}
+                    <Input className={input} value={m.image ?? ""} placeholder="https://…" onChange={(e) => patch({ image: e.target.value })} />
+                  </div>
+                </Field>
+                <div>
+                  <div className="mb-2 text-[12.5px] font-semibold text-foreground/80">Tópicos</div>
+                  <StringList multiline values={m.items} onChange={(items) => patch({ items })} addLabel="Adicionar tópico" />
+                </div>
+              </Collapsible>
+            );
+          })}
+          <AddButton
+            onClick={() =>
+              update("manuals", { ...manuals, list: [...manuals.list, { id: `manual-${Date.now()}`, title: "Novo manual", subtitle: "", items: [""] }] })
+            }
+          >
+            Adicionar manual
+          </AddButton>
+          <Card title="Títulos da seção">
             <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Etiqueta">
+                <Input className={input} value={manuals.eyebrow} onChange={(e) => update("manuals", { ...manuals, eyebrow: e.target.value })} />
+              </Field>
               <Field label="Título">
-                <Input
-                  className="h-10 rounded-xl bg-background/70 text-sm"
-                  value={m.title}
-                  onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)) })}
-                />
-              </Field>
-              <Field label="Subtítulo">
-                <Input
-                  className="h-10 rounded-xl bg-background/70 text-sm"
-                  value={m.subtitle}
-                  onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, subtitle: e.target.value } : x)) })}
-                />
+                <Input className={input} value={manuals.title} onChange={(e) => update("manuals", { ...manuals, title: e.target.value })} />
               </Field>
             </div>
-            <div className="mt-4">
-              <Field label="Imagem do card (URL)">
-                <Input
-                  className="h-10 rounded-xl bg-background/70 text-sm"
-                  value={m.image ?? ""}
-                  placeholder="https://..."
-                  onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, image: e.target.value } : x)) })}
-                />
-              </Field>
-            </div>
-            <div className="mt-4">
-              <div className="mb-2 text-[11px] uppercase tracking-widest text-muted-foreground">Tópicos</div>
-              <StringList
-                multiline
-                values={m.items}
-                onChange={(items) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, items } : x)) })}
-                addLabel="Adicionar tópico"
-              />
-            </div>
-          </div>
-        ))}
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 gap-1.5 rounded-full px-4 text-xs"
-          onClick={() =>
-            setManuals({
-              ...manuals,
-              list: [...manuals.list, { id: `manual-${Date.now()}`, title: "Novo manual", subtitle: "", items: [""] }],
-            })
-          }
-        >
-          <Plus className="h-3.5 w-3.5" /> Adicionar manual
-        </Button>
-      </Panel>
+          </Card>
+        </div>
+      )}
 
       {/* PRESENTE */}
-      <Panel
-        title="Nosso Presente"
-        description="Texto e chave Pix exibidos na home."
-        saving={save.isPending}
-        onSave={() => doSave("gift", gift)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.eyebrow} onChange={(e) => setGift({ ...gift, eyebrow: e.target.value })} />
+      {tab === "gift" && (
+        <Card title="Nosso Presente">
+          <Field label="Texto">
+            <Textarea className={`${area} min-h-[120px]`} value={gift.text} onChange={(e) => update("gift", { ...gift, text: e.target.value })} />
           </Field>
-          <Field label="Título">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.title} onChange={(e) => setGift({ ...gift, title: e.target.value })} />
-          </Field>
-        </div>
-        <Field label="Texto">
-          <Textarea className="min-h-[100px] text-sm" value={gift.text} onChange={(e) => setGift({ ...gift, text: e.target.value })} />
-        </Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Rótulo da chave">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.pixLabel} onChange={(e) => setGift({ ...gift, pixLabel: e.target.value })} />
-          </Field>
-          <Field label="Chave Pix">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.pixKey} onChange={(e) => setGift({ ...gift, pixKey: e.target.value })} />
-          </Field>
-        </div>
-      </Panel>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Rótulo da chave">
+              <Input className={input} value={gift.pixLabel} onChange={(e) => update("gift", { ...gift, pixLabel: e.target.value })} />
+            </Field>
+            <Field label="Chave Pix">
+              <Input className={input} value={gift.pixKey} onChange={(e) => update("gift", { ...gift, pixKey: e.target.value })} />
+            </Field>
+            <Field label="Etiqueta">
+              <Input className={input} value={gift.eyebrow} onChange={(e) => update("gift", { ...gift, eyebrow: e.target.value })} />
+            </Field>
+            <Field label="Título">
+              <Input className={input} value={gift.title} onChange={(e) => update("gift", { ...gift, title: e.target.value })} />
+            </Field>
+          </div>
+        </Card>
+      )}
 
       {/* MESAS */}
-      <Panel
-        title="Mesa dos Convidados"
-        description="Distribua os convidados entre as mesas da recepção. Use parênteses para o parentesco (ex.: Maria (Mãe da Noiva)) e marque o check quando o convite for entregue."
-        saving={save.isPending}
-        onSave={() => doSave("tables", tables)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={tables.eyebrow} onChange={(e) => setTables({ ...tables, eyebrow: e.target.value })} />
-          </Field>
-          <Field label="Título da página">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={tables.title} onChange={(e) => setTables({ ...tables, title: e.target.value })} />
-          </Field>
-        </div>
-
-        {tables.list.map((t, i) => (
-          <div key={t.id} className="rounded-2xl border border-border/70 bg-background/60 p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="font-display text-[15px] italic text-primary">
-                Mesa {t.id} · {t.guests.length} convidado(s)
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => setTables({ ...tables, list: tables.list.filter((_, j) => j !== i) })}
+      {tab === "tables" && (
+        <div className="space-y-3">
+          {(() => {
+            const all = tables.list.flatMap((t) => t.guests);
+            const inv = all.filter((g) => g.invited).length;
+            return (
+              <div className={`${panelCard} flex items-center gap-4 p-4`}>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[12.5px] font-semibold text-muted-foreground">Convites entregues</div>
+                  <div className="text-[22px] font-extrabold tabular-nums">
+                    {inv} <span className="text-[14px] font-bold text-muted-foreground">de {all.length}</span>
+                  </div>
+                </div>
+                <div className="h-2.5 w-28 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-success" style={{ width: `${all.length ? (inv / all.length) * 100 : 0}%` }} />
+                </div>
+              </div>
+            );
+          })()}
+          {tables.list.map((t, i) => {
+            const inv = t.guests.filter((g) => g.invited).length;
+            return (
+              <Collapsible
+                key={t.id}
+                title={`Mesa ${t.id}`}
+                meta={`${t.guests.length} convidados · ${inv} convites entregues`}
+                onRemove={() => update("tables", { ...tables, list: tables.list.filter((_, j) => j !== i) })}
               >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+                <GuestRows
+                  guests={t.guests}
+                  onChange={(guests) => update("tables", { ...tables, list: tables.list.map((x, j) => (j === i ? { ...x, guests } : x)) })}
+                />
+              </Collapsible>
+            );
+          })}
+          <AddButton
+            onClick={() =>
+              update("tables", {
+                ...tables,
+                list: [...tables.list, { id: Math.max(0, ...tables.list.map((t) => t.id)) + 1, guests: [{ name: "", invited: false }] }],
+              })
+            }
+          >
+            Adicionar mesa
+          </AddButton>
+          <Card title="Títulos da página">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Etiqueta">
+                <Input className={input} value={tables.eyebrow} onChange={(e) => update("tables", { ...tables, eyebrow: e.target.value })} />
+              </Field>
+              <Field label="Título">
+                <Input className={input} value={tables.title} onChange={(e) => update("tables", { ...tables, title: e.target.value })} />
+              </Field>
             </div>
-            <GuestRows
-              guests={t.guests}
-              onChange={(guests) =>
-                setTables({ ...tables, list: tables.list.map((x, j) => (j === i ? { ...x, guests } : x)) })
-              }
-            />
-          </div>
-        ))}
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 gap-1.5 rounded-full px-4 text-xs"
-          onClick={() =>
-            setTables({
-              ...tables,
-              list: [...tables.list, { id: Math.max(0, ...tables.list.map((t) => t.id)) + 1, guests: [{ name: "", invited: false }] }],
-            })
-          }
-        >
-          <Plus className="h-3.5 w-3.5" /> Adicionar mesa
-        </Button>
-      </Panel>
+          </Card>
+        </div>
+      )}
 
-      {/* PRÉ-WEDDING */}
-      <Panel
-        title="Pré-Wedding"
-        description="Fotos exibidas abaixo da seção Nosso Presente."
-        saving={save.isPending}
-        onSave={() => doSave("prewedding", prewedding)}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Etiqueta">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={prewedding.eyebrow} onChange={(e) => setPrewedding({ ...prewedding, eyebrow: e.target.value })} />
-          </Field>
-          <Field label="Título">
-            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={prewedding.title} onChange={(e) => setPrewedding({ ...prewedding, title: e.target.value })} />
-          </Field>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {prewedding.photos.map((p, i) => (
-            <div key={i} className="aspect-[3/4] overflow-hidden rounded-md border border-border/60">
-              {p ? <img src={p} alt="" className="h-full w-full object-cover" /> : null}
+      {/* TRAJE */}
+      {tab === "dresscode" && (
+        <>
+          <Card title="Textos">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Etiqueta">
+                <Input className={input} value={dresscode.eyebrow} onChange={(e) => update("dresscode", { ...dresscode, eyebrow: e.target.value })} />
+              </Field>
+              <Field label="Título">
+                <Input className={input} value={dresscode.title} onChange={(e) => update("dresscode", { ...dresscode, title: e.target.value })} />
+              </Field>
             </div>
-          ))}
+            <Field label="Introdução">
+              <Textarea className={`${area} min-h-[90px]`} value={dresscode.intro} onChange={(e) => update("dresscode", { ...dresscode, intro: e.target.value })} />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Título do aviso">
+                <Input className={input} value={dresscode.avoidTitle} onChange={(e) => update("dresscode", { ...dresscode, avoidTitle: e.target.value })} />
+              </Field>
+              <Field label="Texto do aviso">
+                <Input className={input} value={dresscode.avoidNote} onChange={(e) => update("dresscode", { ...dresscode, avoidNote: e.target.value })} />
+              </Field>
+            </div>
+          </Card>
+          <Collapsible title="Imagens de referência" meta={`${dresscode.men.length + dresscode.women.length} imagens (avançado)`}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Título masculino">
+                <Input className={input} value={dresscode.menTitle} onChange={(e) => update("dresscode", { ...dresscode, menTitle: e.target.value })} />
+              </Field>
+              <Field label="Título feminino">
+                <Input className={input} value={dresscode.womenTitle} onChange={(e) => update("dresscode", { ...dresscode, womenTitle: e.target.value })} />
+              </Field>
+            </div>
+            <div className="text-[12.5px] font-semibold text-foreground/80">{dresscode.menTitle}</div>
+            <StringList values={dresscode.men} onChange={(men) => update("dresscode", { ...dresscode, men })} placeholder="URL da imagem" addLabel="Adicionar imagem" />
+            <div className="text-[12.5px] font-semibold text-foreground/80">{dresscode.womenTitle}</div>
+            <StringList values={dresscode.women} onChange={(women) => update("dresscode", { ...dresscode, women })} placeholder="URL da imagem" addLabel="Adicionar imagem" />
+          </Collapsible>
+        </>
+      )}
+
+      {/* FOTOS */}
+      {tab === "prewedding" && (
+        <Card title="Pré-Wedding">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {prewedding.photos.map((p, i) => (
+              <div key={i} className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
+                {p ? <img src={p} alt="" className="h-full w-full object-cover" /> : null}
+                <span className="absolute left-1.5 top-1.5 rounded-full bg-black/50 px-2 text-[11px] font-bold text-white">{i + 1}</span>
+              </div>
+            ))}
+          </div>
+          <StringList values={prewedding.photos} onChange={(photos) => update("prewedding", { ...prewedding, photos })} placeholder="URL da imagem" addLabel="Adicionar foto" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Etiqueta">
+              <Input className={input} value={prewedding.eyebrow} onChange={(e) => update("prewedding", { ...prewedding, eyebrow: e.target.value })} />
+            </Field>
+            <Field label="Título">
+              <Input className={input} value={prewedding.title} onChange={(e) => update("prewedding", { ...prewedding, title: e.target.value })} />
+            </Field>
+          </div>
+        </Card>
+      )}
+
+      {/* Barra de salvar */}
+      <div className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+64px)] z-30 px-4 lg:bottom-6 lg:left-64 lg:px-10">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 rounded-full bg-foreground py-2 pl-5 pr-2 text-background shadow-[0_18px_40px_-14px_rgba(58,40,32,0.6)]">
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">
+            {dirty[tab] ? (
+              <>
+                <span className="mr-2 inline-block h-2 w-2 rounded-full bg-warning" />
+                Alterações em {current.label}
+              </>
+            ) : (
+              <span className="text-background/70">Tudo salvo</span>
+            )}
+          </span>
+          <button
+            onClick={doSave}
+            disabled={!dirty[tab] || save.isPending}
+            className="h-10 shrink-0 rounded-full bg-background px-5 text-[13.5px] font-extrabold text-foreground transition disabled:opacity-40"
+          >
+            {save.isPending ? "Salvando…" : "Salvar"}
+          </button>
         </div>
-        <StringList
-          values={prewedding.photos}
-          onChange={(photos) => setPrewedding({ ...prewedding, photos })}
-          placeholder="URL da imagem"
-          addLabel="Adicionar foto"
-        />
-      </Panel>
+      </div>
     </div>
   );
 }

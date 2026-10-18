@@ -42,6 +42,17 @@ export type Ceremony = {
   timeline: TimelineItem[];
 };
 
+export type Reception = {
+  eyebrow: string;
+  title: string;
+  venue: string;
+  address: string;
+  timeLabel: string;
+  endLabel: string;
+  description: string;
+  mapsUrl: string;
+};
+
 export type Dresscode = {
   eyebrow: string;
   title: string;
@@ -93,6 +104,7 @@ export function normalizeTables(value: Tables): Tables {
 
 export type SiteContent = {
   ceremony: Ceremony;
+  reception: Reception;
   dresscode: Dresscode;
   manuals: Manuals;
   gift: GiftSection;
@@ -118,6 +130,17 @@ export const DEFAULT_CONTENT: SiteContent = {
       { time: "19:00", label: "Fotos com os Convidados" },
       { time: "19:45", label: "Encerramento" },
     ],
+  },
+  reception: {
+    eyebrow: "Depois da cerimônia",
+    title: "A Festa",
+    venue: "Realiza Festas",
+    address: "Tv. Timbó, 2634 — Marco",
+    timeLabel: "A partir das 19h",
+    endLabel: "Encerramento às 23h",
+    description:
+      "Depois do sim, seguimos todos para o salão: jantar, bebidas e muita comemoração juntos.",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Realiza%20Festas%20Tv.%20Timb%C3%B3%202634%20Marco%20Bel%C3%A9m",
   },
   dresscode: {
     eyebrow: "Traje",
@@ -283,6 +306,7 @@ export function useSiteContent() {
       const map = new Map((data ?? []).map((r) => [r.key, r.value]));
       return {
         ceremony: merge(DEFAULT_CONTENT.ceremony, map.get("ceremony")),
+        reception: merge(DEFAULT_CONTENT.reception, map.get("reception")),
         dresscode: merge(DEFAULT_CONTENT.dresscode, map.get("dresscode")),
         manuals: merge(DEFAULT_CONTENT.manuals, map.get("manuals")),
         gift: merge(DEFAULT_CONTENT.gift, map.get("gift")),
