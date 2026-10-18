@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Save, Trash2, GripVertical, Check } from "lucide-react";
-import { AppShell } from "@/components/AppShell";
+import { Plus, Save, Trash2, GripVertical, Check, Settings } from "lucide-react";
+import { AppShell, PageTitle } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/site")({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[11px] uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="mb-1.5 block text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
       {children}
     </label>
   );
@@ -52,13 +52,13 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="border-border/60 bg-card p-5">
-      <div className="mb-5 flex items-start justify-between gap-4">
+    <Card className="rounded-[24px] border-border/70 bg-card/90 p-5 shadow-[0_18px_36px_-28px_rgba(58,40,32,0.55)] sm:p-6">
+      <div className="mb-5 flex items-start justify-between gap-4 border-b border-dashed border-border pb-4">
         <div>
-          <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+          <h2 className="font-display text-[21px] font-normal leading-tight">{title}</h2>
+          <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">{description}</p>
         </div>
-        <Button size="sm" onClick={onSave} disabled={saving} className="h-8 gap-1.5 px-3 text-xs">
+        <Button size="sm" onClick={onSave} disabled={saving} className="h-9 shrink-0 gap-1.5 rounded-full px-4 text-xs">
           <Save className="h-3.5 w-3.5" /> Salvar
         </Button>
       </div>
@@ -87,9 +87,9 @@ function StringList({
         <div key={i} className="flex items-start gap-2">
           <span className="mt-2.5 text-[11px] tabular-nums text-muted-foreground">{i + 1}</span>
           {multiline ? (
-            <Textarea value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="min-h-[70px] text-sm" />
+            <Textarea value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="min-h-[70px] rounded-xl bg-background/70 text-sm" />
           ) : (
-            <Input value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="h-9 text-sm" />
+            <Input value={v} onChange={(e) => set(i, e.target.value)} placeholder={placeholder} className="h-10 rounded-xl bg-background/70 text-sm" />
           )}
           <Button
             variant="ghost"
@@ -101,7 +101,7 @@ function StringList({
           </Button>
         </div>
       ))}
-      <Button variant="outline" size="sm" className="h-8 gap-1.5 px-3 text-xs" onClick={() => onChange([...values, ""])}>
+      <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-full px-4 text-xs" onClick={() => onChange([...values, ""])}>
         <Plus className="h-3.5 w-3.5" /> {addLabel}
       </Button>
     </div>
@@ -132,7 +132,7 @@ function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[
             value={g.name}
             onChange={(e) => set(i, { name: e.target.value })}
             placeholder="Nome do convidado"
-            className="h-9 text-sm"
+            className="h-10 rounded-xl bg-background/70 text-sm"
           />
           <Button
             variant="ghost"
@@ -144,7 +144,7 @@ function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[
           </Button>
         </div>
       ))}
-      <Button variant="outline" size="sm" className="h-8 gap-1.5 px-3 text-xs" onClick={() => onChange([...guests, { name: "", invited: false }])}>
+      <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-full px-4 text-xs" onClick={() => onChange([...guests, { name: "", invited: false }])}>
         <Plus className="h-3.5 w-3.5" /> Adicionar convidado
       </Button>
     </div>
@@ -187,12 +187,11 @@ function SiteEditor() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-lg font-semibold tracking-tight">Conteúdo do site</h1>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Edite os textos e imagens que aparecem no convite digital. Cada bloco é salvo separadamente.
-        </p>
-      </div>
+      <PageTitle
+        icon={Settings}
+        title="Conteúdo do site"
+        subtitle="Edite os textos e imagens que aparecem no convite digital. Cada bloco é salvo separadamente."
+      />
 
       {/* CERIMÔNIA */}
       <Panel
@@ -203,26 +202,26 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={ceremony.eyebrow} onChange={(e) => setCeremony({ ...ceremony, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.eyebrow} onChange={(e) => setCeremony({ ...ceremony, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título">
-            <Input className="h-9 text-sm" value={ceremony.title} onChange={(e) => setCeremony({ ...ceremony, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.title} onChange={(e) => setCeremony({ ...ceremony, title: e.target.value })} />
           </Field>
           <Field label="Data">
-            <Input className="h-9 text-sm" value={ceremony.dateLabel} onChange={(e) => setCeremony({ ...ceremony, dateLabel: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.dateLabel} onChange={(e) => setCeremony({ ...ceremony, dateLabel: e.target.value })} />
           </Field>
           <Field label="Horário">
-            <Input className="h-9 text-sm" value={ceremony.timeLabel} onChange={(e) => setCeremony({ ...ceremony, timeLabel: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.timeLabel} onChange={(e) => setCeremony({ ...ceremony, timeLabel: e.target.value })} />
           </Field>
           <Field label="Local">
-            <Input className="h-9 text-sm" value={ceremony.venue} onChange={(e) => setCeremony({ ...ceremony, venue: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.venue} onChange={(e) => setCeremony({ ...ceremony, venue: e.target.value })} />
           </Field>
           <Field label="Endereço">
-            <Input className="h-9 text-sm" value={ceremony.address} onChange={(e) => setCeremony({ ...ceremony, address: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.address} onChange={(e) => setCeremony({ ...ceremony, address: e.target.value })} />
           </Field>
           <div className="sm:col-span-2">
             <Field label="Link do mapa">
-              <Input className="h-9 text-sm" value={ceremony.mapsUrl} onChange={(e) => setCeremony({ ...ceremony, mapsUrl: e.target.value })} />
+              <Input className="h-10 rounded-xl bg-background/70 text-sm" value={ceremony.mapsUrl} onChange={(e) => setCeremony({ ...ceremony, mapsUrl: e.target.value })} />
             </Field>
           </div>
         </div>
@@ -260,7 +259,7 @@ function SiteEditor() {
             <Button
               variant="outline"
               size="sm"
-              className="h-8 gap-1.5 px-3 text-xs"
+              className="h-9 gap-1.5 rounded-full px-4 text-xs"
               onClick={() => setCeremony({ ...ceremony, timeline: [...ceremony.timeline, { time: "00:00", label: "" }] })}
             >
               <Plus className="h-3.5 w-3.5" /> Adicionar horário
@@ -278,10 +277,10 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={dresscode.eyebrow} onChange={(e) => setDresscode({ ...dresscode, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.eyebrow} onChange={(e) => setDresscode({ ...dresscode, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título">
-            <Input className="h-9 text-sm" value={dresscode.title} onChange={(e) => setDresscode({ ...dresscode, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.title} onChange={(e) => setDresscode({ ...dresscode, title: e.target.value })} />
           </Field>
         </div>
         <Field label="Texto de introdução">
@@ -289,10 +288,10 @@ function SiteEditor() {
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Título masculino">
-            <Input className="h-9 text-sm" value={dresscode.menTitle} onChange={(e) => setDresscode({ ...dresscode, menTitle: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.menTitle} onChange={(e) => setDresscode({ ...dresscode, menTitle: e.target.value })} />
           </Field>
           <Field label="Título feminino">
-            <Input className="h-9 text-sm" value={dresscode.womenTitle} onChange={(e) => setDresscode({ ...dresscode, womenTitle: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.womenTitle} onChange={(e) => setDresscode({ ...dresscode, womenTitle: e.target.value })} />
           </Field>
         </div>
         <div>
@@ -305,10 +304,10 @@ function SiteEditor() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Título do aviso">
-            <Input className="h-9 text-sm" value={dresscode.avoidTitle} onChange={(e) => setDresscode({ ...dresscode, avoidTitle: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.avoidTitle} onChange={(e) => setDresscode({ ...dresscode, avoidTitle: e.target.value })} />
           </Field>
           <Field label="Texto do aviso">
-            <Input className="h-9 text-sm" value={dresscode.avoidNote} onChange={(e) => setDresscode({ ...dresscode, avoidNote: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={dresscode.avoidNote} onChange={(e) => setDresscode({ ...dresscode, avoidNote: e.target.value })} />
           </Field>
         </div>
       </Panel>
@@ -322,17 +321,17 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={manuals.eyebrow} onChange={(e) => setManuals({ ...manuals, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={manuals.eyebrow} onChange={(e) => setManuals({ ...manuals, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título da seção">
-            <Input className="h-9 text-sm" value={manuals.title} onChange={(e) => setManuals({ ...manuals, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={manuals.title} onChange={(e) => setManuals({ ...manuals, title: e.target.value })} />
           </Field>
         </div>
 
         {manuals.list.map((m, i) => (
-          <div key={m.id} className="rounded-lg border border-border/60 bg-background/40 p-4">
+          <div key={m.id} className="rounded-2xl border border-border/70 bg-background/60 p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-[11px] uppercase tracking-widest text-primary">Manual {i + 1}</span>
+              <span className="font-display text-[15px] italic text-primary">Manual {i + 1}</span>
               <Button
                 variant="ghost"
                 size="icon"
@@ -345,14 +344,14 @@ function SiteEditor() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Título">
                 <Input
-                  className="h-9 text-sm"
+                  className="h-10 rounded-xl bg-background/70 text-sm"
                   value={m.title}
                   onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)) })}
                 />
               </Field>
               <Field label="Subtítulo">
                 <Input
-                  className="h-9 text-sm"
+                  className="h-10 rounded-xl bg-background/70 text-sm"
                   value={m.subtitle}
                   onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, subtitle: e.target.value } : x)) })}
                 />
@@ -361,7 +360,7 @@ function SiteEditor() {
             <div className="mt-4">
               <Field label="Imagem do card (URL)">
                 <Input
-                  className="h-9 text-sm"
+                  className="h-10 rounded-xl bg-background/70 text-sm"
                   value={m.image ?? ""}
                   placeholder="https://..."
                   onChange={(e) => setManuals({ ...manuals, list: manuals.list.map((x, j) => (j === i ? { ...x, image: e.target.value } : x)) })}
@@ -382,7 +381,7 @@ function SiteEditor() {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1.5 px-3 text-xs"
+          className="h-9 gap-1.5 rounded-full px-4 text-xs"
           onClick={() =>
             setManuals({
               ...manuals,
@@ -403,10 +402,10 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={gift.eyebrow} onChange={(e) => setGift({ ...gift, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.eyebrow} onChange={(e) => setGift({ ...gift, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título">
-            <Input className="h-9 text-sm" value={gift.title} onChange={(e) => setGift({ ...gift, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.title} onChange={(e) => setGift({ ...gift, title: e.target.value })} />
           </Field>
         </div>
         <Field label="Texto">
@@ -414,10 +413,10 @@ function SiteEditor() {
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Rótulo da chave">
-            <Input className="h-9 text-sm" value={gift.pixLabel} onChange={(e) => setGift({ ...gift, pixLabel: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.pixLabel} onChange={(e) => setGift({ ...gift, pixLabel: e.target.value })} />
           </Field>
           <Field label="Chave Pix">
-            <Input className="h-9 text-sm" value={gift.pixKey} onChange={(e) => setGift({ ...gift, pixKey: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={gift.pixKey} onChange={(e) => setGift({ ...gift, pixKey: e.target.value })} />
           </Field>
         </div>
       </Panel>
@@ -431,17 +430,17 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={tables.eyebrow} onChange={(e) => setTables({ ...tables, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={tables.eyebrow} onChange={(e) => setTables({ ...tables, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título da página">
-            <Input className="h-9 text-sm" value={tables.title} onChange={(e) => setTables({ ...tables, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={tables.title} onChange={(e) => setTables({ ...tables, title: e.target.value })} />
           </Field>
         </div>
 
         {tables.list.map((t, i) => (
-          <div key={t.id} className="rounded-lg border border-border/60 bg-background/40 p-4">
+          <div key={t.id} className="rounded-2xl border border-border/70 bg-background/60 p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-[11px] uppercase tracking-widest text-primary">
+              <span className="font-display text-[15px] italic text-primary">
                 Mesa {t.id} · {t.guests.length} convidado(s)
               </span>
               <Button
@@ -464,7 +463,7 @@ function SiteEditor() {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1.5 px-3 text-xs"
+          className="h-9 gap-1.5 rounded-full px-4 text-xs"
           onClick={() =>
             setTables({
               ...tables,
@@ -485,10 +484,10 @@ function SiteEditor() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Etiqueta">
-            <Input className="h-9 text-sm" value={prewedding.eyebrow} onChange={(e) => setPrewedding({ ...prewedding, eyebrow: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={prewedding.eyebrow} onChange={(e) => setPrewedding({ ...prewedding, eyebrow: e.target.value })} />
           </Field>
           <Field label="Título">
-            <Input className="h-9 text-sm" value={prewedding.title} onChange={(e) => setPrewedding({ ...prewedding, title: e.target.value })} />
+            <Input className="h-10 rounded-xl bg-background/70 text-sm" value={prewedding.title} onChange={(e) => setPrewedding({ ...prewedding, title: e.target.value })} />
           </Field>
         </div>
         <div className="grid grid-cols-4 gap-2">

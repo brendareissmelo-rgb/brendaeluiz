@@ -14,7 +14,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { AppShell } from "@/components/AppShell";
+import { AppShell, PageTitle } from "@/components/AppShell";
 import {
   useExpenses,
   useUpsertExpense,
@@ -55,7 +55,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { DonutRing, Meter, OwnerTag, StatusBadge, ownerOf, OWNER_STYLES } from "@/components/finance-ui";
+import {
+  DonutRing,
+  FIN_COLORS as C,
+  LegendDot,
+  Meter,
+  OwnerTag,
+  StatusBadge,
+  ownerOf,
+  OWNER_STYLES,
+} from "@/components/finance-ui";
 
 export const Route = createFileRoute("/despesas")({
   component: () => (
@@ -65,7 +74,11 @@ export const Route = createFileRoute("/despesas")({
   ),
 });
 
-const C = { paid: "#3fcfa0", reserved: "#3b82f6", remaining: "#e0a33c" };
+const cardBase = "rounded-[22px] border-border/70 bg-card/90 shadow-[0_18px_36px_-28px_rgba(58,40,32,0.55)]";
+const chip =
+  "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-colors";
+const fieldLabel = "text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground";
+const field = "h-11 rounded-xl bg-background/70";
 
 const STATUS_LABEL: Record<Expense["status"], string> = {
   paid: "Pago",
@@ -250,46 +263,40 @@ function ExpensesPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Receipt className="h-4 w-4" />
-            </span>
-            <h1 className="text-2xl font-bold tracking-tight">Despesas</h1>
-          </div>
-          <p className="mt-1 text-xs font-normal text-muted-foreground">
-            Adicione, edite ou remova. Tudo sincroniza com o dashboard.
-          </p>
-        </div>
-        <Button size="sm" onClick={openNew}>
-          <Plus className="mr-1 h-3.5 w-3.5" /> Nova despesa
-        </Button>
-      </div>
+      <PageTitle
+        icon={Receipt}
+        title="Despesas"
+        subtitle="Adicione, edite ou remova. Tudo sincroniza com o resumo."
+        action={
+          <Button onClick={openNew} className="hidden h-10 rounded-full px-5 sm:inline-flex">
+            <Plus className="h-4 w-4" /> Nova despesa
+          </Button>
+        }
+      />
 
       {/* RESUMO DO FILTRO */}
-      <Card className="border-border/50 bg-card p-5">
-        <div className="flex flex-wrap items-center gap-6">
+      <Card className={`${cardBase} p-5`}>
+        <div className="flex items-center gap-4">
           <DonutRing
-            size={92}
-            thickness={9}
+            size={84}
+            thickness={8}
             segments={[
               { value: totals.paid, color: C.paid },
               { value: totals.reserved, color: C.reserved },
               { value: totals.remaining, color: C.remaining },
             ]}
           >
-            <span className="text-base font-bold tabular-nums">{totals.pct}%</span>
-            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">coberto</span>
+            <span className="text-base font-semibold tabular-nums">{totals.pct}%</span>
+            <span className="text-[8.5px] uppercase tracking-widest text-muted-foreground">coberto</span>
           </DonutRing>
-          <div className="min-w-[180px] flex-1">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
               Seleção atual · {filtered.length} item(ns)
             </div>
-            <div className="mt-1 text-3xl font-bold leading-none tabular-nums">{BRL(totals.total)}</div>
-            <div className="mt-4">
+            <div className="mt-1.5 truncate font-display text-[30px] leading-none tabular-nums">{BRL(totals.total)}</div>
+            <div className="mt-3">
               <Meter
-                height={8}
+                height={7}
                 segments={[
                   { value: totals.paid, color: C.paid },
                   { value: totals.reserved, color: C.reserved },
@@ -298,33 +305,27 @@ function ExpensesPage() {
               />
             </div>
           </div>
-          <div className="flex gap-6">
-            <div>
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-                <CheckCircle2 className="h-3 w-3 text-success" /> Pago
-              </div>
-              <div className="mt-1 text-lg font-bold tabular-nums text-success">{BRL(totals.paid)}</div>
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-                <PiggyBank className="h-3 w-3 text-sky-400" /> Na caixinha
-              </div>
-              <div className="mt-1 text-lg font-bold tabular-nums text-sky-400">{BRL(totals.reserved)}</div>
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-                <Timer className="h-3 w-3 text-warning" /> A pagar
-              </div>
-              <div className="mt-1 text-lg font-bold tabular-nums text-warning">{BRL(totals.remaining)}</div>
-            </div>
-          </div>
-
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted/60 px-3 py-2.5">
+          <LegendDot color={C.paid} label="Pago" value={BRL(totals.paid)} />
+          <LegendDot color={C.reserved} label="Caixinha" value={BRL(totals.reserved)} />
+          <LegendDot color={C.remaining} label="A pagar" value={BRL(totals.remaining)} />
         </div>
       </Card>
 
       {/* FILTROS */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-1.5">
+      <div className="space-y-2.5">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por nome ou categoria"
+            className="h-11 rounded-full bg-card/80 pl-11 text-[14px]"
+          />
+        </div>
+
+        <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
           {(["all", "paid", "installment", "pending"] as const).map((k) => {
             const Icon = k === "all" ? Wallet : STATUS_ICON[k];
             return (
@@ -332,67 +333,58 @@ function ExpensesPage() {
                 key={k}
                 onClick={() => setFilter(k)}
                 className={
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors " +
+                  chip +
+                  " " +
                   (filter === k
-                    ? "border-primary/50 bg-primary/10 text-primary"
-                    : "border-border/60 bg-card text-muted-foreground hover:text-foreground")
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border/70 bg-card/80 text-muted-foreground hover:text-foreground")
                 }
               >
-                <Icon className="h-3 w-3" />
+                <Icon className="h-3.5 w-3.5" />
                 {k === "all" ? "Todas" : STATUS_LABEL[k]}
-                <span className="tabular-nums opacity-60">{counts[k]}</span>
+                <span className="tabular-nums opacity-70">{counts[k]}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
           {(["all", "Luiz", "Brenda", "Ambos", "Presente"] as const).map((k) => {
             const style = k === "all" ? null : OWNER_STYLES[k];
-            const Icon = k === "all" ? Users : k === "Presente" ? Gift : Users;
             const active = ownerFilter === k;
             return (
               <button
                 key={k}
                 onClick={() => setOwnerFilter(k)}
                 className={
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors " +
+                  chip +
+                  " " +
                   (active
                     ? style
                       ? `${style.bg} ${style.text} ${style.border}`
-                      : "border-primary/50 bg-primary/10 text-primary"
-                    : "border-border/60 bg-card text-muted-foreground hover:text-foreground")
+                      : "border-primary/40 bg-primary/10 text-primary"
+                    : "border-border/70 bg-card/80 text-muted-foreground hover:text-foreground")
                 }
               >
-                {k === "all" ? <Icon className="h-3 w-3" /> : <span className={`h-2 w-2 rounded-full ${style!.dot}`} />}
+                {k === "all" ? <Users className="h-3.5 w-3.5" /> : <span className={`h-2 w-2 rounded-full ${style!.dot}`} />}
                 {k === "all" ? "Todos" : k}
-                <span className="tabular-nums opacity-60">{ownerCounts[k]}</span>
+                <span className="tabular-nums opacity-70">{ownerCounts[k]}</span>
               </button>
             );
           })}
-
-          <div className="relative ml-auto">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar..."
-              className="h-8 w-44 pl-8 text-xs"
-            />
-          </div>
         </div>
       </div>
 
       {/* LISTA */}
       {isLoading ? (
-        <Card className="border-border/50 bg-card p-8 text-center text-xs text-muted-foreground">Carregando...</Card>
+        <Card className={`${cardBase} p-8 text-center text-xs text-muted-foreground`}>Carregando...</Card>
       ) : filtered.length === 0 ? (
-        <Card className="border-border/50 bg-card p-10 text-center">
+        <Card className={`${cardBase} p-10 text-center`}>
           <Receipt className="mx-auto h-6 w-6 text-muted-foreground/60" />
           <p className="mt-2 text-xs text-muted-foreground">Nenhuma despesa nesta seleção.</p>
         </Card>
       ) : (
-        <div className="grid gap-2.5">
+        <div className="grid gap-3 lg:grid-cols-2 [&>*]:min-w-0">
           {filtered.map((e) => {
             const a = computeAmounts(e);
             const p = a.total > 0 ? Math.round(((a.paid + a.reserved) / a.total) * 100) : 0;
@@ -402,90 +394,91 @@ function ExpensesPage() {
             return (
               <Card
                 key={e.id}
-                className={`group border-border/50 bg-card p-4 transition-colors hover:border-border ${
-                  isGift ? "border-amber-500/25" : ""
-                }`}
+                className={`${cardBase} p-4 transition-colors hover:border-primary/30 ${isGift ? "border-[#d9a54a]/35" : ""}`}
               >
-                <div className="flex flex-wrap items-start gap-4">
+                <div className="flex items-start gap-3">
                   <span
-                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
                       isGift
-                        ? "bg-amber-500/10 text-amber-400"
+                        ? "bg-[#d9a54a]/15 text-[#9a6a2c]"
                         : e.status === "paid"
-                        ? "bg-success/10 text-success"
-                        : e.status === "installment"
-                        ? "bg-primary/10 text-primary"
-                        : "bg-warning/10 text-warning"
+                          ? "bg-success/10 text-success"
+                          : e.status === "installment"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-warning/10 text-warning"
                     }`}
                   >
                     {isGift ? <Gift className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                   </span>
 
-                  <div className="min-w-[180px] flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-sm font-bold tracking-tight">{e.name}</h3>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="pt-0.5 text-[15px] font-semibold leading-snug">{e.name}</h3>
+                      <div className="-mr-1.5 -mt-1 flex shrink-0">
+                        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => openEdit(e)} aria-label="Editar">
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-destructive"
+                          onClick={() => setDeleteId(e.id)}
+                          aria-label="Excluir"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
                       <OwnerTag owner={owner} />
                       <StatusBadge status={e.status} />
+                      <span className="text-[11px] text-muted-foreground">{e.category}</span>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-normal text-muted-foreground">
-                      <span>{e.category}</span>
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
                       {e.status === "installment" && (
                         <span className="tabular-nums">
                           {e.installments_paid}/{e.installments_total} parcelas
                         </span>
                       )}
                       {e.due_date && e.status !== "paid" && (
-                        <span className="tabular-nums">vence {new Date(e.due_date).toLocaleDateString("pt-BR")}</span>
+                        <span className="tabular-nums">
+                          vence {new Date(e.due_date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+                        </span>
                       )}
                     </div>
-                    {!isGift && (
-                      <div className="mt-2.5 max-w-sm">
-                        <Meter
-                          height={5}
-                          segments={[
-                            { value: a.paid, color: C.paid },
-                            { value: a.reserved, color: C.reserved },
-                            { value: a.remaining, color: C.remaining },
-                          ]}
-                        />
-                      </div>
-                    )}
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-5 text-right tabular-nums sm:grid-cols-4">
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Pago</div>
-                      <div className="text-sm font-semibold text-success">{BRL(a.paid)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Na caixinha</div>
-                      <div className="text-sm font-semibold text-sky-400">{BRL(a.reserved)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Restante</div>
-                      <div className="text-sm font-semibold text-warning">{BRL(a.remaining)}</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</div>
-                      <div className="text-base font-bold">{BRL(a.total)}</div>
-                      {!isGift && <div className="text-[10px] font-normal text-muted-foreground">{p}% coberto</div>}
-                    </div>
+                {!isGift && (
+                  <div className="mt-3 flex items-center gap-2.5">
+                    <Meter
+                      height={6}
+                      segments={[
+                        { value: a.paid, color: C.paid },
+                        { value: a.reserved, color: C.reserved },
+                        { value: a.remaining, color: C.remaining },
+                      ]}
+                    />
+                    <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">{p}%</span>
                   </div>
+                )}
 
-
-                  <div className="flex gap-1 self-center">
-                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => openEdit(e)} aria-label="Editar">
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => setDeleteId(e.id)}
-                      aria-label="Excluir"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 rounded-2xl bg-muted/60 px-3.5 py-3 tabular-nums sm:grid-cols-4">
+                  <div className="min-w-0">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Pago</div>
+                    <div className="truncate text-[13.5px] font-semibold text-success">{BRL(a.paid)}</div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Caixinha</div>
+                    <div className="truncate text-[13.5px] font-semibold text-info">{BRL(a.reserved)}</div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Restante</div>
+                    <div className="truncate text-[13.5px] font-semibold text-warning">{BRL(a.remaining)}</div>
+                  </div>
+                  <div className="min-w-0 sm:text-right">
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Total</div>
+                    <div className="truncate text-[14px] font-bold">{BRL(a.total)}</div>
                   </div>
                 </div>
               </Card>
@@ -494,26 +487,35 @@ function ExpensesPage() {
         </div>
       )}
 
+      {/* Botão flutuante (celular) */}
+      <button
+        onClick={openNew}
+        aria-label="Nova despesa"
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+92px)] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_30px_-10px_var(--color-primary)] transition active:scale-95 sm:hidden"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
+
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg border-border/60 bg-card">
+        <DialogContent className="max-h-[92svh] max-w-lg overflow-y-auto rounded-[26px] border-border/70 bg-card">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base">
+            <DialogTitle className="flex items-center gap-2 font-display text-[22px] font-normal">
               {form.id ? <Pencil className="h-4 w-4 text-primary" /> : <Plus className="h-4 w-4 text-primary" />}
               {form.id ? "Editar despesa" : "Nova despesa"}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
             <div className="space-y-1.5 sm:col-span-2">
-              <Label className="text-xs">Nome</Label>
-              <Input
+              <Label className={fieldLabel}>Nome</Label>
+              <Input className={field}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Ex.: Buffet, Vestido, Decoração..."
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Categoria</Label>
-              <Input list="cats" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+              <Label className={fieldLabel}>Categoria</Label>
+              <Input className={field} list="cats" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
               <datalist id="cats">
                 {["Buffet", "Local", "Decoração", "Vestido", "Traje", "Fotografia", "Vídeo", "Música", "Convites", "Lua de mel", "Cerimônia", "Outros"].map((c) => (
                   <option key={c} value={c} />
@@ -521,8 +523,8 @@ function ExpensesPage() {
               </datalist>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Valor total (R$)</Label>
-              <Input
+              <Label className={fieldLabel}>Valor total (R$)</Label>
+              <Input className={field}
                 inputMode="decimal"
                 value={form.total_amount}
                 onChange={(e) => setForm({ ...form, total_amount: e.target.value })}
@@ -530,9 +532,9 @@ function ExpensesPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Status</Label>
+              <Label className={fieldLabel}>Status</Label>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Expense["status"] })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl bg-background/70"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">A pagar</SelectItem>
                   <SelectItem value="installment">Parcelado</SelectItem>
@@ -541,9 +543,9 @@ function ExpensesPage() {
               </Select>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label className="text-xs">Responsável</Label>
+              <Label className={fieldLabel}>Responsável</Label>
               <Select value={form.owner} onValueChange={(v) => setForm({ ...form, owner: v as Owner })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl bg-background/70"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Ambos">Ambos (dividido 50/50)</SelectItem>
                   <SelectItem value="Luiz">Luiz</SelectItem>
@@ -554,10 +556,10 @@ function ExpensesPage() {
             </div>
             {form.status !== "paid" && (
               <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-xs">
+                <Label className={fieldLabel}>
                   Valor de entrada (R$) <span className="font-normal text-muted-foreground">— opcional</span>
                 </Label>
-                <Input
+                <Input className={field}
                   inputMode="decimal"
                   value={form.down_payment}
                   onChange={(e) => setForm({ ...form, down_payment: e.target.value })}
@@ -573,11 +575,11 @@ function ExpensesPage() {
             {form.status !== "paid" && (
               <>
                 <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5 text-xs">
-                    <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                  <Label className={`flex items-center gap-1.5 ${fieldLabel}`}>
+                    <PiggyBank className="h-3.5 w-3.5 text-info" />
                     Caixinha Brenda (R$) <span className="font-normal text-muted-foreground">— opcional</span>
                   </Label>
-                  <Input
+                  <Input className={field}
                     inputMode="decimal"
                     value={form.reserved_brenda}
                     onChange={(e) => setForm({ ...form, reserved_brenda: e.target.value })}
@@ -585,11 +587,11 @@ function ExpensesPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5 text-xs">
-                    <PiggyBank className="h-3.5 w-3.5 text-sky-400" />
+                  <Label className={`flex items-center gap-1.5 ${fieldLabel}`}>
+                    <PiggyBank className="h-3.5 w-3.5 text-info" />
                     Caixinha Luiz (R$) <span className="font-normal text-muted-foreground">— opcional</span>
                   </Label>
-                  <Input
+                  <Input className={field}
                     inputMode="decimal"
                     value={form.reserved_luiz}
                     onChange={(e) => setForm({ ...form, reserved_luiz: e.target.value })}
@@ -605,8 +607,8 @@ function ExpensesPage() {
             {form.status === "installment" && (
               <>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Parcelas totais</Label>
-                  <Input
+                  <Label className={fieldLabel}>Parcelas totais</Label>
+                  <Input className={field}
                     type="number"
                     min={1}
                     value={form.installments_total}
@@ -614,8 +616,8 @@ function ExpensesPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Parcelas pagas</Label>
-                  <Input
+                  <Label className={fieldLabel}>Parcelas pagas</Label>
+                  <Input className={field}
                     type="number"
                     min={0}
                     value={form.installments_paid}
@@ -632,24 +634,24 @@ function ExpensesPage() {
             )}
             {form.status !== "paid" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Vencimento</Label>
-                <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
+                <Label className={fieldLabel}>Vencimento</Label>
+                <Input className={field} type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
               </div>
             )}
             {form.status === "paid" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Data do pagamento</Label>
-                <Input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} />
+                <Label className={fieldLabel}>Data do pagamento</Label>
+                <Input className={field} type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} />
               </div>
             )}
             <div className="space-y-1.5 sm:col-span-2">
-              <Label className="text-xs">Observações</Label>
-              <Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+              <Label className={fieldLabel}>Observações</Label>
+              <Textarea className="rounded-xl bg-background/70" rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
             </div>
           </div>
           <DialogFooter>
-            <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button size="sm" onClick={save} disabled={upsert.isPending}>
+            <Button variant="ghost" className="h-11 rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button className="h-11 rounded-full px-6" onClick={save} disabled={upsert.isPending}>
               {upsert.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>
@@ -657,16 +659,16 @@ function ExpensesPage() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent className="border-border/60 bg-card">
+        <AlertDialogContent className="rounded-[26px] border-border/70 bg-card">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-base">Excluir despesa?</AlertDialogTitle>
+            <AlertDialogTitle className="font-display text-[22px] font-normal">Excluir despesa?</AlertDialogTitle>
             <AlertDialogDescription className="text-xs">
               Essa ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="h-8 text-xs">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="h-8 text-xs" onClick={confirmDelete}>Excluir</AlertDialogAction>
+            <AlertDialogCancel className="h-11 rounded-full">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="h-11 rounded-full bg-destructive hover:bg-destructive/90" onClick={confirmDelete}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -684,7 +686,7 @@ function InstallmentPreview({ total, down, parts, paid }: { total: number; down:
   const remainingAmount = Math.max(total - paidTotal, 0);
   const remainingParts = Math.max(parts - cappedPaid, 0);
   return (
-    <div className="rounded-md border border-border/60 bg-muted/20 p-3 text-xs sm:col-span-2">
+    <div className="rounded-2xl border border-border/70 bg-muted/50 p-3.5 text-xs sm:col-span-2">
       <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
         <CreditCard className="h-3 w-3" /> Resumo do parcelamento
       </div>

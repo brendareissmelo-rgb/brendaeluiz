@@ -15,16 +15,19 @@ import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="paper flex min-h-screen items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <h1 className="text-6xl font-semibold text-foreground">404</h1>
-        <p className="mt-3 text-sm text-muted-foreground">Página não encontrada.</p>
-        <div className="mt-5">
+        <div className="eyebrow text-primary">Ops</div>
+        <h1 className="mt-2 font-script text-7xl text-foreground">Perdido?</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Essa página não existe — mas a festa continua.
+        </p>
+        <div className="mt-7">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Voltar
+            Voltar ao convite
           </Link>
         </div>
       </div>
@@ -37,13 +40,13 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="paper flex min-h-screen items-center justify-center px-6">
       <div className="max-w-md text-center">
-        <h1 className="text-lg font-semibold">Algo deu errado</h1>
+        <h1 className="font-display text-2xl">Algo deu errado</h1>
         <p className="mt-2 text-sm text-muted-foreground">{message}</p>
         <button
           onClick={() => { router.invalidate(); reset(); }}
-          className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           Tentar novamente
         </button>
@@ -52,17 +55,20 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   );
 }
 
+const DESCRIPTION = "Convite digital do casamento de Brenda & Luiz — 12 de dezembro de 2026, em Belém.";
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#f8f2ea" },
       { title: "Brenda & Luiz - Casamento" },
-      { name: "description", content: "Wedding Wallet is a financial dashboard for managing wedding expenses, tracking payments, and upcoming bills." },
+      { name: "description", content: DESCRIPTION },
       { property: "og:title", content: "Brenda & Luiz - Casamento" },
       { name: "twitter:title", content: "Brenda & Luiz - Casamento" },
-      { property: "og:description", content: "Wedding Wallet is a financial dashboard for managing wedding expenses, tracking payments, and upcoming bills." },
-      { name: "twitter:description", content: "Wedding Wallet is a financial dashboard for managing wedding expenses, tracking payments, and upcoming bills." },
+      { property: "og:description", content: DESCRIPTION },
+      { name: "twitter:description", content: DESCRIPTION },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9b94064d-395f-4797-8d42-61c4091a088e/id-preview-90efb1c8--9f6e9a05-518a-45d3-9fe7-daddcbef3f33.lovable.app-1779193929553.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9b94064d-395f-4797-8d42-61c4091a088e/id-preview-90efb1c8--9f6e9a05-518a-45d3-9fe7-daddcbef3f33.lovable.app-1779193929553.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -72,8 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Jost:wght@300;400;500;600;700&family=Pinyon+Script&display=swap",
+      },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
     ],
   }),
@@ -103,7 +111,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Outlet />
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
   );

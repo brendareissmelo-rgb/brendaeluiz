@@ -2,10 +2,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { AuthLayout, authButton, authInput } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -48,54 +48,53 @@ function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm border-border/60 bg-card p-6">
-        <div className="mb-5">
-          <h1 className="text-lg font-semibold tracking-tight">Finanças do Casamento</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {forgot
-              ? "Informe seu e-mail para receber o link de recuperação."
-              : "Painel privado. Entre com seu e-mail e senha."}
-          </p>
+    <AuthLayout
+      title={forgot ? "Recuperar senha" : "Área dos noivos"}
+      subtitle={
+        forgot
+          ? "Informe seu e-mail para receber o link de recuperação."
+          : "Painel privado das finanças do casamento. Entre com seu e-mail e senha."
+      }
+    >
+      <form onSubmit={submit} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="eyebrow !text-[10px] text-muted-foreground">E-mail</Label>
+          <Input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            className={authInput}
+          />
         </div>
-        <form onSubmit={submit} className="space-y-3">
+        {!forgot && (
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs">E-mail</Label>
+            <Label htmlFor="password" className="eyebrow !text-[10px] text-muted-foreground">Senha</Label>
             <Input
-              id="email"
-              type="email"
+              id="password"
+              type="password"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              className={authInput}
             />
           </div>
-          {!forgot && (
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
-            </div>
-          )}
-          <Button type="submit" disabled={busy} className="w-full">
-            {busy ? "Aguarde..." : forgot ? "Enviar link" : "Entrar"}
-          </Button>
-          <button
-            type="button"
-            onClick={() => setForgot((v) => !v)}
-            className="block w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {forgot ? "Voltar ao login" : "Esqueci minha senha"}
-          </button>
-        </form>
-      </Card>
-    </main>
+        )}
+        <Button type="submit" disabled={busy} className={authButton}>
+          {busy ? "Aguarde..." : forgot ? "Enviar link" : "Entrar"}
+        </Button>
+        <button
+          type="button"
+          onClick={() => setForgot((v) => !v)}
+          className="block w-full text-center text-[13px] text-muted-foreground transition-colors hover:text-primary"
+        >
+          {forgot ? "Voltar ao login" : "Esqueci minha senha"}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }

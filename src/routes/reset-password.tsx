@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthLayout, authButton, authInput } from "@/components/auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
@@ -49,46 +49,38 @@ function ResetPasswordPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm border-border/60 bg-card p-6">
-        <div className="mb-5">
-          <h1 className="text-lg font-semibold tracking-tight">Nova senha</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {ready
-              ? "Defina sua nova senha."
-              : "Validando link de recuperação..."}
-          </p>
+    <AuthLayout title="Nova senha" subtitle={ready ? "Defina sua nova senha." : "Validando link de recuperação..."}>
+      <form onSubmit={submit} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="eyebrow !text-[10px] text-muted-foreground">Nova senha</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={!ready}
+            className={authInput}
+          />
         </div>
-        <form onSubmit={submit} className="space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs">Nova senha</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={!ready}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="confirm" className="text-xs">Confirmar senha</Label>
-            <Input
-              id="confirm"
-              type="password"
-              required
-              minLength={6}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              disabled={!ready}
-            />
-          </div>
-          <Button type="submit" disabled={busy || !ready} className="w-full">
-            {busy ? "Salvando..." : "Salvar nova senha"}
-          </Button>
-        </form>
-      </Card>
-    </main>
+        <div className="space-y-1.5">
+          <Label htmlFor="confirm" className="eyebrow !text-[10px] text-muted-foreground">Confirmar senha</Label>
+          <Input
+            id="confirm"
+            type="password"
+            required
+            minLength={6}
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            disabled={!ready}
+            className={authInput}
+          />
+        </div>
+        <Button type="submit" disabled={busy || !ready} className={authButton}>
+          {busy ? "Salvando..." : "Salvar nova senha"}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }

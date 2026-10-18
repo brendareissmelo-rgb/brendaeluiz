@@ -18,22 +18,15 @@ interface NavBarProps {
   className?: string
 }
 
+/**
+ * Barra de navegação em pílula. No celular fica fixa no rodapé (ao alcance do polegar),
+ * com ícone + rótulo; em telas maiores vai para o topo.
+ */
 export function NavBar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0]?.name ?? "")
-  const [isMobile, setIsMobile] = useState(false)
   const navigate = useNavigate()
   const path = useRouterState({ select: (state) => state.location.pathname })
   const hash = useRouterState({ select: (state) => state.location.hash })
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640)
-    }
-
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
 
   useEffect(() => {
     const active = items.find((item) => {
@@ -52,6 +45,7 @@ export function NavBar({ items, className }: NavBarProps) {
     if (item.url.startsWith("#")) {
       e.preventDefault()
       if (path !== "/") {
+        void navigate({ to: "/", hash: item.url.slice(1) })
         return
       }
       const element = document.getElementById(item.url.slice(1))
@@ -73,13 +67,8 @@ export function NavBar({ items, className }: NavBarProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-center",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-1 rounded-full border border-border/60 bg-card/95 p-1.5 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-2 sm:p-2">
+    <div className={cn("flex items-center justify-center", className)}>
+      <div className="flex w-full items-stretch gap-1 rounded-full border border-white/60 bg-card/85 p-1.5 shadow-[0_18px_40px_-16px_rgba(58,40,32,0.45)] backdrop-blur-xl sm:w-auto">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -90,25 +79,27 @@ export function NavBar({ items, className }: NavBarProps) {
               to={item.url.startsWith("#") ? "/" : item.url}
               hash={item.url.startsWith("#") ? item.url.slice(1) : undefined}
               onClick={handleClick(item)}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 font-sora text-xs font-normal transition-colors sm:px-4 sm:py-2 sm:text-sm",
-                item.highlighted
-                  ? "text-primary drop-shadow-[0_0_10px_var(--color-primary)] hover:text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-                isActive && !item.highlighted && "text-foreground",
+                "relative flex flex-1 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full px-3 py-2 text-[10.5px] font-medium tracking-wide transition-colors sm:flex-none sm:flex-row sm:gap-2 sm:px-5 sm:text-sm",
+                isActive
+                  ? "text-primary-foreground"
+                  : item.highlighted
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              {(!isMobile || isActive) && <span>{item.name}</span>}
               {isActive && (
-                <motion.div
+                <motion.span
                   layoutId="tubelight-active"
-                  className={cn(
-                    "absolute inset-0 -z-10 rounded-full bg-background",
-                    item.highlighted && "shadow-[0_0_16px_-2px_var(--color-primary)]",
-                  )}
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  className="absolute inset-0 -z-0 rounded-full bg-primary shadow-[0_8px_18px_-8px_var(--color-primary)]"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.55 }}
                 />
+              )}
+              <Icon className="relative h-[18px] w-[18px] sm:h-4 sm:w-4" strokeWidth={1.7} />
+              <span className="relative leading-none">{item.name}</span>
+              {item.highlighted && !isActive && (
+                <span className="absolute right-[22%] top-1.5 h-1.5 w-1.5 rounded-full bg-primary sm:right-2 sm:top-2" />
               )}
             </Link>
           )

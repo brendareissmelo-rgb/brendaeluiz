@@ -5,11 +5,18 @@ import type { Expense, Owner } from "@/lib/expenses";
 export const ownerOf = (e: Expense): Owner =>
   (((e as any).owner as Owner) ?? "Ambos");
 
+/** Cores dos gráficos: pago (sálvia), caixinha (azul acinzentado), a pagar (caramelo). */
+export const FIN_COLORS = {
+  paid: "#6f8a5c",
+  reserved: "#7d97ad",
+  remaining: "#c8894a",
+} as const;
+
 export const OWNER_STYLES: Record<Owner, { text: string; bg: string; border: string; dot: string; stroke: string }> = {
-  Luiz: { text: "text-sky-700", bg: "bg-sky-500/10", border: "border-sky-500/30", dot: "bg-sky-600", stroke: "#0284c7" },
-  Brenda: { text: "text-pink-700", bg: "bg-pink-500/10", border: "border-pink-500/30", dot: "bg-pink-600", stroke: "#db2777" },
-  Ambos: { text: "text-muted-foreground", bg: "bg-muted/40", border: "border-border", dot: "bg-muted-foreground", stroke: "#8b8b9a" },
-  Presente: { text: "text-amber-700", bg: "bg-amber-500/10", border: "border-amber-500/30", dot: "bg-amber-600", stroke: "#d97706" },
+  Luiz: { text: "text-[#4f6f8a]", bg: "bg-[#7d97ad]/12", border: "border-[#7d97ad]/35", dot: "bg-[#5d7d98]", stroke: "#5d7d98" },
+  Brenda: { text: "text-[#a2556a]", bg: "bg-[#d48a9c]/14", border: "border-[#d48a9c]/40", dot: "bg-[#c06b82]", stroke: "#c06b82" },
+  Ambos: { text: "text-muted-foreground", bg: "bg-muted/70", border: "border-border", dot: "bg-muted-foreground", stroke: "#9a8778" },
+  Presente: { text: "text-[#9a6a2c]", bg: "bg-[#d9a54a]/14", border: "border-[#d9a54a]/40", dot: "bg-[#c99236]", stroke: "#c99236" },
 };
 
 export function OwnerTag({ owner, className = "" }: { owner: Owner; className?: string }) {
@@ -17,7 +24,7 @@ export function OwnerTag({ owner, className = "" }: { owner: Owner; className?: 
   const Icon = owner === "Presente" ? Gift : owner === "Ambos" ? Users : User;
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${s.bg} ${s.text} ${s.border} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${s.bg} ${s.text} ${s.border} ${className}`}
     >
       <Icon className="h-2.5 w-2.5" strokeWidth={2.5} />
       {owner}
@@ -28,12 +35,12 @@ export function OwnerTag({ owner, className = "" }: { owner: Owner; className?: 
 export function StatusBadge({ status }: { status: Expense["status"] }) {
   const map = {
     paid: { label: "Pago", cls: "bg-success/12 text-success border-success/25" },
-    installment: { label: "Parcelado", cls: "bg-primary/12 text-primary border-primary/25" },
+    installment: { label: "Parcelado", cls: "bg-primary/10 text-primary border-primary/25" },
     pending: { label: "A pagar", cls: "bg-warning/12 text-warning border-warning/25" },
   } as const;
   const s = map[status];
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${s.cls}`}>
+    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.12em] ${s.cls}`}>
       {s.label}
     </span>
   );
@@ -45,11 +52,14 @@ export function DonutRing({
   segments,
   size = 132,
   thickness = 11,
+  track = "var(--color-muted)",
   children,
 }: {
   segments: Segment[];
   size?: number;
   thickness?: number;
+  /** Cor do anel de fundo. */
+  track?: string;
   children?: ReactNode;
 }) {
   const r = (size - thickness) / 2;
@@ -60,15 +70,7 @@ export function DonutRing({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="currentColor"
-          className="text-muted/60"
-          strokeWidth={thickness}
-        />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={thickness} />
         {total > 0 &&
           segments.map((s, i) => {
             const frac = Math.max(s.value, 0) / total;
@@ -102,19 +104,37 @@ export function DonutRing({
 export function Meter({
   segments,
   height = 8,
+  track = "var(--color-muted)",
 }: {
   segments: Segment[];
   height?: number;
+  track?: string;
 }) {
   const total = segments.reduce((s, x) => s + Math.max(x.value, 0), 0) || 1;
   return (
-    <div className="flex w-full overflow-hidden rounded-full bg-muted/60" style={{ height }}>
-      {segments.map((s, i) => (
-        <div
-          key={i}
-          style={{ width: `${(Math.max(s.value, 0) / total) * 100}%`, background: s.color, transition: "width .5s ease" }}
-        />
-      ))}
+    <div className="flex w-full gap-[2px] overflow-hidden rounded-full" style={{ height, background: track }}>
+      {segments.map((s, i) =>
+        s.value > 0 ? (
+          <div
+            key={i}
+            className="first:rounded-l-full last:rounded-r-full"
+            style={{ width: `${(Math.max(s.value, 0) / total) * 100}%`, background: s.color, transition: "width .5s ease" }}
+          />
+        ) : null,
+      )}
+    </div>
+  );
+}
+
+/** Legenda com bolinha colorida. */
+export function LegendDot({ color, label, value, light }: { color: string; label: string; value: string; light?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <div className={`flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] ${light ? "text-cream/70" : "text-muted-foreground"}`}>
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: color }} />
+        {label}
+      </div>
+      <div className={`mt-1 truncate text-[13px] font-semibold tabular-nums sm:text-[15px] ${light ? "text-cream" : "text-foreground"}`}>{value}</div>
     </div>
   );
 }
