@@ -29,7 +29,8 @@ import m8 from "@/assets/dresscode-m-8.jpg.asset.json";
 import m9 from "@/assets/dresscode-m-9.jpg.asset.json";
 import m10 from "@/assets/dresscode-m-10.jpg.asset.json";
 
-export type TimelineItem = { time: string; label: string };
+/** `place` (opcional) aparece numa linha própria, abaixo do título. */
+export type TimelineItem = { time: string; label: string; place?: string };
 
 export type Ceremony = {
   eyebrow: string;

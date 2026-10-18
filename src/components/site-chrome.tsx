@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, X } from "lucide-react";
+import { ArrowUpRight, Lock, X } from "lucide-react";
 
 import { FadeIn } from "@/components/fade-in";
 import { Branch, Monogram, Ornament } from "@/components/ornaments";
@@ -180,8 +180,12 @@ export function SiteNav() {
                   12 de dezembro de 2026 · Belém
                 </div>
               </div>
-              <Link to="/login" onClick={() => setOpen(false)} className="text-[11px] text-muted-foreground/70 underline-offset-4 hover:underline">
-                Noivos
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] text-muted-foreground ring-1 ring-border"
+              >
+                <Lock className="h-3 w-3" /> Noivos
               </Link>
             </div>
           </motion.div>
@@ -252,6 +256,12 @@ export function SiteFooter() {
           Obrigado por fazer parte deste momento tão especial das nossas vidas. A presença de vocês é o que torna esse
           dia inesquecível.
         </p>
+        <Link
+          to="/login"
+          className="mt-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-cream/55 ring-1 ring-cream/15 transition hover:text-cream hover:ring-cream/40"
+        >
+          <Lock className="h-3 w-3" /> Área dos noivos
+        </Link>
       </div>
     </footer>
   );

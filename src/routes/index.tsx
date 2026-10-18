@@ -15,17 +15,20 @@ import {
   Shirt,
   Armchair,
   Clock,
+  Users,
+  HeartHandshake,
+  Sparkles,
+  BookOpen,
 } from "lucide-react";
 
 import capa from "@/assets/capa-principal-2.jpg.asset.json";
-import venuePhoto from "@/assets/ceremony-venue.png.asset.json";
 import { Countdown } from "@/components/countdown";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
 import { Branch, OakLeaf } from "@/components/ornaments";
 import { SectionHeading, SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { useSiteContent, DEFAULT_CONTENT, type Manual, type SiteContent } from "@/lib/site-content";
+import { useSiteContent, DEFAULT_CONTENT, type Manual, type SiteContent, type TimelineItem } from "@/lib/site-content";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -152,11 +155,103 @@ function StopNumber({ n, dark }: { n: number; dark?: boolean }) {
     <span
       className={
         "flex h-9 w-9 items-center justify-center rounded-full font-display text-[16px] " +
-        (dark ? "bg-cream text-cocoa" : "bg-primary text-primary-foreground")
+        (dark ? "bg-cream text-cocoa" : "bg-cocoa text-cream")
       }
     >
       {n}
     </span>
+  );
+}
+
+/** Cartão de parada do roteiro: mesmo desenho em versão escura (festa) e clara (igreja). */
+function StopCard({
+  n,
+  tone,
+  step,
+  icon: Icon,
+  eyebrow,
+  title,
+  hour,
+  watermark,
+  description,
+  venue,
+  address,
+  chip,
+  mapsUrl,
+}: {
+  n: number;
+  tone: "light" | "dark";
+  step: string;
+  icon: React.ElementType;
+  eyebrow: string;
+  title: string;
+  hour: string;
+  watermark: string;
+  description?: string;
+  venue: string;
+  address: string;
+  chip?: string;
+  mapsUrl: string;
+}) {
+  const dark = tone === "dark";
+  return (
+    <article
+      className={
+        "relative h-full overflow-hidden rounded-[30px] px-6 pb-7 pt-6 " +
+        (dark ? "panel-dark" : "bg-gradient-to-br from-[#fbf3e8] via-sand to-[#e6cfb2] text-cocoa ring-1 ring-[#e2cdb1] shadow-[0_24px_48px_-28px_rgba(58,40,32,0.45)]")
+      }
+    >
+      <div
+        className={
+          "pointer-events-none absolute -right-6 -top-4 font-script text-[130px] leading-none " +
+          (dark ? "text-cream/[0.07]" : "text-primary/[0.09]")
+        }
+      >
+        {watermark}
+      </div>
+      <Branch className={"absolute -bottom-10 -right-10 h-44 w-44 " + (dark ? "text-cream/10" : "text-primary/15")} />
+
+      <div
+        className={
+          "relative flex w-fit items-center gap-2 rounded-full py-1 pl-1 pr-3 ring-1 " +
+          (dark ? "bg-cream/10 ring-cream/15" : "bg-white/55 ring-cocoa/10")
+        }
+      >
+        <StopNumber n={n} dark={dark} />
+        <span className={"text-[11px] font-medium uppercase tracking-[0.18em] " + (dark ? "text-cream/80" : "text-cocoa/75")}>{step}</span>
+      </div>
+
+      <div className="relative mt-8 flex items-end justify-between gap-4">
+        <div>
+          <div className={"eyebrow !text-[9.5px] " + (dark ? "text-blush" : "text-primary")}>
+            <Icon className="mr-1 inline h-3.5 w-3.5 -translate-y-px" /> {eyebrow}
+          </div>
+          <h3 className="mt-2 font-display text-[30px] font-normal leading-none">{title}</h3>
+        </div>
+        <div className={"font-display text-[40px] font-light leading-none " + (dark ? "text-blush" : "text-primary")}>{hour}</div>
+      </div>
+
+      {description && <p className={"relative mt-5 text-[14.5px] leading-relaxed " + (dark ? "text-cream/80" : "text-cocoa/75")}>{description}</p>}
+
+      <div className="relative mt-5 space-y-1">
+        <div className="text-[16px] font-medium">{venue}</div>
+        <div className={"text-[14px] leading-snug " + (dark ? "text-cream/65" : "text-cocoa/60")}>{address}</div>
+      </div>
+
+      <div className="relative mt-5 flex flex-wrap items-center gap-3">
+        <MapButton href={mapsUrl} light={dark} />
+        {chip && (
+          <span
+            className={
+              "inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[12px] ring-1 " +
+              (dark ? "bg-cream/10 text-cream/85 ring-cream/15" : "bg-white/55 text-cocoa/80 ring-cocoa/10")
+            }
+          >
+            <Clock className="h-3.5 w-3.5" /> {chip}
+          </span>
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -168,36 +263,22 @@ function Roteiro({ c, r }: { c: SiteContent["ceremony"]; r: SiteContent["recepti
 
       <div className="relative mx-auto max-w-md md:max-w-4xl">
         <div className="grid gap-5 md:grid-cols-2 md:gap-8">
-          {/* 1 — Cerimônia */}
           <FadeIn>
-            <article className="card-invite relative h-full overflow-hidden rounded-[30px]">
-              <div className="relative h-52 overflow-hidden">
-                <img src={venuePhoto.url} alt={c.venue} className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/10 to-transparent" />
-                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full bg-card/85 py-1 pl-1 pr-3 backdrop-blur">
-                  <StopNumber n={1} />
-                  <span className="text-[11px] font-medium uppercase tracking-[0.18em]">Primeiro</span>
-                </div>
-              </div>
-              <div className="px-6 pb-7">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <div className="eyebrow !text-[9.5px] text-primary">
-                      <Church className="mr-1 inline h-3.5 w-3.5 -translate-y-px" /> Cerimônia
-                    </div>
-                    <h3 className="mt-2 font-display text-[30px] font-normal leading-none">{c.title}</h3>
-                  </div>
-                  <div className="font-display text-[40px] font-light leading-none text-primary">{hourOf(c.timeLabel) || "17h"}</div>
-                </div>
-                <div className="mt-5 space-y-1">
-                  <div className="text-[16px] font-medium">{c.venue}</div>
-                  <div className="text-[14px] leading-snug text-muted-foreground">{c.address}</div>
-                </div>
-                <div className="mt-6">
-                  <MapButton href={c.mapsUrl} />
-                </div>
-              </div>
-            </article>
+            <StopCard
+              n={1}
+              tone="light"
+              step="Primeiro"
+              icon={Church}
+              eyebrow="Cerimônia"
+              title={c.title}
+              hour={hourOf(c.timeLabel) || "17h"}
+              watermark="Sim"
+              description="O momento do nosso sim, diante de Deus, da família e dos amigos."
+              venue={c.venue}
+              address={c.address}
+              chip="Chegue 20 min antes"
+              mapsUrl={c.mapsUrl}
+            />
           </FadeIn>
 
           {/* Ligação entre as paradas (mobile) */}
@@ -209,38 +290,22 @@ function Roteiro({ c, r }: { c: SiteContent["ceremony"]; r: SiteContent["recepti
             <span className="h-px w-8 border-t border-dashed border-primary/50" />
           </div>
 
-          {/* 2 — Festa */}
           <FadeIn delay={0.1}>
-            <article className="panel-dark relative h-full overflow-hidden rounded-[30px] px-6 pb-7 pt-6">
-              <div className="pointer-events-none absolute -right-6 -top-4 font-script text-[130px] leading-none text-cream/[0.07]">
-                Festa
-              </div>
-              <Branch className="absolute -bottom-10 -right-10 h-44 w-44 text-cream/10" />
-              <div className="relative flex w-fit items-center gap-2 rounded-full bg-cream/10 py-1 pl-1 pr-3 ring-1 ring-cream/15">
-                <StopNumber n={2} dark />
-                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-cream/80">Em seguida</span>
-              </div>
-              <div className="relative mt-8 flex items-end justify-between gap-4">
-                <div>
-                  <div className="eyebrow !text-[9.5px] text-blush">
-                    <PartyPopper className="mr-1 inline h-3.5 w-3.5 -translate-y-px" /> {r.eyebrow}
-                  </div>
-                  <h3 className="mt-2 font-display text-[30px] font-normal leading-none">{r.title}</h3>
-                </div>
-                <div className="font-display text-[40px] font-light leading-none text-blush">{hourOf(r.timeLabel) || "19h"}</div>
-              </div>
-              <p className="relative mt-5 text-[14.5px] leading-relaxed text-cream/80">{r.description}</p>
-              <div className="relative mt-5 space-y-1">
-                <div className="text-[16px] font-medium">{r.venue}</div>
-                <div className="text-[14px] leading-snug text-cream/65">{r.address}</div>
-              </div>
-              <div className="relative mt-5 flex flex-wrap items-center gap-3">
-                <MapButton href={r.mapsUrl} light />
-                <span className="inline-flex items-center gap-2 rounded-full bg-cream/10 px-3.5 py-2 text-[12px] text-cream/85 ring-1 ring-cream/15">
-                  <Clock className="h-3.5 w-3.5" /> {r.endLabel}
-                </span>
-              </div>
-            </article>
+            <StopCard
+              n={2}
+              tone="dark"
+              step="Em seguida"
+              icon={PartyPopper}
+              eyebrow={r.eyebrow}
+              title={r.title}
+              hour={hourOf(r.timeLabel) || "19h"}
+              watermark="Festa"
+              description={r.description}
+              venue={r.venue}
+              address={r.address}
+              chip={r.endLabel}
+              mapsUrl={r.mapsUrl}
+            />
           </FadeIn>
         </div>
       </div>
@@ -250,7 +315,14 @@ function Roteiro({ c, r }: { c: SiteContent["ceremony"]; r: SiteContent["recepti
 
 /* ───────────────── Programação ───────────────── */
 
-function Programacao({ items }: { items: { time: string; label: string }[] }) {
+/** Separa "Salão (Realiza Festas) Tv. Timbó, 2634" em título + endereço quando não há `place`. */
+function splitPlace(t: TimelineItem) {
+  if (t.place) return { title: t.label, place: t.place };
+  const m = t.label.match(/^(.*?)[\s,–—-]+((?:Tv\.|Trav\.|Travessa|Rua|R\.|Av\.|Avenida|Alameda|Rod\.|Rodovia|Estrada)\s.*)$/i);
+  return m ? { title: m[1].trim(), place: m[2].trim() } : { title: t.label, place: "" };
+}
+
+function Programacao({ items }: { items: TimelineItem[] }) {
   if (!items.length) return null;
   return (
     <Section id="programacao" className="pt-4">
@@ -261,14 +333,25 @@ function Programacao({ items }: { items: { time: string; label: string }[] }) {
           <span className="absolute -left-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-background shadow-[inset_-1px_0_0_var(--color-border)]" />
           <span className="absolute -right-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-background shadow-[inset_1px_0_0_var(--color-border)]" />
           <ol className="divide-y divide-dashed divide-border">
-            {items.map((t, i) => (
-              <li key={i} className="flex items-center gap-5 py-5">
-                <span className="w-[78px] shrink-0 font-display text-[30px] font-light leading-none tabular-nums text-primary">
-                  {t.time}
-                </span>
-                <span className="text-[15px] leading-snug text-foreground/85">{t.label}</span>
-              </li>
-            ))}
+            {items.map((t, i) => {
+              const { title, place } = splitPlace(t);
+              return (
+                <li key={i} className="flex items-start gap-5 py-5">
+                  <span className="w-[78px] shrink-0 font-display text-[30px] font-light leading-none tabular-nums text-primary">
+                    {t.time}
+                  </span>
+                  <span className="min-w-0 pt-0.5">
+                    <span className="block text-[15.5px] font-medium leading-snug text-foreground">{title}</span>
+                    {place && (
+                      <span className="mt-1 flex items-start gap-1.5 text-[13px] leading-snug text-muted-foreground">
+                        <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-caramel" />
+                        {place}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
           </ol>
         </div>
       </FadeIn>
@@ -278,6 +361,14 @@ function Programacao({ items }: { items: { time: string; label: string }[] }) {
 
 /* ───────────────── Manuais ───────────────── */
 
+/** Cores dos cartões de manual (fundo, destaque, marca d'água). */
+const MANUAL_TONES = [
+  { bg: "bg-gradient-to-br from-[#b0623f] via-primary to-[#7a3e28]", accent: "text-blush", icon: Users },
+  { bg: "bg-gradient-to-br from-[#7a8a5e] via-[#5f6f47] to-[#414d30]", accent: "text-[#e3e8c8]", icon: HeartHandshake },
+  { bg: "bg-gradient-to-br from-[#c9955f] via-[#a87443] to-[#7a5130]", accent: "text-[#fbe7cc]", icon: Sparkles },
+  { bg: "bg-gradient-to-br from-[#6f879b] via-[#56697a] to-[#3b4a57]", accent: "text-[#dbe6ef]", icon: BookOpen },
+];
+
 function Manuais({ eyebrow, title, list }: { eyebrow: string; title: string; list: Manual[] }) {
   const [open, setOpen] = useState<Manual | null>(null);
   return (
@@ -285,43 +376,44 @@ function Manuais({ eyebrow, title, list }: { eyebrow: string; title: string; lis
       <div className="px-5">
         <SectionHeading eyebrow={eyebrow} title={title} />
       </div>
-      <StaggerContainer
-        className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-[9vw] pb-2 md:justify-center md:px-5"
-        staggerDelay={0.08}
-      >
-        {list.map((m, i) => (
-          <StaggerItem key={m.id} className="w-[74vw] max-w-[300px] shrink-0 snap-center md:w-72">
-            <button
-              type="button"
-              onClick={() => setOpen(m)}
-              className="group relative block aspect-[3/4] w-full overflow-hidden rounded-[28px] text-left shadow-[0_24px_44px_-26px_rgba(58,40,32,0.7)]"
-            >
-              {m.image && (
-                <img
-                  src={m.image}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-cocoa via-cocoa/30 to-transparent" />
-              <span className="absolute left-5 top-5 font-display text-[15px] italic text-white/90">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="absolute inset-x-0 bottom-0 block p-5">
-                <span className="eyebrow block !text-[9.5px] text-white/70">Manual</span>
-                <span className="mt-1.5 block font-display text-[26px] font-normal leading-[1.05] text-white">
-                  {m.title.replace(/^Manual d[oa]s?\s+/i, "")}
-                </span>
-                {m.subtitle && <span className="mt-1.5 block text-[13px] leading-snug text-white/75">{m.subtitle}</span>}
-                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-[12px] font-medium text-white ring-1 ring-white/25 backdrop-blur">
-                  Ler orientações <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </span>
-            </button>
-          </StaggerItem>
-        ))}
-      </StaggerContainer>
+      <div className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-[9vw] pb-2 md:justify-center md:px-5">
+        {list.map((m, i) => {
+          const tone = MANUAL_TONES[i % MANUAL_TONES.length];
+          const Icon = tone.icon;
+          const short = m.title.replace(/^Manual d[oa]s?\s+/i, "");
+          return (
+            <FadeIn key={m.id} delay={i * 0.06} className="w-[74vw] max-w-[300px] shrink-0 snap-center md:w-72">
+              <button
+                type="button"
+                onClick={() => setOpen(m)}
+                className={`group relative flex aspect-[3/4] w-full flex-col overflow-hidden rounded-[28px] p-5 text-left text-cream shadow-[0_24px_44px_-26px_rgba(58,40,32,0.7)] ${tone.bg}`}
+              >
+                <div className="pointer-events-none absolute -right-4 top-10 font-script text-[110px] leading-none text-white/[0.08]">
+                  {short.split(" ")[0]}
+                </div>
+                <Branch className="pointer-events-none absolute -bottom-8 -right-8 h-40 w-40 text-white/10" />
+
+                <div className="relative flex items-center justify-between">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25">
+                    <Icon className="h-5 w-5" strokeWidth={1.6} />
+                  </span>
+                  <span className="font-display text-[15px] italic text-white/70">{String(i + 1).padStart(2, "0")}</span>
+                </div>
+
+                <div className="relative mt-auto">
+                  <span className={`eyebrow block !text-[9.5px] ${tone.accent}`}>Manual</span>
+                  <span className="mt-2 block font-display text-[30px] font-normal leading-[1.02]">{short}</span>
+                  {m.subtitle && <span className="mt-2 block text-[13.5px] leading-snug text-white/75">{m.subtitle}</span>}
+                  <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-[12.5px] font-medium text-cocoa transition group-active:scale-95">
+                    Ler orientações <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                  <span className="mt-3 block text-[11.5px] text-white/60">{m.items.length} combinados</span>
+                </div>
+              </button>
+            </FadeIn>
+          );
+        })}
+      </div>
       {list.length > 1 && (
         <p className="mt-5 text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground md:hidden">
           Deslize para ver todos

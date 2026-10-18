@@ -296,26 +296,30 @@ function SiteEditor() {
             </div>
           </Card>
           <Card title="Programação do dia">
-            <div className="space-y-2">
-              {ceremony.timeline.map((t, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <Input
-                    className={`${input} w-24 shrink-0 text-center font-bold tabular-nums`}
-                    value={t.time}
-                    onChange={(e) =>
-                      update("ceremony", { ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, time: e.target.value } : x)) })
-                    }
-                  />
-                  <Input
-                    className={input}
-                    value={t.label}
-                    onChange={(e) =>
-                      update("ceremony", { ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })
-                    }
-                  />
-                  <IconButton danger label="Remover horário" onClick={() => update("ceremony", { ...ceremony, timeline: ceremony.timeline.filter((_, j) => j !== i) })} />
-                </div>
-              ))}
+            <div className="space-y-3">
+              {ceremony.timeline.map((t, i) => {
+                const patchItem = (p: Partial<typeof t>) =>
+                  update("ceremony", { ...ceremony, timeline: ceremony.timeline.map((x, j) => (j === i ? { ...x, ...p } : x)) });
+                return (
+                  <div key={i} className="flex gap-2 rounded-2xl bg-[#faf6f0] p-2 ring-1 ring-border/60">
+                    <Input
+                      className={`${input} w-20 shrink-0 bg-card px-2 text-center font-bold tabular-nums`}
+                      value={t.time}
+                      onChange={(e) => patchItem({ time: e.target.value })}
+                    />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <Input className={`${input} bg-card`} value={t.label} placeholder="O que acontece" onChange={(e) => patchItem({ label: e.target.value })} />
+                      <Input
+                        className={`${input} h-10 bg-card text-[13.5px]`}
+                        value={t.place ?? ""}
+                        placeholder="Endereço (opcional)"
+                        onChange={(e) => patchItem({ place: e.target.value || undefined })}
+                      />
+                    </div>
+                    <IconButton danger label="Remover horário" onClick={() => update("ceremony", { ...ceremony, timeline: ceremony.timeline.filter((_, j) => j !== i) })} />
+                  </div>
+                );
+              })}
               <AddButton onClick={() => update("ceremony", { ...ceremony, timeline: [...ceremony.timeline, { time: "00:00", label: "" }] })}>
                 Adicionar horário
               </AddButton>
@@ -386,12 +390,6 @@ function SiteEditor() {
                     <Input className={input} value={m.subtitle} onChange={(e) => patch({ subtitle: e.target.value })} />
                   </Field>
                 </div>
-                <Field label="Imagem do cartão (URL)">
-                  <div className="flex items-center gap-3">
-                    {m.image && <img src={m.image} alt="" className="h-12 w-12 shrink-0 rounded-xl object-cover" />}
-                    <Input className={input} value={m.image ?? ""} placeholder="https://…" onChange={(e) => patch({ image: e.target.value })} />
-                  </div>
-                </Field>
                 <div>
                   <div className="mb-2 text-[12.5px] font-semibold text-foreground/80">Tópicos</div>
                   <StringList multiline values={m.items} onChange={(items) => patch({ items })} addLabel="Adicionar tópico" />

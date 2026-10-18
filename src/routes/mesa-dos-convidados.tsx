@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Users, Check, Search, X, Armchair } from "lucide-react";
 
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/fade-in";
+import { FadeIn } from "@/components/fade-in";
 import { PageHeader, SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteContent, type GuestTable, type Guest } from "@/lib/site-content";
@@ -86,7 +86,7 @@ function TablePlan({ id, guests, highlight }: { id: number; guests: GuestInfo[];
             {/* Cadeira */}
             <span
               className={`chair-surface absolute h-[9px] w-[20px] rounded-full border shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px] ${
-                hit ? "!bg-none bg-primary border-primary ring-4 ring-primary/20" : g.invited ? "border-gold-400" : "border-gold-200"
+                hit ? "!bg-none bg-primary border-primary ring-4 ring-primary/20" : g.invited ? "!bg-none bg-success border-success" : "border-gold-200"
               }`}
               style={{
                 left: `calc(50% + var(--rc) * ${c})`,
@@ -96,7 +96,7 @@ function TablePlan({ id, guests, highlight }: { id: number; guests: GuestInfo[];
             />
             {/* Nome do convidado */}
             <span
-              className="absolute max-w-[84px] text-center leading-tight sm:max-w-[132px]"
+              className="absolute w-max max-w-[92px] text-center leading-tight sm:max-w-[140px]"
               style={{
                 left: `calc(50% + var(--rn) * ${c})`,
                 top: `calc(50% + var(--rn) * ${s})`,
@@ -104,21 +104,25 @@ function TablePlan({ id, guests, highlight }: { id: number; guests: GuestInfo[];
               }}
             >
               <span
-                className={`block text-[10px] sm:text-[12px] ${
-                  hit ? "rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground" : "text-foreground"
+                className={`block text-[11.5px] font-bold sm:text-[13.5px] ${
+                  hit
+                    ? "rounded-full bg-primary px-2 py-0.5 text-primary-foreground"
+                    : g.invited
+                      ? "text-success"
+                      : "text-foreground"
                 }`}
               >
                 {g.name}
               </span>
               {g.relation ? (
-                <span className="mt-0.5 block text-[7.5px] font-medium uppercase tracking-[0.1em] text-gold-700 sm:text-[9px]">
+                <span className="mt-0.5 block text-[8px] font-semibold uppercase tracking-[0.08em] text-gold-700 sm:text-[9.5px]">
                   {g.relation}
                 </span>
               ) : null}
               {g.invited ? (
                 <span
-                  className="mx-auto mt-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold-400 text-gold-900"
-                  title="Convite entregue"
+                  className="mx-auto mt-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-success text-white"
+                  title="Convite entregue pessoalmente"
                 >
                   <Check className="h-2.5 w-2.5" strokeWidth={3} />
                 </span>
@@ -131,13 +135,13 @@ function TablePlan({ id, guests, highlight }: { id: number; guests: GuestInfo[];
   );
 }
 
-function TableCard({ table, query }: { table: GuestTable; query: string }) {
+function TableCard({ table, query, focused }: { table: GuestTable; query: string; focused?: boolean }) {
   const guests = table.guests.map(parseGuest);
   const invitedCount = guests.filter((g) => g.invited).length;
   const q = norm(query);
   const highlight = (name: string) => q.length >= 2 && norm(name).includes(q);
   return (
-    <div id={`mesa-${table.id}`} className="card-warm scroll-mt-6 rounded-[28px] border border-gold-200 p-4 shadow-[0_22px_44px_-26px_var(--gold-700)] sm:p-7">
+    <div id={`mesa-${table.id}`} className={`card-warm scroll-mt-20 rounded-[28px] border p-4 transition-shadow ${focused ? "border-primary ring-4 ring-primary/15" : "border-gold-200"} shadow-[0_22px_44px_-26px_var(--gold-700)] sm:p-7`}>
       <div className="mb-2 flex items-center justify-between gap-3 px-1">
         <span className="font-display text-[22px] font-normal tracking-tight text-foreground">Mesa {table.id}</span>
         <div className="flex items-center gap-1.5">
@@ -145,8 +149,8 @@ function TableCard({ table, query }: { table: GuestTable; query: string }) {
             <Users className="h-3 w-3 text-gold-600" />
             {table.guests.length}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-card/80 px-2.5 py-1 text-[11px] text-gold-800 ring-1 ring-gold-200">
-            <Check className="h-3 w-3 text-gold-600" />
+          <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-semibold text-success ring-1 ring-success/25">
+            <Check className="h-3 w-3" />
             {invitedCount}/{table.guests.length}
           </span>
         </div>
@@ -160,6 +164,14 @@ function MesaPage() {
   const { data, isLoading } = useSiteContent();
   const [minWait, setMinWait] = useState(true);
   const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState<number | null>(null);
+
+  const goToTable = (id: number) => {
+    setFocused(id);
+    requestAnimationFrame(() =>
+      document.getElementById(`mesa-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  };
 
   useEffect(() => {
     const id = setTimeout(() => setMinWait(false), 450);
@@ -187,7 +199,7 @@ function MesaPage() {
     <div className="paper min-h-screen">
       <SiteNav />
       <PageHeader eyebrow={data?.tables.eyebrow ?? "Recepção"} title={data?.tables.title ?? "Mesa dos Convidados"}>
-        Cada cadeira ao redor da mesa é um convidado. O check dourado indica quem já recebeu o convite.
+        Cada cadeira ao redor da mesa é um convidado. Busque seu nome para encontrar o seu lugar.
       </PageHeader>
 
       <main className="mx-auto max-w-3xl px-5 pb-20">
@@ -197,7 +209,10 @@ function MesaPage() {
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setFocused(null);
+                }}
                 placeholder="Encontre seu nome"
                 aria-label="Buscar convidado"
                 className="h-12 w-full rounded-full border border-border bg-background/70 pl-11 pr-11 text-[15px] outline-none transition placeholder:text-muted-foreground/80 focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
@@ -205,7 +220,10 @@ function MesaPage() {
               {query && (
                 <button
                   type="button"
-                  onClick={() => setQuery("")}
+                  onClick={() => {
+                    setQuery("");
+                    setFocused(null);
+                  }}
                   aria-label="Limpar busca"
                   className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-muted text-muted-foreground"
                 >
@@ -219,9 +237,10 @@ function MesaPage() {
                 <ul className="mt-3 space-y-1.5">
                   {matches.slice(0, 6).map((m, i) => (
                     <li key={m.name + i}>
-                      <a
-                        href={`#mesa-${m.table}`}
-                        className="flex items-center justify-between gap-3 rounded-2xl bg-sand/50 px-4 py-2.5 transition hover:bg-sand"
+                      <button
+                        type="button"
+                        onClick={() => goToTable(m.table)}
+                        className="flex w-full items-center text-left justify-between gap-3 rounded-2xl bg-sand/50 px-4 py-2.5 transition hover:bg-sand"
                       >
                         <span className="min-w-0">
                           <span className="block truncate text-[14px] font-medium">{m.name}</span>
@@ -230,7 +249,7 @@ function MesaPage() {
                         <span className="flex shrink-0 items-center gap-1.5 font-display text-[15px] text-primary">
                           <Armchair className="h-4 w-4" strokeWidth={1.6} /> Mesa {m.table}
                         </span>
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -246,6 +265,15 @@ function MesaPage() {
               </div>
             )}
           </div>
+          <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-success/[0.07] px-4 py-3 text-[12.5px] leading-snug text-foreground/80 ring-1 ring-success/20">
+            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-success text-white">
+              <Check className="h-2.5 w-2.5" strokeWidth={3} />
+            </span>
+            <span>
+              <b className="font-semibold text-success">Nomes em verde</b> já receberam o convite pessoalmente, junto com o
+              convite do salão.
+            </span>
+          </div>
         </FadeIn>
 
         {loading ? (
@@ -255,13 +283,11 @@ function MesaPage() {
             ))}
           </div>
         ) : (
-          <StaggerContainer className="space-y-6" staggerDelay={0.08}>
+          <div className="space-y-6">
             {visible.map((t) => (
-              <StaggerItem key={t.id}>
-                <TableCard table={t} query={query} />
-              </StaggerItem>
+              <TableCard key={t.id} table={t} query={query} focused={focused === t.id} />
             ))}
-          </StaggerContainer>
+          </div>
         )}
       </main>
       <SiteFooter />
