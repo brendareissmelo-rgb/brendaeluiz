@@ -6,6 +6,7 @@ import { FadeIn } from "@/components/fade-in";
 import { PageHeader, SiteFooter, SiteNav } from "@/components/site-chrome";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteContent, type GuestTable, type Guest } from "@/lib/site-content";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/mesa-dos-convidados")({
   head: () => ({
@@ -46,89 +47,50 @@ const norm = (s: string) =>
     .toLowerCase()
     .trim();
 
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]!.toUpperCase())
+    .join("");
+
 /**
- * Planta baixa de uma mesa redonda: cada convidado vira uma cadeira ao redor
- * da mesa, com o nome logo fora dela. As distâncias vêm de variáveis CSS
- * (--rc = anel das cadeiras, --rn = anel dos nomes) para poder mudar no mobile.
+ * Planta compacta da mesa redonda: só as cadeiras ao redor (verde = convite
+ * entregue, terracota = resultado da busca). Os nomes ficam na lista ao lado.
  */
-function TablePlan({ id, guests, highlight }: { id: number; guests: GuestInfo[]; highlight: (name: string) => boolean }) {
+function MiniPlan({ id, guests, hit }: { id: number; guests: GuestInfo[]; hit: (g: GuestInfo) => boolean }) {
   const n = guests.length;
-
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[460px] [--rc:21%] [--rn:37%] sm:[--rc:23%] sm:[--rn:39%]">
-      <div className="table-halo absolute -inset-[4%] rounded-full" />
-
-      {/* Anel pontilhado onde as cadeiras se apoiam */}
-      <div className="absolute left-1/2 top-1/2 h-[42%] w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-gold-400/70 sm:h-[46%] sm:w-[46%]" />
-      {/* Anel externo do salão */}
-      <div className="absolute left-1/2 top-1/2 h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-300/50 sm:h-[60%] sm:w-[60%]" />
-
-      {/* Mesa */}
-      <div className="table-surface absolute left-1/2 top-1/2 flex h-[27%] w-[27%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center overflow-hidden rounded-full border border-gold-100/80 text-center shadow-[0_18px_38px_-14px_var(--gold-700)] sm:h-[32%] sm:w-[32%]">
+    <div className="relative h-[124px] w-[124px] shrink-0">
+      <div className="table-halo absolute -inset-3 rounded-full" />
+      <div className="absolute inset-[18px] rounded-full border border-dashed border-gold-300" />
+      <div className="table-surface absolute inset-[34px] flex flex-col items-center justify-center overflow-hidden rounded-full border border-gold-100 shadow-[0_12px_24px_-12px_var(--gold-700)]">
         <div className="table-shine pointer-events-none absolute inset-0" />
-        <span className="relative font-display text-[9px] uppercase leading-none tracking-[0.2em] text-gold-900/80 sm:text-[10px]">
-          Mesa
-        </span>
-        <span className="relative font-display text-[26px] font-normal leading-none text-gold-900 sm:text-[34px]">
-          {id}
-        </span>
+        <span className="relative font-display text-[8px] uppercase leading-none tracking-[0.2em] text-gold-900/75">Mesa</span>
+        <span className="relative font-display text-[24px] leading-none text-gold-900">{id}</span>
       </div>
-
       {guests.map((g, i) => {
         const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-        const c = Math.cos(a).toFixed(4);
-        const s = Math.sin(a).toFixed(4);
         const deg = (a * 180) / Math.PI + 90;
-        const hit = highlight(g.name);
-
         return (
-          <div key={g.name + i}>
-            {/* Cadeira */}
-            <span
-              className={`chair-surface absolute h-[9px] w-[20px] rounded-full border shadow-[0_3px_7px_-2px_var(--gold-700)] sm:h-[11px] sm:w-[25px] ${
-                hit ? "!bg-none bg-primary border-primary ring-4 ring-primary/20" : g.invited ? "!bg-none bg-success border-success" : "border-gold-200"
-              }`}
-              style={{
-                left: `calc(50% + var(--rc) * ${c})`,
-                top: `calc(50% + var(--rc) * ${s})`,
-                transform: `translate(-50%, -50%) rotate(${deg.toFixed(2)}deg)`,
-              }}
-            />
-            {/* Nome do convidado */}
-            <span
-              className="absolute w-max max-w-[92px] text-center leading-tight sm:max-w-[140px]"
-              style={{
-                left: `calc(50% + var(--rn) * ${c})`,
-                top: `calc(50% + var(--rn) * ${s})`,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <span
-                className={`block text-[11.5px] font-bold sm:text-[13.5px] ${
-                  hit
-                    ? "rounded-full bg-primary px-2 py-0.5 text-primary-foreground"
-                    : g.invited
-                      ? "text-success"
-                      : "text-foreground"
-                }`}
-              >
-                {g.name}
-              </span>
-              {g.relation ? (
-                <span className="mt-0.5 block text-[8px] font-semibold uppercase tracking-[0.08em] text-gold-700 sm:text-[9.5px]">
-                  {g.relation}
-                </span>
-              ) : null}
-              {g.invited ? (
-                <span
-                  className="mx-auto mt-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-success text-white"
-                  title="Convite entregue pessoalmente"
-                >
-                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                </span>
-              ) : null}
-            </span>
-          </div>
+          <span
+            key={i}
+            title={g.name}
+            className={cn(
+              "absolute h-[9px] w-[18px] rounded-full border shadow-[0_2px_5px_-2px_var(--gold-700)]",
+              hit(g)
+                ? "border-primary bg-primary ring-4 ring-primary/20"
+                : g.invited
+                  ? "border-invite bg-invite"
+                  : "chair-surface border-gold-200",
+            )}
+            style={{
+              left: `calc(50% + 46px * ${Math.cos(a).toFixed(4)})`,
+              top: `calc(50% + 46px * ${Math.sin(a).toFixed(4)})`,
+              transform: `translate(-50%, -50%) rotate(${deg.toFixed(2)}deg)`,
+            }}
+          />
         );
       })}
     </div>
@@ -139,24 +101,91 @@ function TableCard({ table, query, focused }: { table: GuestTable; query: string
   const guests = table.guests.map(parseGuest);
   const invitedCount = guests.filter((g) => g.invited).length;
   const q = norm(query);
-  const highlight = (name: string) => q.length >= 2 && norm(name).includes(q);
+  const hit = (g: GuestInfo) => q.length >= 2 && norm(g.name).includes(q);
+  const pct = guests.length ? Math.round((invitedCount / guests.length) * 100) : 0;
+
   return (
-    <div id={`mesa-${table.id}`} className={`card-warm scroll-mt-20 rounded-[28px] border p-4 transition-shadow ${focused ? "border-primary ring-4 ring-primary/15" : "border-gold-200"} shadow-[0_22px_44px_-26px_var(--gold-700)] sm:p-7`}>
-      <div className="mb-2 flex items-center justify-between gap-3 px-1">
-        <span className="font-display text-[22px] font-normal tracking-tight text-foreground">Mesa {table.id}</span>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-card/80 px-2.5 py-1 text-[11px] text-gold-800 ring-1 ring-gold-200">
-            <Users className="h-3 w-3 text-gold-600" />
-            {table.guests.length}
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-semibold text-success ring-1 ring-success/25">
-            <Check className="h-3 w-3" />
-            {invitedCount}/{table.guests.length}
-          </span>
+    <FadeIn>
+      <article
+        id={`mesa-${table.id}`}
+        className={cn(
+          "card-invite scroll-mt-36 overflow-hidden rounded-[30px] transition-shadow",
+          focused && "ring-4 ring-primary/25",
+        )}
+      >
+        {/* Cabeçalho com a planta */}
+        <div className="flex items-center gap-5 bg-gradient-to-br from-gold-wash to-gold-100/70 px-5 py-5">
+          <MiniPlan id={table.id} guests={guests} hit={hit} />
+          <div className="min-w-0 flex-1">
+            <div className="eyebrow !text-[9.5px] text-primary">Recepção</div>
+            <h2 className="mt-1 font-display text-[30px] font-normal leading-none">Mesa {table.id}</h2>
+            <div className="mt-2 flex items-center gap-1.5 text-[13px] text-muted-foreground">
+              <Users className="h-3.5 w-3.5 text-caramel" /> {guests.length} lugares
+            </div>
+            <div className="mt-3">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/70">
+                <div className="h-full rounded-full bg-invite" style={{ width: `${pct}%` }} />
+              </div>
+              <div className="mt-1.5 text-[11.5px] font-medium text-invite-ink">
+                {invitedCount} de {guests.length} convites entregues
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <TablePlan id={table.id} guests={guests} highlight={highlight} />
-    </div>
+
+        {/* Lista de convidados */}
+        <ul className="grid gap-1.5 p-3 sm:grid-cols-2">
+          {guests.map((g, i) => {
+            const isHit = hit(g);
+            return (
+              <li
+                key={g.name + i}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors",
+                  isHit ? "bg-primary/10 ring-2 ring-primary/40" : g.invited ? "bg-invite-soft" : "bg-transparent",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold",
+                    isHit
+                      ? "bg-primary text-primary-foreground"
+                      : g.invited
+                        ? "bg-invite text-white"
+                        : "bg-sand text-gold-800",
+                  )}
+                >
+                  {initials(g.name)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span
+                    className={cn(
+                      "block truncate text-[15.5px] font-semibold leading-tight",
+                      isHit ? "text-primary" : g.invited ? "text-invite-ink" : "text-foreground",
+                    )}
+                  >
+                    {g.name}
+                  </span>
+                  {g.relation && (
+                    <span className="mt-0.5 block truncate text-[10.5px] font-semibold uppercase tracking-[0.12em] text-caramel">
+                      {g.relation}
+                    </span>
+                  )}
+                </span>
+                {g.invited && (
+                  <span
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-invite text-white"
+                    title="Convite entregue pessoalmente"
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </article>
+    </FadeIn>
   );
 }
 
@@ -181,6 +210,7 @@ function MesaPage() {
   const tables = data?.tables.list ?? [];
   const loading = isLoading || minWait;
   const totalGuests = tables.reduce((sum, t) => sum + t.guests.length, 0);
+  const totalInvited = tables.reduce((sum, t) => sum + t.guests.filter((g) => g.invited).length, 0);
 
   const matches = useMemo(() => {
     const q = norm(query);
@@ -199,12 +229,13 @@ function MesaPage() {
     <div className="paper min-h-screen">
       <SiteNav />
       <PageHeader eyebrow={data?.tables.eyebrow ?? "Recepção"} title={data?.tables.title ?? "Mesa dos Convidados"}>
-        Cada cadeira ao redor da mesa é um convidado. Busque seu nome para encontrar o seu lugar.
+        Busque seu nome para encontrar o seu lugar no salão.
       </PageHeader>
 
       <main className="mx-auto max-w-3xl px-5 pb-20">
-        <FadeIn className="mx-auto mb-8 max-w-md">
-          <div className="card-invite rounded-[24px] p-4">
+        {/* Busca */}
+        <FadeIn className="mx-auto mb-5 max-w-md">
+          <div className="card-invite rounded-[26px] p-4">
             <label className="relative block">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -240,10 +271,10 @@ function MesaPage() {
                       <button
                         type="button"
                         onClick={() => goToTable(m.table)}
-                        className="flex w-full items-center text-left justify-between gap-3 rounded-2xl bg-sand/50 px-4 py-2.5 transition hover:bg-sand"
+                        className="flex w-full items-center justify-between gap-3 rounded-2xl bg-sand/50 px-4 py-2.5 text-left transition hover:bg-sand"
                       >
                         <span className="min-w-0">
-                          <span className="block truncate text-[14px] font-medium">{m.name}</span>
+                          <span className="block truncate text-[14px] font-semibold">{m.name}</span>
                           {m.relation && <span className="block text-[11px] text-muted-foreground">{m.relation}</span>}
                         </span>
                         <span className="flex shrink-0 items-center gap-1.5 font-display text-[15px] text-primary">
@@ -254,36 +285,78 @@ function MesaPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="mt-3 text-center text-[13px] text-muted-foreground">
-                  Nenhum nome encontrado. Tente só o primeiro nome.
-                </p>
+                <p className="mt-3 text-center text-[13px] text-muted-foreground">Nenhum nome encontrado. Tente só o primeiro nome.</p>
               )
             ) : (
-              <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
-                <Users className="h-3.5 w-3.5 text-caramel" />
-                {loading ? "Carregando mesas…" : `${totalGuests} convidados em ${tables.length} mesas`}
+              <div className="mt-3 grid grid-cols-2 gap-2 text-center">
+                <div className="rounded-2xl bg-sand/50 px-3 py-2.5">
+                  <div className="font-display text-[22px] leading-none">{loading ? "–" : totalGuests}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">convidados</div>
+                </div>
+                <div className="rounded-2xl bg-invite-soft px-3 py-2.5">
+                  <div className="font-display text-[22px] leading-none text-invite-ink">{loading ? "–" : totalInvited}</div>
+                  <div className="mt-1 text-[11px] text-invite-ink/80">convites entregues</div>
+                </div>
               </div>
             )}
           </div>
-          <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-success/[0.07] px-4 py-3 text-[12.5px] leading-snug text-foreground/80 ring-1 ring-success/20">
-            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-success text-white">
+        </FadeIn>
+
+        {/* Legenda */}
+        <FadeIn className="mx-auto mb-6 max-w-md">
+          <div className="flex items-start gap-2.5 rounded-2xl bg-invite-soft px-4 py-3 text-[12.5px] leading-snug text-foreground/80 ring-1 ring-invite/40">
+            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-invite text-white">
               <Check className="h-2.5 w-2.5" strokeWidth={3} />
             </span>
             <span>
-              <b className="font-semibold text-success">Nomes em verde</b> já receberam o convite pessoalmente, junto com o
+              <b className="font-semibold text-invite-ink">Nomes em verde</b> já receberam o convite pessoalmente, junto com o
               convite do salão.
             </span>
           </div>
         </FadeIn>
 
+        {/* Atalhos para as mesas */}
+        {!loading && visible.length > 1 && (
+          <div className="sticky top-16 z-30 -mx-5 mb-5 bg-background/85 px-5 py-2.5 backdrop-blur-md">
+            <div className="no-scrollbar flex gap-2 overflow-x-auto">
+              {visible.map((t) => {
+                const inv = t.guests.filter((g) => g.invited).length;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => goToTable(t.id)}
+                    className={cn(
+                      "flex shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3.5 text-[13px] font-medium ring-1 transition-colors",
+                      focused === t.id ? "bg-foreground text-background ring-foreground" : "bg-card text-foreground ring-border",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "flex h-7 w-7 items-center justify-center rounded-full font-display text-[14px]",
+                        focused === t.id ? "bg-background text-foreground" : "bg-sand text-gold-800",
+                      )}
+                    >
+                      {t.id}
+                    </span>
+                    <span className={cn("text-[11.5px]", focused === t.id ? "text-background/80" : "text-muted-foreground")}>
+                      {inv}/{t.guests.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {loading ? (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {[0, 1, 2].map((i) => (
-              <Skeleton key={i} className="aspect-square w-full rounded-[28px]" />
+              <Skeleton key={i} className="h-[420px] w-full rounded-[30px]" />
             ))}
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {visible.map((t) => (
               <TableCard key={t.id} table={t} query={query} focused={focused === t.id} />
             ))}

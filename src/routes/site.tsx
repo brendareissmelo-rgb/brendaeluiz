@@ -148,7 +148,7 @@ function GuestRows({ guests, onChange }: { guests: Guest[]; onChange: (g: Guest[
             onClick={() => set(i, { invited: !g.invited })}
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-              g.invited ? "border-success bg-success text-white" : "border-border text-transparent hover:border-success/60",
+              g.invited ? "border-invite bg-invite text-white" : "border-border text-transparent hover:border-invite",
             )}
           >
             <Check className="h-4 w-4" strokeWidth={3} />
@@ -455,7 +455,7 @@ function SiteEditor() {
                   </div>
                 </div>
                 <div className="h-2.5 w-28 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-success" style={{ width: `${all.length ? (inv / all.length) * 100 : 0}%` }} />
+                  <div className="h-full rounded-full bg-invite" style={{ width: `${all.length ? (inv / all.length) * 100 : 0}%` }} />
                 </div>
               </div>
             );

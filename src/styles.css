@@ -201,6 +201,9 @@
   --color-sage: var(--sage);
   --color-blush: var(--blush);
   --color-dusk: var(--dusk);
+  --color-invite: var(--invite);
+  --color-invite-ink: var(--invite-ink);
+  --color-invite-soft: var(--invite-soft);
 
   --color-gold-100: var(--gold-100);
   --color-gold-200: var(--gold-200);
@@ -227,6 +230,10 @@
   --sage: #7f8f6a;
   --blush: #e7c3b4;
   --dusk: #7d97ad;
+  /* Verde claro: convite entregue pessoalmente */
+  --invite: #74c279;
+  --invite-ink: #3f9d52;
+  --invite-soft: #e6f5e4;
 
   --background: #f8f2ea;
   --foreground: #3a2820;
