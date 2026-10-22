@@ -272,7 +272,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       {
         id: 5,
         guests: [
-          { name: "Jonatha David", invited: false },
+          { name: "Ana Paula Morais\n", invited: false },
           { name: "Dayane Lobo", invited: false },
           { name: "Isaac Lobo", invited: false },
           { name: "Carol Barros", invited: false },
